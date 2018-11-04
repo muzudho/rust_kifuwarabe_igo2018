@@ -1,6 +1,5 @@
 {
-	"comment": "指し手",
-    "boardSize": 19,
+	"comment": "現局面",
     "board": [
         "+++++++++++++++++++",
         "+                 +",
@@ -24,7 +23,5 @@
         "+                 +",
         "+++++++++++++++++++"
     ],
-    "turn": "black",
-    "rule": "jungo",
-    "komiJungo": 6.5
+    "turn": "black"
 }
