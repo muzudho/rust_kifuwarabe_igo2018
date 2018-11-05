@@ -96,9 +96,31 @@ fn main() {
             let turn = pos_v["turn"].as_str().unwrap().to_string();
             println!("Turn: '{}'.", turn);
 
+            // 読み取ったらファイル削除。
+            fs::remove_file("position.json");
+
+            // 盤を表示☆（＾～＾）
             println!("Board: ");
             i = 0;
             for num in board.iter() {
+                if i == (board_size+2) * (board_size+2) {
+                    break;
+                }
+                print!("{}, ", num);
+                if i % (board_size + 2) == (board_size + 1) {
+                    println!();
+                }
+                i += 1;
+            }
+
+            // 連の算出。
+            let mut marker_board = [0; 21 * 21];
+            check_liberty(board, &mut marker_board, board_size);
+
+            // マーク盤を表示☆（＾～＾）
+            println!("Mark board: ");
+            i = 0;
+            for num in marker_board.iter() {
                 print!("{}, ", num);
                 if i == (board_size+2) * (board_size+2) {
                     break;
@@ -107,14 +129,31 @@ fn main() {
                 }
                 i += 1;
             }
-
-            // 読み取ったらファイル削除。
-            fs::remove_file("position.json");
         }
 
         thread::sleep(Duration::from_millis(1));
     }
     // サーバーは、[Ctrl]+[C]キーで強制終了しろだぜ☆（＾～＾）
+}
+
+/// 連の算出。
+fn check_liberty(board:[i8;21*21], marker_board:&mut [i8;21*21], board_size:usize) {
+    // 枠でも構わず検索☆（＾～＾）
+    let mut i = 0;
+    for num in board.iter() {
+        if i == (board_size+2) * (board_size+2) {
+            break;
+        }
+
+        match num {
+            1 => { marker_board[i] = 1; }, // 黒。
+            2 => { marker_board[i] = 1; }, // 白。
+            3 => {}, // 枠。何もしない。
+            _ => {}, // スペース。何もしない。
+        };
+
+        i += 1;
+    }
 }
 
 /// TODO トライアウト。
