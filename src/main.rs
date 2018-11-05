@@ -14,16 +14,16 @@ use std::time::Duration;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
-/// 
+///
 /// ```
 /// ### コンパイル
 /// cd  C:\MuzudhoDrive\projects_rust\rust_kifuwarabe_igo2018
 /// cargo clippy
-/// 
+///
 /// ### 実行
 /// cargo run --release
 /// ```
-/// 
+///
 fn main() {
     // 設定ファイル読込。
     let mut conf_file = match File::open("config.json") {
@@ -73,12 +73,34 @@ fn main() {
             println!("Pos comment: '{}'.", pos_comment);
 
             // 盤面取得。
+            let mut i = 0;
+            let mut board = [2; 21 * 21]; // 19路盤枠あり。
             for line in pos_v["board"].as_array().unwrap().iter() {
+                let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();
+                for ch in &chars {
+                    board[i] = match ch {
+                        'x' => 0, // 黒。
+                        'o' => 1, // 白。
+                        '+' => 3, // 枠。
+                        _ => 2,   // スペース。
+                    };
+                    i += 1;
+                }
                 println!("Line: '{}'.", line);
             }
 
             let turn = pos_v["turn"].as_str().unwrap().to_string();
             println!("Turn: '{}'.", turn);
+
+            println!("Board: ");
+            i = 0;
+            for num in board.iter() {
+                print!("{}, ", num);
+                if i % 21 == 20 {
+                    println!();
+                }
+                i += 1;
+            }
 
             // 読み取ったらファイル削除。
             fs::remove_file("position.json");
@@ -87,24 +109,21 @@ fn main() {
         thread::sleep(Duration::from_millis(1));
     }
     // サーバーは、[Ctrl]+[C]キーで強制終了しろだぜ☆（＾～＾）
-
 }
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-fn tryout() {
-
-}
+fn tryout() {}
 
 /// TODO 勝敗判定。
 /// 純碁ルールでは、終局図では簡単で　単に盤上の石の数が多い方の勝ち。
 /// 途中図で石の数を数えても　何の当てにもならない☆（＾～＾）
 /// だから tryout(); してから呼び出せだぜ☆（＾～＾）
-/// 
+///
 /// # Returns.
 /// 黒番が勝ってれば 0, 白番が勝ってれば 1, 引き分けなら 2。
 fn judge() -> i8 {
-    return 0;
+    0
 }
 
 /// TODO 次の１手を返す。
@@ -112,5 +131,5 @@ fn judge() -> i8 {
 fn think() -> i8 {
     tryout();
     judge();
-    return 0101;
+    101
 }
