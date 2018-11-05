@@ -83,10 +83,10 @@ fn main() {
                 let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();
                 for ch in &chars {
                     board[i] = match ch {
-                        'x' => 0, // 黒。
-                        'o' => 1, // 白。
+                        'x' => 1, // 黒。
+                        'o' => 2, // 白。
                         '+' => 3, // 枠。
-                        _ => 2,   // スペース。
+                        _ => 0,   // スペース。
                     };
                     i += 1;
                 }
