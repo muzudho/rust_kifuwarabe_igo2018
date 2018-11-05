@@ -44,8 +44,12 @@ fn main() {
     };
 
     // コメント取得。
-    let conf_comment = conf_v["comment"].as_str().unwrap().to_string();
+    let conf_comment = conf_v["comment"].as_str().expect("comment.").to_string();
     println!("Config comment: '{}'.", conf_comment);
+
+    // 何路盤。
+    let board_size: usize = conf_v["boardSize"].as_i64().expect("boardSize.") as usize; // FIXME 変換方法が分からん☆（＾～＾）
+    println!("Config conf_board_size: {}.", board_size);
 
     loop {
         // ファイル確認。
@@ -74,7 +78,7 @@ fn main() {
 
             // 盤面取得。
             let mut i = 0;
-            let mut board = [2; 21 * 21]; // 19路盤枠あり。
+            let mut board = [9; 21 * 21]; // 19路盤枠ありが入るサイズを確保しておく。使ってない数字で埋める☆（＾～＾）
             for line in pos_v["board"].as_array().unwrap().iter() {
                 let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();
                 for ch in &chars {
@@ -96,7 +100,9 @@ fn main() {
             i = 0;
             for num in board.iter() {
                 print!("{}, ", num);
-                if i % 21 == 20 {
+                if i == (board_size+2) * (board_size+2) {
+                    break;
+                } else if i % (board_size + 2) == (board_size + 1) {
                     println!();
                 }
                 i += 1;

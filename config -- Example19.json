@@ -1,6 +1,7 @@
 {
-	"comment": "現局面",
-    "board": [
+    "comment": "AI竜星戦2018用設定ファイル",
+    "boardSize": 19,
+    "boardInit": [
         "+++++++++++++++++++",
         "+                 +",
         "+                 +",
@@ -23,5 +24,7 @@
         "+                 +",
         "+++++++++++++++++++"
     ],
-    "turn": "black"
+    "sente": "black",
+    "rule": "jungo",
+    "komiJungo": 6.5
 }
