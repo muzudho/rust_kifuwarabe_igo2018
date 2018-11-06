@@ -138,26 +138,46 @@ fn main() {
 
 /// 連の算出。
 fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21]) {
-    // 枠でも構わず検索☆（＾～＾）
 
-    let upper = (board_size+2) * (board_size+2) + 1;
-    let color = 1; // 探す石の色。仮に黒。
-    for start in 0..upper { // セル番号。連のIDを決めるのにも使う。
-        walk_liberty(start as i8, color, board_size, board, ren_id_board, start); // ここ。
+    // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
+    // 小さい盤で数えてみろだぜ☆（＾～＾）
+    //
+    // ++++
+    // +  +
+    // +  +
+    // ++++
+    //
+    // は board_size 2 で、セル番号は
+    //
+    //  0, 1, 2, 3,
+    //  4, 5, 6, 7,
+    //  8, 9,10,11,
+    // 12,13,14,15
+    //
+    // だから、枠の中の 左上隅は 5、右下隅は 10 で、算出方法は以下の通り☆
+    let left_top = (board_size+2) + 1;
+    let rigth_bottom = (board_size+2) * board_size + board_size;
+
+    for start in left_top..rigth_bottom { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
+        let color = board[start]; // 開始地点にある石の色。この石と同じ色を探す。
+        if color==1 || color==2 { // 黒石か白石だけ探せばいい☆（＾～＾）
+            let opponent = (color+2)%2+1;// 相手の石の色。
+            walk_liberty(start as i8, color, opponent, board_size, board, ren_id_board, start); // まず開始地点から。
+        }
     }
 }
 
 /// 連の計算中。
 /// # Parameters.
 /// * `dir` - 0: 上, 1: 右, 2: 下, 3: 左.
-fn walk_liberty(ren_id:i8, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21], target:usize){
-    // マーク済みなら終了。
-    if ren_id_board[target] != 0 {
+fn walk_liberty(ren_id:i8, color:i8, opponent:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21], target:usize){
+    // 連IDが振られてたら終了。ただし相手の石の色を除く。
+    if ren_id_board[target] != 0 && ren_id_board[target] != opponent { // 0 は枠セル番号なんで、連IDに使わない。
         return;
     }
-    // 探している石でなければ、マークして終了。
+    // 探している石でなければ、自分の石の色をマークして終了。
     if board[target] != color {
-        ren_id_board[target] = 1; // 1 は枠が置いてあるセル。連IDには使われない。
+        ren_id_board[target] = color; // 1とか2 という数は枠セル番号なんで、連IDに使わない。
         return;
     }
 
@@ -165,10 +185,10 @@ fn walk_liberty(ren_id:i8, color:i8, board_size:usize, board:[i8;21*21], ren_id_
     ren_id_board[target] = ren_id;
 
     // 隣を探す。（再帰）
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, target-(board_size+2));// 上 。
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, target+1);// 右。
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, target+(board_size+2));// 下。
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, target-1);// 左。
+    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target-(board_size+2));// 上 。
+    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target+1);// 右。
+    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target+(board_size+2));// 下。
+    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target-1);// 左。
 }
 
 /// TODO トライアウト。
