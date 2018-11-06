@@ -113,15 +113,15 @@ fn main() {
                 i += 1;
             }
 
-            // 連の算出。
-            let mut marker_board = [0; 21 * 21];
-            check_liberty(board, &mut marker_board, board_size);
+            // 連のIDを振る。
+            let mut ren_id_board = [0; 21 * 21];
+            check_liberty(board_size, board, &mut ren_id_board);
 
-            // マーク盤を表示☆（＾～＾）
-            println!("Mark board: ");
+            // 連のIDを表示☆（＾～＾）
+            println!("Ren ID board: ");
             i = 0;
-            for num in marker_board.iter() {
-                print!("{}, ", num);
+            for ren_id in ren_id_board.iter() {
+                print!("{:3}, ", ren_id);
                 if i == (board_size+2) * (board_size+2) {
                     break;
                 } else if i % (board_size + 2) == (board_size + 1) {
@@ -137,23 +137,38 @@ fn main() {
 }
 
 /// 連の算出。
-fn check_liberty(board:[i8;21*21], marker_board:&mut [i8;21*21], board_size:usize) {
+fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21]) {
     // 枠でも構わず検索☆（＾～＾）
-    let mut i = 0;
-    for num in board.iter() {
-        if i == (board_size+2) * (board_size+2) {
-            break;
-        }
 
-        match num {
-            1 => { marker_board[i] = 1; }, // 黒。
-            2 => { marker_board[i] = 1; }, // 白。
-            3 => {}, // 枠。何もしない。
-            _ => {}, // スペース。何もしない。
-        };
-
-        i += 1;
+    let upper = (board_size+2) * (board_size+2) + 1;
+    let color = 1; // 探す石の色。仮に黒。
+    for start in 0..upper { // セル番号。連のIDを決めるのにも使う。
+        walk_liberty(start as i8, color, board_size, board, ren_id_board, start); // ここ。
     }
+}
+
+/// 連の計算中。
+/// # Parameters.
+/// * `dir` - 0: 上, 1: 右, 2: 下, 3: 左.
+fn walk_liberty(ren_id:i8, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21], target:usize){
+    // マーク済みなら終了。
+    if ren_id_board[target] != 0 {
+        return;
+    }
+    // 探している石でなければ、マークして終了。
+    if board[target] != color {
+        ren_id_board[target] = 1; // 1 は枠が置いてあるセル。連IDには使われない。
+        return;
+    }
+
+    // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
+    ren_id_board[target] = ren_id;
+
+    // 隣を探す。（再帰）
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, target-(board_size+2));// 上 。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, target+1);// 右。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, target+(board_size+2));// 下。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, target-1);// 左。
 }
 
 /// TODO トライアウト。
