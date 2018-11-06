@@ -99,14 +99,28 @@ fn main() {
             // 読み取ったらファイル削除。
             fs::remove_file("position.json");
 
-            // 盤を表示☆（＾～＾）
-            println!("Board: ");
+            // 盤番地を表示☆（＾～＾）
+            println!("Cell address: ");
             i = 0;
-            for num in board.iter() {
+            for stone in board.iter() {
                 if i == (board_size+2) * (board_size+2) {
                     break;
                 }
-                print!("{}, ", num);
+                print!("{:3}, ", i);
+                if i % (board_size + 2) == (board_size + 1) {
+                    println!();
+                }
+                i += 1;
+            }
+
+            // 盤を表示☆（＾～＾）
+            println!("Board: ");
+            i = 0;
+            for stone in board.iter() {
+                if i == (board_size+2) * (board_size+2) {
+                    break;
+                }
+                print!("{}, ", stone);
                 if i % (board_size + 2) == (board_size + 1) {
                     println!();
                 }
@@ -115,19 +129,28 @@ fn main() {
 
             // 連のIDを振る。
             let mut ren_id_board = [0; 21 * 21];
-            check_liberty(board_size, board, &mut ren_id_board);
+            let mut liberty_count_map = [0; 21*21];
+            check_liberty(board_size, board, &mut ren_id_board, &mut liberty_count_map);
 
             // 連のIDを表示☆（＾～＾）
             println!("Ren ID board: ");
             i = 0;
             for ren_id in ren_id_board.iter() {
-                print!("{:3}, ", ren_id);
                 if i == (board_size+2) * (board_size+2) {
                     break;
-                } else if i % (board_size + 2) == (board_size + 1) {
+                }
+                print!("{:4}, ", ren_id);
+                if i % (board_size + 2) == (board_size + 1) {
                     println!();
                 }
                 i += 1;
+            }
+
+            println!("Liberty count: ");
+            for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
+                if *lib_cnt != 0 {
+                    println!("[{:3}] {:3}", ren_id, lib_cnt);
+                }
             }
         }
 
@@ -137,7 +160,7 @@ fn main() {
 }
 
 /// 連の算出。
-fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21]) {
+fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21], liberty_count_map:&mut [i8;21*21]) {
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
     // 小さい盤で数えてみろだぜ☆（＾～＾）
@@ -161,23 +184,28 @@ fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21
     for start in left_top..rigth_bottom { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
         let color = board[start]; // 開始地点にある石の色。この石と同じ色を探す。
         if color==1 || color==2 { // 黒石か白石だけ探せばいい☆（＾～＾）
-            let opponent = (color+2)%2+1;// 相手の石の色。
-            walk_liberty(start as i8, color, opponent, board_size, board, ren_id_board, start); // まず開始地点から。
+            // let opponent = (color+2)%2+1;// 相手の石の色。
+            walk_liberty(start as i16, color, board_size, board, ren_id_board, liberty_count_map, start); // まず開始地点から。
         }
     }
 }
 
-/// 連の計算中。
+/// 連にIDを振り、連の呼吸点も数える。
 /// # Parameters.
-/// * `dir` - 0: 上, 1: 右, 2: 下, 3: 左.
-fn walk_liberty(ren_id:i8, color:i8, opponent:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i8;21*21], target:usize){
-    // 連IDが振られてたら終了。ただし相手の石の色を除く。
-    if ren_id_board[target] != 0 && ren_id_board[target] != opponent { // 0 は枠セル番号なんで、連IDに使わない。
-        return;
+/// * `ren_id_board` - 1000以上はtemporaryな数。
+fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21], liberty_count_map:&mut [i8;21*21], target:usize){
+    if board[target] == 0 && ren_id_board[target] != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
+        // println!("LIB: [{:3}] {:3}", ren_id, target);
+        liberty_count_map[ren_id as usize] += 1;
     }
-    // 探している石でなければ、自分の石の色をマークして終了。
-    if board[target] != color {
-        ren_id_board[target] = color; // 1とか2 という数は枠セル番号なんで、連IDに使わない。
+    
+    if (ren_id_board[target] != 0 && ren_id_board[target] != ren_id + 1000) // 連IDが振られてたら終了。ただし「自分の連ID + 1000」を除く。0 は枠セル番号なんで、連IDに使わない。
+        || // または、
+        board[target] != color // 探している石でなければ終了。
+    {
+        if board[target] == 0 || 1000 <= ren_id_board[target] { // そこが空点か、1000以上の連IDなら「自分の連ID + 1000」を上書きでマークしておく。
+            ren_id_board[target] = ren_id + 1000;
+        }
         return;
     }
 
@@ -185,10 +213,10 @@ fn walk_liberty(ren_id:i8, color:i8, opponent:i8, board_size:usize, board:[i8;21
     ren_id_board[target] = ren_id;
 
     // 隣を探す。（再帰）
-    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target-(board_size+2));// 上 。
-    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target+1);// 右。
-    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target+(board_size+2));// 下。
-    walk_liberty(ren_id, color, opponent, board_size, board, ren_id_board, target-1);// 左。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-(board_size+2));// 上 。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target+1);// 右。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target+(board_size+2));// 下。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-1);// 左。
 }
 
 /// TODO トライアウト。
