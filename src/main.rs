@@ -178,6 +178,13 @@ fn main() {
             println!("forbidden? {}", forbidden);
             let forbidden = is_forbidden(convert_code_to_address(401, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
+
+            let legal_moves = pick_move(color, board_size, board, ren_id_board, liberty_count_map, ko);
+            print!("Legal moves: ");
+            for legal_move in &legal_moves {
+                print!("{}, ", legal_move);
+            }
+            println!(".");
         }
 
         thread::sleep(Duration::from_millis(1));
@@ -225,7 +232,7 @@ fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*2
     let left_top = (board_size+2) + 1;
     let rigth_bottom = (board_size+2) * board_size + board_size;
 
-    for start in left_top..rigth_bottom { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
+    for start in left_top..rigth_bottom+1 { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
         let color = board[start]; // 開始地点にある石の色。この石と同じ色を探す。
         if color==1 || color==2 { // 黒石か白石だけ探せばいい☆（＾～＾）
             walk_liberty(start as i16, color, board_size, board, ren_id_board, liberty_count_map, start); // まず開始地点から。
@@ -279,6 +286,7 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
     let opponent = (color+2)%2+1; // 相手の石の色。
 
     /*
+    println!("forbidden? board[target] != 0 -> {}", board[target] != 0);
     println!("forbidden? target == ko -> {}", target == ko);
     println!("forbidden? board[top] == 0 -> {}", board[top] == 0);
     println!("forbidden? board[right] == 0 -> {}", board[right] == 0);
@@ -294,8 +302,12 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
     println!("forbidden? board[left] == opponent && liberty_count_map[left_ren_id] < 2 -> {}", board[left] == opponent && liberty_count_map[left_ren_id] < 2);
     */
 
-    // コウ（前にアゲるところに石を打ったばかりの番地）なら、着手禁止点。
-    if target == ko {
+    if
+        // 空点以外は、着手禁止点。
+        board[target] != 0
+        // コウ（前にアゲるところに石を打ったばかりの番地）なら、着手禁止点。
+        || target == ko
+    {
         return true;
     }
 
@@ -318,6 +330,22 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
 
     // それ以外なら 着手禁止点。
     true
+}
+
+/// 合法手生成。
+fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) -> Vec<usize> {
+    let mut vec: Vec<usize> = Vec::new();
+
+    let left_top = (board_size+2) + 1;
+    let rigth_bottom = (board_size+2) * board_size + board_size;
+
+    for target in left_top..rigth_bottom+1 {
+        if !is_forbidden(target, color, board_size, board, ren_id_board, liberty_count_map, ko) {
+            vec.push(target);
+        }
+    }
+
+    vec
 }
 
 /// TODO トライアウト。
