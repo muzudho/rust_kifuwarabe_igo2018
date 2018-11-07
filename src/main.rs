@@ -172,10 +172,11 @@ fn main() {
             println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
+            let ko = 0;
             let color = 1;
-            let forbidden = is_forbidden(convert_code_to_address(704, board_size), color, board_size, board, ren_id_board, liberty_count_map);
+            let forbidden = is_forbidden(convert_code_to_address(704, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, board_size), color, board_size, board, ren_id_board, liberty_count_map);
+            let forbidden = is_forbidden(convert_code_to_address(401, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
         }
 
@@ -265,7 +266,7 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
 /// * `color` - 置く石の色。 1:黒, 2:白.
-fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21]) -> bool {
+fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) -> bool {
     
     let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
@@ -278,6 +279,7 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
     let opponent = (color+2)%2+1; // 相手の石の色。
 
     /*
+    println!("forbidden? target == ko -> {}", target == ko);
     println!("forbidden? board[top] == 0 -> {}", board[top] == 0);
     println!("forbidden? board[right] == 0 -> {}", board[right] == 0);
     println!("forbidden? board[bottom] == 0 -> {}", board[bottom] == 0);
@@ -292,6 +294,11 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
     println!("forbidden? board[left] == opponent && liberty_count_map[left_ren_id] < 2 -> {}", board[left] == opponent && liberty_count_map[left_ren_id] < 2);
     */
 
+    // コウ（前にアゲるところに石を打ったばかりの番地）なら、着手禁止点。
+    if target == ko {
+        return true;
+    }
+
     if
         // 隣に空点があれば、自殺手ではない。
         board[top] == 0 || board[right] == 0 || board[bottom] == 0 || board[left] == 0
@@ -305,7 +312,6 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
         || (board[right] == opponent && liberty_count_map[right_ren_id] < 2)
         || (board[bottom] == opponent && liberty_count_map[bottom_ren_id] < 2)
         || (board[left] == opponent && liberty_count_map[left_ren_id] < 2)
-        // TODO 前に打ったばかりのところでなければ、コウではない。
     {
         return false;
     }
