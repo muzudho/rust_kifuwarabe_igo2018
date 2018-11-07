@@ -152,11 +152,42 @@ fn main() {
                     println!("[{:3}] {:3}", ren_id, lib_cnt);
                 }
             }
+
+            // 試し打ちをする☆（＾～＾）
+            //
+            // 例えば 3x3 の盤の中段右は x=3, y=2 と数えて、
+            //
+            // +++++
+            // +   +
+            // +  *+
+            // +   +
+            // +++++
+            //
+            // 符号は 302、番地は 5 とする。
+            // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
+            // let forbidden = is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], liberty_count_map:&mut [i8;21*21]);
+
         }
 
         thread::sleep(Duration::from_millis(1));
     }
     // サーバーは、[Ctrl]+[C]キーで強制終了しろだぜ☆（＾～＾）
+}
+
+// 符号を番地に変換。
+//
+// 例えば 3x3 の盤の中段右は x=3, y=2 と数えて、
+//
+// +++++
+// +   +
+// +  *+
+// +   +
+// +++++
+//
+// 符号は 302、番地は 5 とする。
+// 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
+fn convert_code_to_address(code:i16, board_size:usize) -> i16 {
+    0
 }
 
 /// 連の算出。
@@ -184,14 +215,13 @@ fn check_liberty(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*2
     for start in left_top..rigth_bottom { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
         let color = board[start]; // 開始地点にある石の色。この石と同じ色を探す。
         if color==1 || color==2 { // 黒石か白石だけ探せばいい☆（＾～＾）
-            // let opponent = (color+2)%2+1;// 相手の石の色。
             walk_liberty(start as i16, color, board_size, board, ren_id_board, liberty_count_map, start); // まず開始地点から。
         }
     }
 }
 
 /// 連にIDを振り、連の呼吸点も数える。
-/// # Parameters.
+/// # Arguments.
 /// * `ren_id_board` - 1000以上はtemporaryな数。
 fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21], liberty_count_map:&mut [i8;21*21], target:usize){
     if board[target] == 0 && ren_id_board[target] != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
@@ -213,10 +243,44 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
     ren_id_board[target] = ren_id;
 
     // 隣を探す。（再帰）
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-(board_size+2));// 上 。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-(board_size+2));// 上。
     walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target+1);// 右。
     walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target+(board_size+2));// 下。
     walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-1);// 左。
+}
+
+/// 着手禁止点（自殺手またはコウ）なら真。
+/// # Arguments.
+/// * `target` - 石を置きたい空点の番地。
+/// * `color` - 置く石の色。 1:黒, 2:白.
+fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], liberty_count_map:&mut [i8;21*21]) -> bool {
+    
+    let top = target-(board_size+2); // 上。
+    let right = target+1; // 右。
+    let bottom = target+(board_size+2); // 下。
+    let left = target-1; // 左。
+    let opponent = (color+2)%2+1; // 相手の石の色。
+
+    if
+        // 隣に空点があれば、自殺手ではない。
+        board[top] == 0 || board[right] == 0 || board[bottom] == 0 || board[left] == 0
+        // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
+        || (board[top] == color && 1<liberty_count_map[top])
+        || (board[right] == color && 1<liberty_count_map[right])
+        || (board[bottom] == color && 1<liberty_count_map[bottom])
+        || (board[left] == color && 1<liberty_count_map[left])
+        // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
+        || (board[top] == opponent && liberty_count_map[top] < 2)
+        || (board[right] == opponent && liberty_count_map[right] < 2)
+        || (board[bottom] == opponent && liberty_count_map[bottom] < 2)
+        || (board[left] == opponent && liberty_count_map[left] < 2)
+        // TODO 前に打ったばかりのところでなければ、コウではない。
+    {
+        return false;
+    }
+
+    // それ以外なら 着手禁止点。
+    true
 }
 
 /// TODO トライアウト。
