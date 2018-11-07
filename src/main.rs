@@ -165,8 +165,18 @@ fn main() {
             //
             // 符号は 302、番地は 5 とする。
             // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
-            // let forbidden = is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], liberty_count_map:&mut [i8;21*21]);
-
+            /*
+            println!("Conv {} -> {}", 704, convert_code_to_address(704, board_size));
+            println!("Conv {} -> {}", 101, convert_code_to_address(101, board_size));
+            println!("Conv {} -> {}", 102, convert_code_to_address(102, board_size));
+            println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
+            println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
+             */
+            let color = 1;
+            let forbidden = is_forbidden(convert_code_to_address(704, board_size), color, board_size, board, ren_id_board, liberty_count_map);
+            println!("forbidden? {}", forbidden);
+            let forbidden = is_forbidden(convert_code_to_address(401, board_size), color, board_size, board, ren_id_board, liberty_count_map);
+            println!("forbidden? {}", forbidden);
         }
 
         thread::sleep(Duration::from_millis(1));
@@ -186,8 +196,10 @@ fn main() {
 //
 // 符号は 302、番地は 5 とする。
 // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
-fn convert_code_to_address(code:i16, board_size:usize) -> i16 {
-    0
+fn convert_code_to_address(code:i16, board_size:usize) -> usize {
+    // x と y に分解
+    // コードの算出
+    (code % 100i16 * (board_size as i16 + 2i16) + code / 100i16 % 100i16) as usize
 }
 
 /// 連の算出。
@@ -253,27 +265,46 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
 /// * `color` - 置く石の色。 1:黒, 2:白.
-fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], liberty_count_map:&mut [i8;21*21]) -> bool {
+fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21]) -> bool {
     
-    let top = target-(board_size+2); // 上。
+    let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
     let bottom = target+(board_size+2); // 下。
     let left = target-1; // 左。
+    let top_ren_id = ren_id_board[top] as usize; // 上の連のID。
+    let right_ren_id = ren_id_board[right] as usize; // 上の連のID。
+    let bottom_ren_id = ren_id_board[bottom] as usize; // 上の連のID。
+    let left_ren_id = ren_id_board[left] as usize; // 上の連のID。
     let opponent = (color+2)%2+1; // 相手の石の色。
+
+    /*
+    println!("forbidden? board[top] == 0 -> {}", board[top] == 0);
+    println!("forbidden? board[right] == 0 -> {}", board[right] == 0);
+    println!("forbidden? board[bottom] == 0 -> {}", board[bottom] == 0);
+    println!("forbidden? board[left] == 0 -> {}", board[left] == 0);
+    println!("forbidden? board[top] == color && 1<liberty_count_map[top_ren_id] -> {}", board[top] == color && 1<liberty_count_map[top_ren_id]);
+    println!("forbidden? board[right] == color && 1<liberty_count_map[right_ren_id] -> {}", board[right] == color && 1<liberty_count_map[right_ren_id]);
+    println!("forbidden? board[bottom] == color && 1<liberty_count_map[bottom_ren_id] -> {}", board[bottom] == color && 1<liberty_count_map[bottom_ren_id]);
+    println!("forbidden? board[left] == color && 1<liberty_count_map[left_ren_id] -> {}", board[left] == color && 1<liberty_count_map[left_ren_id]);
+    println!("forbidden? board[top] == opponent && liberty_count_map[top_ren_id] < 2 -> {}", board[top] == opponent && liberty_count_map[top_ren_id] < 2);
+    println!("forbidden? board[right] == opponent && liberty_count_map[right_ren_id] < 2 -> {}", board[right] == opponent && liberty_count_map[right_ren_id] < 2);
+    println!("forbidden? board[bottom] == opponent && liberty_count_map[bottom_ren_id] < 2 -> {}", board[bottom] == opponent && liberty_count_map[bottom_ren_id] < 2);
+    println!("forbidden? board[left] == opponent && liberty_count_map[left_ren_id] < 2 -> {}", board[left] == opponent && liberty_count_map[left_ren_id] < 2);
+    */
 
     if
         // 隣に空点があれば、自殺手ではない。
         board[top] == 0 || board[right] == 0 || board[bottom] == 0 || board[left] == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (board[top] == color && 1<liberty_count_map[top])
-        || (board[right] == color && 1<liberty_count_map[right])
-        || (board[bottom] == color && 1<liberty_count_map[bottom])
-        || (board[left] == color && 1<liberty_count_map[left])
+        || (board[top] == color && 1<liberty_count_map[top_ren_id])
+        || (board[right] == color && 1<liberty_count_map[right_ren_id])
+        || (board[bottom] == color && 1<liberty_count_map[bottom_ren_id])
+        || (board[left] == color && 1<liberty_count_map[left_ren_id])
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (board[top] == opponent && liberty_count_map[top] < 2)
-        || (board[right] == opponent && liberty_count_map[right] < 2)
-        || (board[bottom] == opponent && liberty_count_map[bottom] < 2)
-        || (board[left] == opponent && liberty_count_map[left] < 2)
+        || (board[top] == opponent && liberty_count_map[top_ren_id] < 2)
+        || (board[right] == opponent && liberty_count_map[right_ren_id] < 2)
+        || (board[bottom] == opponent && liberty_count_map[bottom_ren_id] < 2)
+        || (board[left] == opponent && liberty_count_map[left_ren_id] < 2)
         // TODO 前に打ったばかりのところでなければ、コウではない。
     {
         return false;
