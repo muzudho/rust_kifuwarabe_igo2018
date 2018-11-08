@@ -106,7 +106,7 @@ fn main() {
             // 盤番地を表示☆（＾～＾）
             println!("Cell address: ");
             i = 0;
-            for stone in board.iter() {
+            for _stone in board.iter() {
                 if i == (board_size+2) * (board_size+2) {
                     break;
                 }
@@ -166,29 +166,34 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            let color = 1;
+            // 石の色。 1:黒, 2:白。
+            let mut color = 1;
             let forbidden = is_forbidden(convert_code_to_address(704, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
             let forbidden = is_forbidden(convert_code_to_address(401, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
             let legal_moves = pick_move(color, board_size, board, ren_id_board, liberty_count_map, ko);
-            print!("Legal moves: ");
-            for legal_move in &legal_moves {
-                print!("{}, ", legal_move);
-            }
-            println!(".");
-
-            // 合法手があれば、ランダムに１つ選ぶ。無ければ 0: パス☆（＾～＾）
-            let best_move:usize = if legal_moves.len()==0 {0}else{*rand::thread_rng().choose(&legal_moves).unwrap()};
-            println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
-            if best_move!=0 {
-                // 石を置く。
-                board[best_move] = color;
-            }
+            // 合法手の表示☆（＾～＾）
+            show_legal_moves(&legal_moves);
+            // 合法手があれば、ランダムに１つ選ぶ。無ければパス☆（＾～＾）
+            do_random_move(color, board_size, &mut board, &legal_moves);
             // 盤を表示☆（＾～＾）
             show_board(board_size, board);
 
+            // 手番を反転する☆（＾～＾）
+            color = get_opponent(color);
+
+            // ランダムムーブする☆（＾～＾）
+            let legal_moves = pick_move(color, board_size, board, ren_id_board, liberty_count_map, ko);
+            show_legal_moves(&legal_moves);
+            do_random_move(color, board_size, &mut board, &legal_moves);
+            show_board(board_size, board);
+            color = get_opponent(color);
+
+            // 連続パス が起こったら終了☆（＾～＾）400手目を打ったところでも終了☆（＾～＾）
+
+            // TODO コウをなんとかしろだぜ☆（*＾～＾*）
         }
 
         thread::sleep(Duration::from_millis(1));
@@ -209,6 +214,25 @@ fn show_board(board_size:usize, board:[i8; 21 * 21]) {
             println!();
         }
         i += 1;
+    }
+}
+
+/// 合法手の表示☆（＾～＾）
+fn show_legal_moves(legal_moves:&Vec<usize>){
+    print!("Legal moves: ");
+    for legal_move in legal_moves {
+        print!("{}, ", legal_move);
+    }
+    println!(".");
+}
+
+/// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
+fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&Vec<usize>) {
+    let best_move = if (*legal_moves).len()==0 {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
+    println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
+    if best_move!=0 {
+        // 石を置く。
+        board[best_move] = color;
     }
 }
 
@@ -238,7 +262,7 @@ fn convert_address_to_code(address:usize, board_size:usize) -> i16 {
     // y を算出。
     let y = address as i16 / (board_size as i16 + 2i16);
     // 符号にまとめる。
-    y * 100 + x
+    x * 100 + y
 }
 
 /// 連の算出。
@@ -300,6 +324,13 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
     walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-1);// 左。
 }
 
+/// 相手の石の色☆（＾～＾）
+/// # Argumetns.
+/// * `color` - 石の色。 1:黒, 2:白.
+fn get_opponent(color:i8) -> i8 {
+    (color+2)%2+1
+}
+
 /// 着手禁止点（自殺手またはコウ）なら真。
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
@@ -314,7 +345,7 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
     let right_ren_id = ren_id_board[right] as usize; // 上の連のID。
     let bottom_ren_id = ren_id_board[bottom] as usize; // 上の連のID。
     let left_ren_id = ren_id_board[left] as usize; // 上の連のID。
-    let opponent = (color+2)%2+1; // 相手の石の色。
+    let opponent = get_opponent(color); // 相手の石の色。
 
     /*
     println!("forbidden? board[target] != 0 -> {}", board[target] != 0);
