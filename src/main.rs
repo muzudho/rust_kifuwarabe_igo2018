@@ -1,3 +1,7 @@
+// ランダムムーブ
+extern crate rand;
+use rand::Rng;
+
 /// 参考:
 /// https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
@@ -114,18 +118,7 @@ fn main() {
             }
 
             // 盤を表示☆（＾～＾）
-            println!("Board: ");
-            i = 0;
-            for stone in board.iter() {
-                if i == (board_size+2) * (board_size+2) {
-                    break;
-                }
-                print!("{}, ", stone);
-                if i % (board_size + 2) == (board_size + 1) {
-                    println!();
-                }
-                i += 1;
-            }
+            show_board(board_size, board);
 
             // 連のIDを振る。
             let mut ren_id_board = [0; 21 * 21];
@@ -185,6 +178,17 @@ fn main() {
                 print!("{}, ", legal_move);
             }
             println!(".");
+
+            // 合法手があれば、ランダムに１つ選ぶ。無ければ 0: パス☆（＾～＾）
+            let best_move:usize = if legal_moves.len()==0 {0}else{*rand::thread_rng().choose(&legal_moves).unwrap()};
+            println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
+            if best_move!=0 {
+                // 石を置く。
+                board[best_move] = color;
+            }
+            // 盤を表示☆（＾～＾）
+            show_board(board_size, board);
+
         }
 
         thread::sleep(Duration::from_millis(1));
@@ -192,22 +196,49 @@ fn main() {
     // サーバーは、[Ctrl]+[C]キーで強制終了しろだぜ☆（＾～＾）
 }
 
+/// 盤の表示☆（＾～＾）
+fn show_board(board_size:usize, board:[i8; 21 * 21]) {
+    println!("Board: ");
+    let mut i = 0;
+    for stone in board.iter() {
+        if i == (board_size+2) * (board_size+2) {
+            break;
+        }
+        print!("{}, ", stone);
+        if i % (board_size + 2) == (board_size + 1) {
+            println!();
+        }
+        i += 1;
+    }
+}
+
 // 符号を番地に変換。
 //
 // 例えば 3x3 の盤の中段右は x=3, y=2 と数えて、
 //
-// +++++
-// +   +
-// +  *+
-// +   +
-// +++++
+//  x123
+// y+++++   0  1  2  3  4
+// 1+   +   5  6  7  8  9
+// 2+  *+  10 11 12 13 14
+// 3+   +  15 16 17 18 19
+//  +++++  20 21 22 23 24
 //
 // 符号は 302、番地は 5 とする。
 // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
 fn convert_code_to_address(code:i16, board_size:usize) -> usize {
-    // x と y に分解
-    // コードの算出
+    // x と y に分解。
+    // コードの算出。
     (code % 100i16 * (board_size as i16 + 2i16) + code / 100i16 % 100i16) as usize
+}
+
+/// 番地を 符号に変換する。
+fn convert_address_to_code(address:usize, board_size:usize) -> i16 {
+    // x を算出。
+    let x = address as i16 % (board_size as i16 + 2i16);
+    // y を算出。
+    let y = address as i16 / (board_size as i16 + 2i16);
+    // 符号にまとめる。
+    y * 100 + x
 }
 
 /// 連の算出。
