@@ -80,6 +80,10 @@ fn main() {
             let pos_comment = pos_v["comment"].as_str().unwrap().to_string();
             println!("Pos comment: '{}'.", pos_comment);
 
+            // 何手目か。
+            let mut ply = pos_v["ply"].as_i64().unwrap();
+            println!("ply: '{}'.", ply);
+
             // 盤面作成。
             let mut i = 0;
             let mut board = [9; 21 * 21]; // 19路盤枠ありが入るサイズを確保しておく。使ってない数字で埋める☆（＾～＾）
@@ -179,13 +183,23 @@ fn main() {
             let forbidden = is_forbidden(convert_code_to_address(401, board_size), turn, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
+            // 相手がパスしていれば真。
+            let mut opponent_passed = false;
+
             let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
             // 合法手の表示☆（＾～＾）
             show_legal_moves(&legal_moves);
-            // 合法手があれば、ランダムに１つ選ぶ。無ければパス☆（＾～＾）
-            do_random_move(turn, board_size, &mut board, &legal_moves);
+            // 合法手があれば、ランダムに１つ選ぶ。
+            if do_random_move(turn, board_size, &mut board, &legal_moves) {
+                // パスなら
+                if opponent_passed {
+                    // TODO ゲーム終了☆（＾～＾）
+                }
+                opponent_passed = true;
+            }
+            ply += 1;
             // 盤を表示☆（＾～＾）
-            println!("Turn: '{}'.", turn);
+            println!("Ply: {}, Turn: {}.", ply, turn);
             show_board(board_size, board);
 
             // 手番を反転する☆（＾～＾）
@@ -194,8 +208,15 @@ fn main() {
             // ランダムムーブする☆（＾～＾）
             let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
             show_legal_moves(&legal_moves);
-            do_random_move(turn, board_size, &mut board, &legal_moves);
-            println!("Turn: '{}'.", turn);
+            if do_random_move(turn, board_size, &mut board, &legal_moves) {
+                // パスなら
+                if opponent_passed {
+                    // TODO ゲーム終了☆（＾～＾）
+                }
+                opponent_passed = true;
+            }
+            ply += 1;
+            println!("Ply: {}, Turn: {}.", ply, turn);
             show_board(board_size, board);
             turn = get_opponent(turn);
 
@@ -254,13 +275,19 @@ fn show_legal_moves(legal_moves:&[usize]){ // &Vec<usize>
 }
 
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
-fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) {
+/// # Return.
+/// - パスしたら真。
+fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
     println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
-    if best_move!=0 {
-        // 石を置く。
-        board[best_move] = color;
+    if best_move==0 {
+        // パス
+        return false;
     }
+
+    // 石を置く。
+    board[best_move] = color;
+    true
 }
 
 // 符号を番地に変換。
