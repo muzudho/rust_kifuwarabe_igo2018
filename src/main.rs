@@ -80,7 +80,7 @@ fn main() {
             let pos_comment = pos_v["comment"].as_str().unwrap().to_string();
             println!("Pos comment: '{}'.", pos_comment);
 
-            // 盤面取得。
+            // 盤面作成。
             let mut i = 0;
             let mut board = [9; 21 * 21]; // 19路盤枠ありが入るサイズを確保しておく。使ってない数字で埋める☆（＾～＾）
             for line in pos_v["board"].as_array().unwrap().iter() {
@@ -97,7 +97,15 @@ fn main() {
                 println!("Line: '{}'.", line);
             }
 
-            let turn = pos_v["turn"].as_str().unwrap().to_string();
+            // 盤面表示☆（＾～＾）
+            show_board(board_size, board);
+
+            // 手番の石の色☆（＾～＾） 1:黒, 2:白。
+            let mut turn = match pos_v["turn"].as_str().unwrap() {
+                "black" => 1,
+                "white" => 2,
+                _ => panic!("Undefined turn: [{}].", pos_v["turn"].as_str().unwrap())
+            };
             println!("Turn: '{}'.", turn);
 
             // 読み取ったらファイル削除。
@@ -118,7 +126,7 @@ fn main() {
             }
 
             // 盤を表示☆（＾～＾）
-            show_board(board_size, board);
+            show_board_by_number(board_size, board);
 
             // 連のIDを振る。
             let mut ren_id_board = [0; 21 * 21];
@@ -166,30 +174,30 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            // 石の色。 1:黒, 2:白。
-            let mut color = 1;
-            let forbidden = is_forbidden(convert_code_to_address(704, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, board_size), turn, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, board_size), color, board_size, board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, board_size), turn, board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
-            let legal_moves = pick_move(color, board_size, board, ren_id_board, liberty_count_map, ko);
+            let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
             // 合法手の表示☆（＾～＾）
             show_legal_moves(&legal_moves);
             // 合法手があれば、ランダムに１つ選ぶ。無ければパス☆（＾～＾）
-            do_random_move(color, board_size, &mut board, &legal_moves);
+            do_random_move(turn, board_size, &mut board, &legal_moves);
             // 盤を表示☆（＾～＾）
+            println!("Turn: '{}'.", turn);
             show_board(board_size, board);
 
             // 手番を反転する☆（＾～＾）
-            color = get_opponent(color);
+            turn = get_opponent(turn);
 
             // ランダムムーブする☆（＾～＾）
-            let legal_moves = pick_move(color, board_size, board, ren_id_board, liberty_count_map, ko);
+            let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
             show_legal_moves(&legal_moves);
-            do_random_move(color, board_size, &mut board, &legal_moves);
+            do_random_move(turn, board_size, &mut board, &legal_moves);
+            println!("Turn: '{}'.", turn);
             show_board(board_size, board);
-            color = get_opponent(color);
+            turn = get_opponent(turn);
 
             // 連続パス が起こったら終了☆（＾～＾）400手目を打ったところでも終了☆（＾～＾）
 
@@ -202,10 +210,30 @@ fn main() {
 }
 
 /// 盤の表示☆（＾～＾）
-fn show_board(board_size:usize, board:[i8; 21 * 21]) {
+fn show_board(board_size:usize, board:[i8; 21 * 21]){
     println!("Board: ");
-    let mut i = 0;
-    for stone in board.iter() {
+    for (i, stone) in board.iter().enumerate() {
+        if i == (board_size+2) * (board_size+2) {
+            break;
+        }
+
+        print!("{}", match stone {
+            0 => ' ',
+            1 => 'x',
+            2 => 'o',
+            _ => '+',
+        });
+
+        if i % (board_size + 2) == (board_size + 1) {
+            println!();
+        }
+    }
+}
+
+/// 盤の表示☆（＾～＾）
+fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
+    println!("Board: ");
+    for (i, stone) in board.iter().enumerate() {
         if i == (board_size+2) * (board_size+2) {
             break;
         }
@@ -213,12 +241,11 @@ fn show_board(board_size:usize, board:[i8; 21 * 21]) {
         if i % (board_size + 2) == (board_size + 1) {
             println!();
         }
-        i += 1;
     }
 }
 
 /// 合法手の表示☆（＾～＾）
-fn show_legal_moves(legal_moves:&Vec<usize>){
+fn show_legal_moves(legal_moves:&[usize]){ // &Vec<usize>
     print!("Legal moves: ");
     for legal_move in legal_moves {
         print!("{}, ", legal_move);
@@ -227,8 +254,8 @@ fn show_legal_moves(legal_moves:&Vec<usize>){
 }
 
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
-fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&Vec<usize>) {
-    let best_move = if (*legal_moves).len()==0 {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
+fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) {
+    let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
     println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
     if best_move!=0 {
         // 石を置く。
