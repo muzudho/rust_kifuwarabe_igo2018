@@ -186,43 +186,37 @@ fn main() {
             // 相手がパスしていれば真。
             let mut opponent_passed = false;
 
-            let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
-            // 合法手の表示☆（＾～＾）
-            show_legal_moves(&legal_moves);
-            // 合法手があれば、ランダムに１つ選ぶ。
-            if do_random_move(turn, board_size, &mut board, &legal_moves) {
-                // パスなら
-                if opponent_passed {
-                    // TODO ゲーム終了☆（＾～＾）
+            // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
+            for i_ply in ply..401 {
+                let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
+                // 合法手の表示☆（＾～＾）
+                show_legal_moves(&legal_moves);
+                // 合法手があれば、ランダムに１つ選ぶ。
+                if do_random_move(turn, board_size, &mut board, &legal_moves) {
+                    // パスなら
+                    if opponent_passed {
+                        // TODO ゲーム終了☆（＾～＾）
+                        println!("Pass: game end.");
+                        break;
+                    }
+                    opponent_passed = true;
                 }
-                opponent_passed = true;
-            }
-            ply += 1;
-            // 盤を表示☆（＾～＾）
-            println!("Ply: {}, Turn: {}.", ply, turn);
-            show_board(board_size, board);
-
-            // 手番を反転する☆（＾～＾）
-            turn = get_opponent(turn);
-
-            // ランダムムーブする☆（＾～＾）
-            let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
-            show_legal_moves(&legal_moves);
-            if do_random_move(turn, board_size, &mut board, &legal_moves) {
-                // パスなら
-                if opponent_passed {
-                    // TODO ゲーム終了☆（＾～＾）
+                else {
+                    // パスで無かったら。
+                    opponent_passed = false;
                 }
-                opponent_passed = true;
-            }
-            ply += 1;
-            println!("Ply: {}, Turn: {}.", ply, turn);
-            show_board(board_size, board);
-            turn = get_opponent(turn);
 
+                // 盤を表示☆（＾～＾）
+                println!("Ply: {}, Turn: {}.", i_ply, turn);
+                show_board(board_size, board);
+
+                // 手番を反転する☆（＾～＾）
+                turn = get_opponent(turn);
+            }
             // 連続パス が起こったら終了☆（＾～＾）400手目を打ったところでも終了☆（＾～＾）
 
             // TODO コウをなんとかしろだぜ☆（*＾～＾*）
+            println!("Finished.");
         }
 
         thread::sleep(Duration::from_millis(1));
@@ -282,12 +276,12 @@ fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_mov
     println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
     if best_move==0 {
         // パス
-        return false;
+        return true;
     }
 
     // 石を置く。
     board[best_move] = color;
-    true
+    false
 }
 
 // 符号を番地に変換。
@@ -431,15 +425,15 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
         // 隣に空点があれば、自殺手ではない。
         board[top] == 0 || board[right] == 0 || board[bottom] == 0 || board[left] == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (board[top] == color && 1<liberty_count_map[top_ren_id])
-        || (board[right] == color && 1<liberty_count_map[right_ren_id])
-        || (board[bottom] == color && 1<liberty_count_map[bottom_ren_id])
-        || (board[left] == color && 1<liberty_count_map[left_ren_id])
+        || (board[top] == color && top_ren_id < 1000 && 1<liberty_count_map[top_ren_id])
+        || (board[right] == color && right_ren_id < 1000 && 1<liberty_count_map[right_ren_id])
+        || (board[bottom] == color && bottom_ren_id < 1000 && 1<liberty_count_map[bottom_ren_id])
+        || (board[left] == color && left_ren_id < 1000 && 1<liberty_count_map[left_ren_id])
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (board[top] == opponent && liberty_count_map[top_ren_id] < 2)
-        || (board[right] == opponent && liberty_count_map[right_ren_id] < 2)
-        || (board[bottom] == opponent && liberty_count_map[bottom_ren_id] < 2)
-        || (board[left] == opponent && liberty_count_map[left_ren_id] < 2)
+        || (board[top] == opponent && top_ren_id < 1000 && liberty_count_map[top_ren_id] < 2)
+        || (board[right] == opponent && right_ren_id < 1000 && liberty_count_map[right_ren_id] < 2)
+        || (board[bottom] == opponent && bottom_ren_id < 1000 && liberty_count_map[bottom_ren_id] < 2)
+        || (board[left] == opponent && left_ren_id < 1000 && liberty_count_map[left_ren_id] < 2)
     {
         return false;
     }
