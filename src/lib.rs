@@ -6,22 +6,14 @@ use rand::Rng;
 
 /// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
-// use std::fs;
 
-// use std::path::Path;
+/// このライブラリーに含まれる公開モジュール☆（＾～＾）
+pub mod config_file;
+pub mod position_file;
+pub mod position;
+pub mod liberty;
 
-// use std::thread;
-// use std::time::Duration;
-
-mod config_file;
-// use config_file::Config;
-mod position_file;
-// use position_file::PositionFile;
-mod position;
 use position::Position;
-
-mod liberty;
-// use liberty::*;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
