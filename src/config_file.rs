@@ -1,6 +1,6 @@
 /// 設定ファイル
-/// 参考:
-/// https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
+
+/// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
 use serde_json::Value;
 

@@ -2,22 +2,19 @@
 extern crate rand;
 use rand::Rng;
 
-/// 参考:
-/// https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
+/// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
-use serde_json::Value;
-
 use std::fs;
-use std::fs::File;
-use std::io::Read;
 
 use std::path::Path;
 
 use std::thread;
 use std::time::Duration;
 
-mod config;
-use config::Config;
+mod config_file;
+use config_file::Config;
+mod position_file;
+use position_file::Position;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -41,68 +38,28 @@ fn main() {
 
 
     loop {
-        // ファイル確認。
-        // println!("{}", Path::new("position.json").exists());
         if Path::new("position.json").exists() {
-            // 指し手ファイル読込。
-            let mut pos_file = match File::open("position.json") {
-                Ok(n) => n,
-                Err(err) => panic!("File open error. {:?}", err),
-            };
 
-            let mut pos_contents = String::new();
-            match pos_file.read_to_string(&mut pos_contents) {
-                Ok(n) => n,
-                Err(err) => panic!("File open error. {:?}", err),
-            };
-
-            let pos_v: Value = match serde_json::from_str(&pos_contents) {
-                Ok(n) => n,
-                Err(err) => panic!("File open error. {:?}", err),
-            };
-
-            // コメント取得。
-            let pos_comment = pos_v["comment"].as_str().unwrap().to_string();
-            println!("Pos comment: '{}'.", pos_comment);
-
-            // 何手目か。
-            let mut ply = pos_v["ply"].as_i64().unwrap();
-            println!("ply: '{}'.", ply);
-
-            // 盤面作成。
-            let mut i = 0;
-            let mut board = [9; 21 * 21]; // 19路盤枠ありが入るサイズを確保しておく。使ってない数字で埋める☆（＾～＾）
-            for line in pos_v["board"].as_array().unwrap().iter() {
-                let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();
-                for ch in &chars {
-                    board[i] = match ch {
-                        'x' => 1, // 黒。
-                        'o' => 2, // 白。
-                        '+' => 3, // 枠。
-                        _ => 0,   // スペース。
-                    };
-                    i += 1;
-                }
-                println!("Line: '{}'.", line);
-            }
-
+            // 局面ファイル確認。
+            let pos = Position::load("position.json");
+            println!("Pos comment: '{}'.", pos.comment);
+            println!("ply: '{}'.", pos.ply);
+            println!("Turn: '{}'.", pos.turn);
             // 盤面表示☆（＾～＾）
-            show_board(conf.board_size, board);
+            show_board(conf.board_size, pos.board);
 
-            // 手番の石の色☆（＾～＾） 1:黒, 2:白。
-            let mut turn = match pos_v["turn"].as_str().unwrap() {
-                "black" => 1,
-                "white" => 2,
-                _ => panic!("Undefined turn: [{}].", pos_v["turn"].as_str().unwrap())
-            };
-            println!("Turn: '{}'.", turn);
+            // 代入ではなく、コピーを作っている☆（*＾～＾*）
+            let mut ply = pos.ply;
+            let mut turn = pos.turn;
+            let mut board = pos.board;
+
 
             // 読み取ったらファイル削除。
             fs::remove_file("position.json");
 
             // 盤番地を表示☆（＾～＾）
             println!("Cell address: ");
-            i = 0;
+            let mut i = 0;
             for _stone in board.iter() {
                 if i == (conf.board_size+2) * (conf.board_size+2) {
                     break;
