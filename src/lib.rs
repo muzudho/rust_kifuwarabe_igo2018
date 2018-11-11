@@ -129,26 +129,41 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16; 21 * 21],
     ren_element_map:&mut HashMap<i8, Vec<i16>>
 ) {
+    let self_ren_id = target as i16;
     // 隣接する自分の連のID。 1000未満の数。
-    let ren_id = ren_id_board[adjacent];
+    let adjacent_ren_id = ren_id_board[adjacent];
+
     // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
-    if target < ren_id as usize {
+    if self_ren_id < adjacent_ren_id {
+        println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が大きい。", self_ren_id, adjacent_ren_id);
         {
-            let addr_vec: &Vec<i16> = match ren_element_map.get(&(ren_id as i8)) {
+            let addr_vec: &Vec<i16> = match ren_element_map.get(&(adjacent_ren_id as i8)) {
                 Some(s) => {s},
-                None => {panic!("ren_id: {0} ",ren_id)}
+                None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
             for addr in addr_vec {
-                ren_id_board[*addr as usize] = adjacent as i16;
+                ren_id_board[*addr as usize] = self_ren_id;
             }
         }
         // キー変更。
-        match ren_element_map.remove(&(ren_id as i8)) {
-            Some(s) => {ren_element_map.insert(adjacent as i8, s)},
-            None => {panic!("ren_id: {}.", ren_id)}
+        match ren_element_map.remove(&(adjacent_ren_id as i8)) {
+            Some(vec) => {
+                if ren_element_map.contains_key(&(self_ren_id as i8)) {
+                    // 既存ベクターに追加。
+                    match ren_element_map.get_mut(&(self_ren_id as i8)) {
+                        Some(s) => {s.extend(vec.iter().cloned());},
+                        None => {panic!("キー変更中。 self_ren_id: {}.", self_ren_id)},
+                    };
+                } else {
+                    // ベクターを丸ごと移動。
+                    ren_element_map.insert(self_ren_id as i8, vec);
+                }
+            },
+            None => {panic!("adjacent_ren_id: {}.", adjacent_ren_id);}
         };
     } else {
-        ren_id_board[adjacent] = ren_id;
+        println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
+        ren_id_board[target] = adjacent_ren_id;
     }
 }
 
@@ -177,15 +192,19 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
     // 連がつながるか調べたいので、自分の色と比較☆（＾～＾）
     // TODO 上、右、下、左。
     if board[top] == color {
+        println!("Do move: 上とつながる。");
         refill_ren_id_board(target, top, ren_id_board, ren_element_map);
     }
     if board[right] == color {
+        println!("Do move: 右とつながる。");
         refill_ren_id_board(target, right, ren_id_board, ren_element_map);        
     }
     if board[bottom] == color {
+        println!("Do move: 下とつながる。");
         refill_ren_id_board(target, bottom, ren_id_board, ren_element_map);        
     }
     if board[left] == color {
+        println!("Do move: 左とつながる。");
         refill_ren_id_board(target, left, ren_id_board, ren_element_map);        
     }
 
