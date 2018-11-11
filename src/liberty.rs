@@ -4,6 +4,30 @@
 use ren_element_map::RenElementMap;
 use ren_id_board::RenIDBoard;
 
+/// 4方向の空点を数えるだけ☆（＾～＾）
+pub fn count_liberty_at_point(target:usize, board_size:usize, board:&[i8;21*21]) -> i8 {
+    let top = target-(board_size+2); // 上の番地。
+    let right = target+1; // 右。
+    let bottom = target+(board_size+2); // 下。
+    let left = target-1; // 左。
+
+    let mut count = 0;
+    if board[top] == 0 {
+        count += 1;
+    }
+    if board[right] == 0 {
+        count += 1;
+    }
+    if board[bottom] == 0 {
+        count += 1;
+    }
+    if board[left] == 0 {
+        count += 1;
+    }
+
+    count
+}
+
 /// 全部の交点に、連のIDを振る。
 pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut RenIDBoard,
     liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap) {

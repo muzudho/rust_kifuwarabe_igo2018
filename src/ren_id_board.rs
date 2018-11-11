@@ -1,7 +1,7 @@
 // 連のIDが入った盤☆（＾～＾）
 
 use std;
-use ren_element_map::RenElementMap;
+// use ren_element_map::RenElementMap;
 
 pub struct RenIDBoard {
     pub value: [i16; 21 * 21],

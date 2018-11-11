@@ -18,6 +18,7 @@ pub mod ren_id_board;
 use position::Position;
 use ren_element_map::RenElementMap;
 use ren_id_board::RenIDBoard;
+use liberty::*;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -183,11 +184,11 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
 
     // 連がつながるか調べたいので、自分の色と比較☆（＾～＾） 上、右、下、左。
     // - [v] 連のIDの更新。
-    // TODO - [ ] 呼吸点の更新。
     // TODO - [ ] 連の要素の更新。
     let mut small_id = target as i16;
     small_id = if board[top] == color {
         println!("Do move: 上とつながる。");
+        // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
         refill_ren_id_board(target, top, ren_id_board, ren_element_map)
     } else {small_id};
     small_id = if board[right] == color {
@@ -202,14 +203,18 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
         println!("Do move: 左とつながる。");
         refill_ren_id_board(target, left, ren_id_board, ren_element_map)
     } else {small_id};
-    // 連の要素一覧に 新しい石の番地を 追加。
+
+    // [v] 連ID から 紐づくすべての石を取得したい☆（＾～＾） -> RenElementMap を使う☆（＾～＾）
+
+    // [v] 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾） -> RenIDBoard を使う☆（＾～＾）
+
+    // [v] 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾） -> 連の要素一覧に 置いた石の番地を 追加。
     ren_element_map.add(small_id, target as i16);
 
-    // TODO 連ID から 紐づくすべての石を取得したい☆（＾～＾）
+    // TODO - [ ] 呼吸点の更新。
+    // TODO 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引けばいいと思うが☆（＾～＾）？
+    let count_liberty = count_liberty_at_point(target, board_size, board);
 
-    // TODO 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾）
-
-    // TODO 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾）
 
     // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
 
