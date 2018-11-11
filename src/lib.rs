@@ -167,8 +167,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut RenID
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut Board, ren_id_board:&mut RenIDBoard,
-    ren_element_map:&mut RenElementMap) -> bool {
+pub fn do_move(target:usize, color:i8, board_size:usize, pos:&mut Position) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
 
     if target == 0 {
@@ -176,7 +175,7 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut Board, ren_i
         return true;
     }
 
-    board.set(target, color);
+    pos.board.set(target, color);
 
     let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
@@ -190,22 +189,22 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut Board, ren_i
     // - [v] 連のIDの更新。
     // TODO - [ ] 連の要素の更新。
     let mut small_id = target as i16;
-    small_id = if board.get(top) == color {
+    small_id = if pos.board.get(top) == color {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
-        refill_ren_id_board(target, top, ren_id_board, ren_element_map)
+        refill_ren_id_board(target, top, &mut pos.ren_id_board, &mut pos.ren_element_map)
     } else {small_id};
-    small_id = if board.get(right) == color {
+    small_id = if pos.board.get(right) == color {
         println!("Do move: 右とつながる。");
-        refill_ren_id_board(target, right, ren_id_board, ren_element_map)
+        refill_ren_id_board(target, right, &mut pos.ren_id_board, &mut pos.ren_element_map)
     } else {small_id};
-    small_id = if board.get(bottom) == color {
+    small_id = if pos.board.get(bottom) == color {
         println!("Do move: 下とつながる。");
-        refill_ren_id_board(target, bottom, ren_id_board, ren_element_map)
+        refill_ren_id_board(target, bottom, &mut pos.ren_id_board, &mut pos.ren_element_map)
     } else {small_id};
-    small_id = if board.get(left) == color {
+    small_id = if pos.board.get(left) == color {
         println!("Do move: 左とつながる。");
-        refill_ren_id_board(target, left, ren_id_board, ren_element_map)
+        refill_ren_id_board(target, left, &mut pos.ren_id_board, &mut pos.ren_element_map)
     } else {small_id};
 
     // [v] 連ID から 紐づくすべての石を取得したい☆（＾～＾） -> RenElementMap を使う☆（＾～＾）
@@ -213,11 +212,12 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut Board, ren_i
     // [v] 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾） -> RenIDBoard を使う☆（＾～＾）
 
     // [v] 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾） -> 連の要素一覧に 置いた石の番地を 追加。
-    ren_element_map.add(small_id, target as i16);
+    pos.ren_element_map.add(small_id, target as i16);
 
     // TODO - [ ] 呼吸点の更新。
     // TODO 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引けばいいと思うが☆（＾～＾）？
-    let count_liberty = count_liberty_at_point(target, board_size, board);
+    let count_liberty = count_liberty_at_point(target, board_size, &pos.board);
+    // pos.liberty_count_map[]
 
 
     // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
@@ -237,12 +237,11 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut Board, ren_i
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_random_move(color:i8, board_size:usize, board:&mut Board, ren_id_board:&mut RenIDBoard,
-    ren_element_map:&mut RenElementMap, legal_moves:&[usize]) -> bool {
+pub fn do_random_move(color:i8, board_size:usize, pos:&mut Position, legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
-    do_move(best_move, color, board_size, board, ren_id_board, ren_element_map)
+    do_move(best_move, color, board_size, pos)
 }
 
 // 符号を番地に変換。
@@ -374,7 +373,7 @@ pub fn tryout(pos:&mut Position, board_size:usize, ko:usize) {
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
-        if do_random_move(pos.turn, board_size, &mut pos.board, &mut pos.ren_id_board, &mut pos.ren_element_map, &legal_moves) {
+        if do_random_move(pos.turn, board_size, pos, &legal_moves) {
             // パスなら
             if opponent_passed {
                 // TODO ゲーム終了☆（＾～＾）
