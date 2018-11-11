@@ -1,25 +1,27 @@
+#![allow(dead_code)]
+
 // ランダムムーブ
 extern crate rand;
 use rand::Rng;
 
 /// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
-use std::fs;
+// use std::fs;
 
-use std::path::Path;
+// use std::path::Path;
 
-use std::thread;
-use std::time::Duration;
+// use std::thread;
+// use std::time::Duration;
 
 mod config_file;
-use config_file::Config;
+// use config_file::Config;
 mod position_file;
-use position_file::PositionFile;
+// use position_file::PositionFile;
 mod position;
 use position::Position;
 
 mod liberty;
-use liberty::*;
+// use liberty::*;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -33,86 +35,9 @@ use liberty::*;
 /// cargo run --release
 /// ```
 ///
-fn main() {
-
-    // 設定ファイル読込。
-    let conf = Config::load("config.json");
-
-    println!("Config comment: '{}'.", conf.comment);
-    println!("Config conf_board_size: {}.", conf.board_size);
-
-
-    loop {
-        if Path::new("position.json").exists() {
-
-            // 局面ファイル確認。
-            let pos = PositionFile::load("position.json");
-            println!("Pos comment: '{}'.", pos.comment);
-            println!("ply: '{}'.", pos.ply);
-            println!("Turn: '{}'.", pos.turn);
-            // 盤面表示☆（＾～＾）
-            show_board(conf.board_size, pos.board);
-
-            // 読み取ったらファイル削除。
-            fs::remove_file("position.json");
-
-
-            // 代入ではなく、コピーを作っている☆（*＾～＾*）
-            let mut pos = Position::default(pos.ply, pos.turn, pos.board);
-
-            // 盤番地を表示☆（＾～＾）
-            show_board_address(conf.board_size);
-
-            // 盤を表示☆（＾～＾）
-            show_board_by_number(conf.board_size, pos.board);
-
-            // 全部の交点に、連のIDを振る。
-            let mut ren_id_board = [0; 21 * 21];
-            let mut liberty_count_map = [0; 21*21];
-            check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map);
-
-            // 連のIDを表示☆（＾～＾）
-            show_ren_id_board(conf.board_size, ren_id_board);
-
-            // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(liberty_count_map);
-
-            // 試し打ちをする☆（＾～＾）
-            //
-            // 例えば 3x3 の盤の中段右は x=3, y=2 と数えて、
-            //
-            // +++++
-            // +   +
-            // +  *+
-            // +   +
-            // +++++
-            //
-            // 符号は 302、番地は 5 とする。
-            // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
-            /*
-            println!("Conv {} -> {}", 704, convert_code_to_address(704, board_size));
-            println!("Conv {} -> {}", 101, convert_code_to_address(101, board_size));
-            println!("Conv {} -> {}", 102, convert_code_to_address(102, board_size));
-            println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
-            println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
-             */
-            let ko = 0;
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
-            println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
-            println!("forbidden? {}", forbidden);
-
-            // ↓トライアウトの練習をする☆（＾～＾）
-            tryout(&mut pos, conf.board_size, ren_id_board, liberty_count_map, ko);
-        }
-
-        thread::sleep(Duration::from_millis(1));
-    }
-    // サーバーは、[Ctrl]+[C]キーで強制終了しろだぜ☆（＾～＾）
-}
 
 /// 盤の表示☆（＾～＾）
-fn show_board(board_size:usize, board:[i8; 21 * 21]){
+pub fn show_board(board_size:usize, board:[i8; 21 * 21]){
     println!("Board: ");
     for (i, stone) in board.iter().enumerate() {
         if i == (board_size+2) * (board_size+2) {
@@ -133,7 +58,7 @@ fn show_board(board_size:usize, board:[i8; 21 * 21]){
 }
 
 /// セル番地を表示☆（＾～＾）
-fn show_board_address(board_size:usize) {
+pub fn show_board_address(board_size:usize) {
     println!("Cell address: ");
     let end = (board_size+2) * (board_size+2) + 1;
 
@@ -149,7 +74,7 @@ fn show_board_address(board_size:usize) {
 }
 
 /// 盤の表示☆（＾～＾）
-fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
+pub fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
     println!("Board: ");
     for (i, stone) in board.iter().enumerate() {
         if i == (board_size+2) * (board_size+2) {
@@ -163,10 +88,9 @@ fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
 }
 
 /// 盤に振られた 連ID を表示だぜ☆（＾～＾）
-fn show_ren_id_board(board_size:usize, ren_id_board:[i16; 21 * 21]) {
+pub fn show_ren_id_board(board_size:usize, ren_id_board:[i16; 21 * 21]) {
     println!("Ren ID board: ");
-    let mut i = 0;
-    for ren_id in ren_id_board.iter() {
+    for (i, ren_id) in ren_id_board.iter().enumerate() {
         if i == (board_size+2) * (board_size+2) {
             break;
         }
@@ -174,12 +98,11 @@ fn show_ren_id_board(board_size:usize, ren_id_board:[i16; 21 * 21]) {
         if i % (board_size + 2) == (board_size + 1) {
             println!();
         }
-        i += 1;
     }
 }
 
 /// 呼吸点の数を表示☆（＾～＾）
-fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
+pub fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
     println!("Liberty count: ");
     for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
         if *lib_cnt != 0 {
@@ -189,7 +112,7 @@ fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
 }
 
 /// 合法手の表示☆（＾～＾）
-fn show_legal_moves(legal_moves:&[usize]) {
+pub fn show_legal_moves(legal_moves:&[usize]) {
     print!("Legal moves: ");
     for legal_move in legal_moves {
         print!("{}, ", legal_move);
@@ -200,7 +123,7 @@ fn show_legal_moves(legal_moves:&[usize]) {
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) -> bool {
+pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
     println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
     if best_move==0 {
@@ -226,14 +149,14 @@ fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_mov
 //
 // 符号は 302、番地は 5 とする。
 // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
-fn convert_code_to_address(code:i16, board_size:usize) -> usize {
+pub fn convert_code_to_address(code:i16, board_size:usize) -> usize {
     // x と y に分解。
     // コードの算出。
     (code % 100i16 * (board_size as i16 + 2i16) + code / 100i16 % 100i16) as usize
 }
 
 /// 番地を 符号に変換する。
-fn convert_address_to_code(address:usize, board_size:usize) -> i16 {
+pub fn convert_address_to_code(address:usize, board_size:usize) -> i16 {
     // x を算出。
     let x = address as i16 % (board_size as i16 + 2i16);
     // y を算出。
@@ -245,7 +168,7 @@ fn convert_address_to_code(address:usize, board_size:usize) -> i16 {
 /// 相手の石の色☆（＾～＾）
 /// # Argumetns.
 /// * `color` - 石の色。 1:黒, 2:白.
-fn get_opponent(color:i8) -> i8 {
+pub fn get_opponent(color:i8) -> i8 {
     (color+2)%2+1
 }
 
@@ -253,7 +176,7 @@ fn get_opponent(color:i8) -> i8 {
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
 /// * `color` - 置く石の色。 1:黒, 2:白.
-fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) -> bool {
+pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) -> bool {
     
     let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
@@ -313,7 +236,7 @@ fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_
 }
 
 /// 合法手生成。
-fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) -> Vec<usize> {
+pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
     let left_top = (board_size+2) + 1;
@@ -330,7 +253,7 @@ fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) {
+pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。
@@ -376,13 +299,13 @@ fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty
 ///
 /// # Returns.
 /// 黒番が勝ってれば 0, 白番が勝ってれば 1, 引き分けなら 2。
-fn judge() -> i8 {
+pub fn judge() -> i8 {
     0
 }
 
 /// TODO 次の１手を返す。
 /// 書式は yyxx。 端には枠があるので、右上隅が 0101。左下隅が 1919。
-fn think() -> i8 {
+pub fn think() -> i8 {
     // TODO tryout();
     judge();
     101
