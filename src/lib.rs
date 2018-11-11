@@ -10,6 +10,7 @@ extern crate serde_json;
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
 pub mod board;
 pub mod config_file;
+pub mod liberty_count_map;
 pub mod liberty;
 pub mod position_file;
 pub mod position;
@@ -17,6 +18,7 @@ pub mod ren_element_map;
 pub mod ren_id_board;
 
 use board::Board;
+use liberty_count_map::LibertyCountMap;
 use position::Position;
 use ren_element_map::RenElementMap;
 use ren_id_board::RenIDBoard;
@@ -101,7 +103,7 @@ pub fn show_ren_id_board(board_size:usize, ren_id_board:&RenIDBoard) {
 }
 
 /// 呼吸点の数を表示☆（＾～＾）
-pub fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
+pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
     println!("Liberty count: ");
     for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
         if *lib_cnt != 0 {
@@ -283,7 +285,7 @@ pub fn get_opponent(color:i8) -> i8 {
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
 /// * `color` - 置く石の色。 1:黒, 2:白.
-pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:[i8;21*21], ko:usize) -> bool {
+pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:&LibertyCountMap, ko:usize) -> bool {
     
     let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
@@ -325,15 +327,15 @@ pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:&Board, ren_
         // 隣に空点があれば、自殺手ではない。
         board.get(top) == 0 || board.get(right) == 0 || board.get(bottom) == 0 || board.get(left) == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (board.get(top) == color && top_ren_id < 1000 && 1<liberty_count_map[top_ren_id])
-        || (board.get(right) == color && right_ren_id < 1000 && 1<liberty_count_map[right_ren_id])
-        || (board.get(bottom) == color && bottom_ren_id < 1000 && 1<liberty_count_map[bottom_ren_id])
-        || (board.get(left) == color && left_ren_id < 1000 && 1<liberty_count_map[left_ren_id])
+        || (board.get(top) == color && top_ren_id < 1000 && 1<liberty_count_map.get(top_ren_id))
+        || (board.get(right) == color && right_ren_id < 1000 && 1<liberty_count_map.get(right_ren_id))
+        || (board.get(bottom) == color && bottom_ren_id < 1000 && 1<liberty_count_map.get(bottom_ren_id))
+        || (board.get(left) == color && left_ren_id < 1000 && 1<liberty_count_map.get(left_ren_id))
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (board.get(top) == opponent && top_ren_id < 1000 && liberty_count_map[top_ren_id] < 2)
-        || (board.get(right) == opponent && right_ren_id < 1000 && liberty_count_map[right_ren_id] < 2)
-        || (board.get(bottom) == opponent && bottom_ren_id < 1000 && liberty_count_map[bottom_ren_id] < 2)
-        || (board.get(left) == opponent && left_ren_id < 1000 && liberty_count_map[left_ren_id] < 2)
+        || (board.get(top) == opponent && top_ren_id < 1000 && liberty_count_map.get(top_ren_id) < 2)
+        || (board.get(right) == opponent && right_ren_id < 1000 && liberty_count_map.get(right_ren_id) < 2)
+        || (board.get(bottom) == opponent && bottom_ren_id < 1000 && liberty_count_map.get(bottom_ren_id) < 2)
+        || (board.get(left) == opponent && left_ren_id < 1000 && liberty_count_map.get(left_ren_id) < 2)
     {
         return false;
     }
@@ -343,7 +345,7 @@ pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:&Board, ren_
 }
 
 /// 合法手生成。
-pub fn pick_move(color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:[i8;21*21], ko:usize) -> Vec<usize> {
+pub fn pick_move(color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:&LibertyCountMap, ko:usize) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
     let left_top = (board_size+2) + 1;
@@ -368,7 +370,7 @@ pub fn tryout(pos:&mut Position, board_size:usize, ko:usize) {
 
     // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
     for i_ply in pos.ply..401 {
-        let legal_moves = pick_move(pos.turn, board_size, &pos.board, &pos.ren_id_board, pos.liberty_count_map, ko);
+        let legal_moves = pick_move(pos.turn, board_size, &pos.board, &pos.ren_id_board, &pos.liberty_count_map, ko);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。

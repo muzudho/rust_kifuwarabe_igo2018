@@ -1,6 +1,7 @@
 /// 連と呼吸点の計算☆（＾～＾）
 
 use board::Board;
+use liberty_count_map::LibertyCountMap;
 use ren_element_map::RenElementMap;
 use ren_id_board::RenIDBoard;
 
@@ -30,7 +31,7 @@ pub fn count_liberty_at_point(target:usize, board_size:usize, board:&Board) -> i
 
 /// 全部の交点に、連のIDを振る。
 pub fn check_liberty_all_points(board_size:usize, board:&Board, ren_id_board:&mut RenIDBoard,
-    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap) {
+    liberty_count_map:&mut LibertyCountMap, ren_element_map:&mut RenElementMap) {
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
     // 小さい盤で数えてみろだぜ☆（＾～＾）
@@ -63,10 +64,10 @@ pub fn check_liberty_all_points(board_size:usize, board:&Board, ren_id_board:&mu
 /// # Arguments.
 /// * `ren_id_board` - 1000以上はtemporaryな数。
 fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:&Board, ren_id_board:&mut RenIDBoard,
-    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap, target:usize){
+    liberty_count_map:&mut LibertyCountMap, ren_element_map:&mut RenElementMap, target:usize){
     if board.get(target) == 0 && ren_id_board.get(target) != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
         // println!("LIB: [{:3}] {:3}", ren_id, target);
-        liberty_count_map[ren_id as usize] += 1;
+        liberty_count_map.add(ren_id as usize, 1);
     }
     
     if (ren_id_board.get(target) != 0 && ren_id_board.get(target) != ren_id + 1000) // 連IDが振られてたら終了。ただし「自分の連ID + 1000」を除く。0 は枠セル番号なんで、連IDに使わない。

@@ -1,6 +1,7 @@
 /// 局面☆（＾▽＾）
 
 use board::Board;
+use liberty_count_map::LibertyCountMap;
 use ren_element_map::RenElementMap;
 use ren_id_board::RenIDBoard;
 
@@ -9,7 +10,7 @@ pub struct Position {
     pub turn: i8,
     pub board: Board,
     pub ren_id_board: RenIDBoard,
-    pub liberty_count_map: [i8; 21*21],
+    pub liberty_count_map: LibertyCountMap,
     // 連に紐づく番地のリスト。
     pub ren_element_map: RenElementMap,
 }
@@ -20,7 +21,7 @@ impl Position {
             turn: turn_count,
             board: board_stones,
             ren_id_board: RenIDBoard::new(),
-            liberty_count_map: [0; 21*21],
+            liberty_count_map: LibertyCountMap::new(),
             ren_element_map: RenElementMap::new(),
         }
     }

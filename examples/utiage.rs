@@ -62,7 +62,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(pos.liberty_count_map);
+        show_libarty_count(&pos.liberty_count_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 
@@ -74,7 +74,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(pos.liberty_count_map);
+        show_libarty_count(&pos.liberty_count_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
     }
