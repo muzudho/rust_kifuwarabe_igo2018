@@ -60,7 +60,7 @@ fn main() {
         // 全部の交点に、連のIDを振る。
         check_liberty_all_points(conf.board_size, pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, pos.ren_id_board);
+        show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(pos.liberty_count_map);
         // 連の要素を表示☆（＾～＾）
@@ -72,7 +72,7 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(conf.board_size, pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, pos.ren_id_board);
+        show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(pos.liberty_count_map);
         // 連の要素を表示☆（＾～＾）

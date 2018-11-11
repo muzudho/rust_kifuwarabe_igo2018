@@ -2,9 +2,10 @@
 
 // use std::collections::HashMap;
 use ren_element_map::RenElementMap;
+use ren_id_board::RenIDBoard;
 
 /// 全部の交点に、連のIDを振る。
-pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
+pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut RenIDBoard,
     liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap) {
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
@@ -37,25 +38,25 @@ pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board
 /// 連にIDを振り、連の呼吸点も数える。
 /// # Arguments.
 /// * `ren_id_board` - 1000以上はtemporaryな数。
-fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
+fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut RenIDBoard,
     liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap, target:usize){
-    if board[target] == 0 && ren_id_board[target] != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
+    if board[target] == 0 && ren_id_board.get(target) != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
         // println!("LIB: [{:3}] {:3}", ren_id, target);
         liberty_count_map[ren_id as usize] += 1;
     }
     
-    if (ren_id_board[target] != 0 && ren_id_board[target] != ren_id + 1000) // 連IDが振られてたら終了。ただし「自分の連ID + 1000」を除く。0 は枠セル番号なんで、連IDに使わない。
+    if (ren_id_board.get(target) != 0 && ren_id_board.get(target) != ren_id + 1000) // 連IDが振られてたら終了。ただし「自分の連ID + 1000」を除く。0 は枠セル番号なんで、連IDに使わない。
         || // または、
         board[target] != color // 探している石でなければ終了。
     {
-        if board[target] == 0 || 1000 <= ren_id_board[target] { // そこが空点か、1000以上の連IDなら「自分の連ID + 1000」を上書きでマークしておく。
-            ren_id_board[target] = ren_id + 1000;
+        if board[target] == 0 || 1000 <= ren_id_board.get(target) { // そこが空点か、1000以上の連IDなら「自分の連ID + 1000」を上書きでマークしておく。
+            ren_id_board.set(target, ren_id + 1000);
         }
         return;
     }
 
     // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
-    ren_id_board[target] = ren_id;
+    ren_id_board.set(target, ren_id);
     if ren_id < 1000 && ren_element_map.contains_key(ren_id as i8) {
         match ren_element_map.get_mut(ren_id as i8) {
             Some(s) => {s.push(target as i16);}
