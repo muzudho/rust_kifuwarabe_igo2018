@@ -9,12 +9,14 @@ extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
 pub mod config_file;
+pub mod liberty;
 pub mod position_file;
 pub mod position;
-pub mod liberty;
+pub mod ren_element_map;
 
 use position::Position;
 use std::collections::HashMap;
+use ren_element_map::RenElementMap;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -105,9 +107,9 @@ pub fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
 }
 
 /// 連の要素を表示☆（＾～＾）
-pub fn show_ren_element_map(ren_element_map:&HashMap<i8,Vec<i16>>) {
+pub fn show_ren_element_map(ren_element_map:&RenElementMap) {
     println!("Ren element: ");
-    for (ren_id, addr_vec) in ren_element_map {
+    for (ren_id, addr_vec) in ren_element_map.iter() {
         print!("[{:3}] ", ren_id);
         for addr in addr_vec.iter() {
             print!("{:3} ", addr);
@@ -127,7 +129,7 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 
 /// 連IDを塗り替えるぜ☆（＾～＾）
 pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16; 21 * 21],
-    ren_element_map:&mut HashMap<i8, Vec<i16>>
+    ren_element_map:&mut RenElementMap
 ) {
     let self_ren_id = target as i16;
     // 隣接する自分の連のID。 1000未満の数。
@@ -137,7 +139,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16;
     if self_ren_id < adjacent_ren_id {
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が大きい。", self_ren_id, adjacent_ren_id);
         {
-            let addr_vec: &Vec<i16> = match ren_element_map.get(&(adjacent_ren_id as i8)) {
+            let addr_vec: &Vec<i16> = match ren_element_map.get(adjacent_ren_id as i8) {
                 Some(s) => {s},
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
@@ -146,14 +148,11 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16;
             }
         }
         // キー変更。
-        match ren_element_map.remove(&(adjacent_ren_id as i8)) {
+        match ren_element_map.remove(adjacent_ren_id as i8) {
             Some(vec) => {
-                if ren_element_map.contains_key(&(self_ren_id as i8)) {
+                if ren_element_map.contains_key(self_ren_id as i8) {
                     // 既存ベクターに追加。
-                    match ren_element_map.get_mut(&(self_ren_id as i8)) {
-                        Some(s) => {s.extend(vec.iter().cloned());},
-                        None => {panic!("キー変更中。 self_ren_id: {}.", self_ren_id)},
-                    };
+                    ren_element_map.extend(self_ren_id as i8, vec);
                 } else {
                     // ベクターを丸ごと移動。
                     ren_element_map.insert(self_ren_id as i8, vec);
@@ -165,6 +164,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16;
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
         ren_id_board[target] = adjacent_ren_id;
     }
+
 }
 
 /// 石を置くぜ☆（*＾～＾*）
@@ -172,7 +172,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16;
 /// # Return.
 /// - パスしたら真。
 pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:&mut [i16; 21 * 21],
-    ren_element_map:&mut HashMap<i8, Vec<i16>>) -> bool {
+    ren_element_map:&mut RenElementMap) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
 
     if target == 0 {
@@ -187,10 +187,15 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
     let bottom = target+(board_size+2); // 下。
     let left = target-1; // 左。
 
+
+    // 連の要素に追加。
+
     // TODO 石が隣接していれば、連が変わる☆（＾～＾） 0～4つの連が隣接している☆（＾～＾）
 
-    // 連がつながるか調べたいので、自分の色と比較☆（＾～＾）
-    // TODO 上、右、下、左。
+    // 連がつながるか調べたいので、自分の色と比較☆（＾～＾） 上、右、下、左。
+    // - [v] 連のIDの更新。
+    // TODO - [ ] 呼吸点の更新。
+    // TODO - [ ] 連の要素の更新。
     if board[top] == color {
         println!("Do move: 上とつながる。");
         refill_ren_id_board(target, top, ren_id_board, ren_element_map);
@@ -232,7 +237,7 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
 /// # Return.
 /// - パスしたら真。
 pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:&mut [i16;21*21],
-    ren_element_map:&mut HashMap<i8, Vec<i16>>, legal_moves:&[usize]) -> bool {
+    ren_element_map:&mut RenElementMap, legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
@@ -357,7 +362,7 @@ pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
 pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:&mut[i16;21*21], liberty_count_map:[i8;21*21],
-    ren_element_map:&mut HashMap<i8, Vec<i16>>, ko:usize) {
+    ren_element_map:&mut RenElementMap, ko:usize) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。

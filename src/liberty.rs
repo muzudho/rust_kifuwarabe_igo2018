@@ -1,10 +1,11 @@
 /// 連と呼吸点の計算☆（＾～＾）
 
 use std::collections::HashMap;
+use ren_element_map::RenElementMap;
 
 /// 全部の交点に、連のIDを振る。
 pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
-    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut HashMap<i8, Vec<i16>>) {
+    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap) {
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
     // 小さい盤で数えてみろだぜ☆（＾～＾）
@@ -37,7 +38,7 @@ pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board
 /// # Arguments.
 /// * `ren_id_board` - 1000以上はtemporaryな数。
 fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
-    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut HashMap<i8, Vec<i16>>, target:usize){
+    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut RenElementMap, target:usize){
     if board[target] == 0 && ren_id_board[target] != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
         // println!("LIB: [{:3}] {:3}", ren_id, target);
         liberty_count_map[ren_id as usize] += 1;
@@ -55,8 +56,8 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
 
     // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
     ren_id_board[target] = ren_id;
-    if ren_id < 1000 && ren_element_map.contains_key(&(ren_id as i8)) {
-        match ren_element_map.get_mut(&(ren_id as i8)) {
+    if ren_id < 1000 && ren_element_map.contains_key(ren_id as i8) {
+        match ren_element_map.get_mut(ren_id as i8) {
             Some(s) => {s.push(target as i16);}
             None => {panic!("walk_liberty");}
         }
