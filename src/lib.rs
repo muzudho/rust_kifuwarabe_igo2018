@@ -105,9 +105,9 @@ pub fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
 }
 
 /// 連の要素を表示☆（＾～＾）
-pub fn show_ren_element_map(ren_element_map:HashMap<i8,Vec<i16>>) {
+pub fn show_ren_element_map(ren_element_map:&HashMap<i8,Vec<i16>>) {
     println!("Ren element: ");
-    for (ren_id, addr_vec) in &ren_element_map {
+    for (ren_id, addr_vec) in ren_element_map {
         print!("[{:3}] ", ren_id);
         for addr in addr_vec.iter() {
             print!("{:3} ", addr);
@@ -129,7 +129,7 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:[i16; 21 * 21],
+pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:&mut [i16; 21 * 21],
     ren_element_map:&mut HashMap<i8, Vec<i16>>) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
 
@@ -147,10 +147,24 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
 
     // TODO 石が隣接していれば、連が変わる☆（＾～＾） 0～4つの連が隣接している☆（＾～＾）
 
+    // 連がつながるか調べたいので、自分の色と比較☆（＾～＾）
     // TODO 上、右、下、左。
     if board[top] == color {
+        // 隣接する自分の連のID。 1000未満の数。
         let ren_id = ren_id_board[top];
-
+        // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
+        if target < ren_id as usize {
+            for addr in ren_element_map.get(&(ren_id as i8)) {
+                ren_id_board[ren_id as usize] = top as i16;
+            }
+            // キー変更。
+            match ren_element_map.remove(&(ren_id as i8)) {
+                Some(s) => {ren_element_map.insert(top as i8, s)},
+                None => {panic!("ren_id: {}.", ren_id)}
+            };
+        } else {
+            ren_id_board[top] = ren_id;
+        }
     }
     if board[right] == color {
         
@@ -185,7 +199,7 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:[i16;21*21],
+pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:&mut [i16;21*21],
     ren_element_map:&mut HashMap<i8, Vec<i16>>, legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
@@ -310,7 +324,7 @@ pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21],
+pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:&mut[i16;21*21], liberty_count_map:[i8;21*21],
     ren_element_map:&mut HashMap<i8, Vec<i16>>, ko:usize) {
     println!("Start tryout.");
 
@@ -319,7 +333,7 @@ pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], lib
 
     // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
     for i_ply in pos.ply..401 {
-        let legal_moves = pick_move(pos.turn, board_size, pos.board, ren_id_board, liberty_count_map, ko);
+        let legal_moves = pick_move(pos.turn, board_size, pos.board, *ren_id_board, liberty_count_map, ko);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。

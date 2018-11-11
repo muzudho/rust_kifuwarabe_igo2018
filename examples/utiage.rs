@@ -63,8 +63,11 @@ fn main() {
         show_ren_id_board(conf.board_size, pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(pos.liberty_count_map);
+        // 連の要素を表示☆（＾～＾）
+        show_ren_element_map(&pos.ren_element_map);
+
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(102, conf.board_size), 1, conf.board_size, &mut pos.board, pos.ren_id_board, &mut pos.ren_element_map);
+        do_move(convert_code_to_address(102, conf.board_size), 1, conf.board_size, &mut pos.board, &mut pos.ren_id_board, &mut pos.ren_element_map);
 
         // 盤面表示☆（＾～＾）
         show_board(conf.board_size, pos.board);
@@ -73,7 +76,7 @@ fn main() {
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(pos.liberty_count_map);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(pos.ren_element_map);
+        show_ren_element_map(&pos.ren_element_map);
     }
 
     println!("Finished.");
