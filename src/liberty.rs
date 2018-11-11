@@ -1,9 +1,10 @@
 /// 連と呼吸点の計算☆（＾～＾）
+
 use std::collections::HashMap;
 
 /// 全部の交点に、連のIDを振る。
 pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
-    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut HashMap<i16, Vec<i8>>) {
+    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut HashMap<i8, Vec<i16>>) {
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
     // 小さい盤で数えてみろだぜ☆（＾～＾）
@@ -27,7 +28,7 @@ pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board
     for start in left_top..rigth_bottom+1 { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
         let color = board[start]; // 開始地点にある石の色。この石と同じ色を探す。
         if color==1 || color==2 { // 黒石か白石だけ探せばいい☆（＾～＾）
-            walk_liberty(start as i16, color, board_size, board, ren_id_board, liberty_count_map, start); // まず開始地点から。
+            walk_liberty(start as i16, color, board_size, board, ren_id_board, liberty_count_map, ren_element_map, start); // まず開始地点から。
         }
     }
 }
@@ -35,7 +36,8 @@ pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board
 /// 連にIDを振り、連の呼吸点も数える。
 /// # Arguments.
 /// * `ren_id_board` - 1000以上はtemporaryな数。
-fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21], liberty_count_map:&mut [i8;21*21], target:usize){
+fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
+    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut HashMap<i8, Vec<i16>>, target:usize){
     if board[target] == 0 && ren_id_board[target] != ren_id + 1000 { // 調べた先が空点で、まだ今回マークしていなければ。
         // println!("LIB: [{:3}] {:3}", ren_id, target);
         liberty_count_map[ren_id as usize] += 1;
@@ -53,10 +55,20 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
 
     // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
     ren_id_board[target] = ren_id;
+    if ren_id < 1000 && ren_element_map.contains_key(&(ren_id as i8)) {
+        match ren_element_map.get_mut(&(ren_id as i8)) {
+            Some(s) => {s.push(target as i16);}
+            None => {panic!("walk_liberty");}
+        }
+    } else {
+        let mut vec = Vec::new();
+        vec.push(target as i16);
+        ren_element_map.insert(ren_id as i8, vec);
+    }
 
     // 隣を探す。（再帰）
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-(board_size+2));// 上。
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target+1);// 右。
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target+(board_size+2));// 下。
-    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, target-1);// 左。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, ren_element_map, target-(board_size+2));// 上。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, ren_element_map, target+1);// 右。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, ren_element_map, target+(board_size+2));// 下。
+    walk_liberty(ren_id, color, board_size, board, ren_id_board, liberty_count_map, ren_element_map, target-1);// 左。
 }

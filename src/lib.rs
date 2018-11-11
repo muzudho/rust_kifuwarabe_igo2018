@@ -104,6 +104,18 @@ pub fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
     }
 }
 
+/// 連の要素を表示☆（＾～＾）
+pub fn show_ren_element_map(ren_element_map:HashMap<i8,Vec<i16>>) {
+    println!("Ren element: ");
+    for (ren_id, addr_vec) in &ren_element_map {
+        print!("[{:3}] ", ren_id);
+        for addr in addr_vec.iter() {
+            print!("{:3} ", addr);
+        }
+        println!(".");
+    }
+}
+
 /// 合法手の表示☆（＾～＾）
 pub fn show_legal_moves(legal_moves:&[usize]) {
     print!("Legal moves: ");
@@ -118,7 +130,7 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 /// # Return.
 /// - パスしたら真。
 pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:[i16; 21 * 21],
-    ren_element_map:&mut HashMap<i16, Vec<i8>>) -> bool {
+    ren_element_map:&mut HashMap<i8, Vec<i16>>) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
 
     if target == 0 {
@@ -174,7 +186,7 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
 /// # Return.
 /// - パスしたら真。
 pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:[i16;21*21],
-    ren_element_map:&mut HashMap<i16, Vec<i8>>, legal_moves:&[usize]) -> bool {
+    ren_element_map:&mut HashMap<i8, Vec<i16>>, legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
@@ -299,7 +311,7 @@ pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
 pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21],
-    ren_element_map:&mut HashMap<i16, Vec<i8>>, ko:usize) {
+    ren_element_map:&mut HashMap<i8, Vec<i16>>, ko:usize) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。

@@ -63,8 +63,6 @@ fn main() {
             show_board_by_number(conf.board_size, pos.board);
 
             // 全部の交点に、連のIDを振る。
-            let mut ren_id_board = [0; 21 * 21];
-            let mut liberty_count_map = [0; 21*21];
             check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map);
 
             // 連のIDを表示☆（＾～＾）

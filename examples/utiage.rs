@@ -19,7 +19,7 @@ extern crate kifuwarabe_igo2018;
 extern crate serde_json;
 use std::fs;
 use std::path::Path;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
 use kifuwarabe_igo2018::config_file::Config;
@@ -50,27 +50,30 @@ fn main() {
 
         // 盤面表示☆（＾～＾）
         show_board(conf.board_size, pos.board);
+
         // 代入ではなく、コピーを作っている☆（*＾～＾*）
         let mut pos = Position::default(pos.ply, pos.turn, pos.board);
 
+        // 盤番地を表示☆（＾～＾）
+        show_board_address(conf.board_size);
+
         // 全部の交点に、連のIDを振る。
-        let mut ren_id_board = [0; 21 * 21];
-        let mut liberty_count_map = [0; 21*21];
-        let mut ren_element_map: HashMap<i16,Vec<i8>> = HashMap::new();
-        check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map, &mut ren_element_map);
+        check_liberty_all_points(conf.board_size, pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, ren_id_board);
+        show_ren_id_board(conf.board_size, pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(liberty_count_map);
+        show_libarty_count(pos.liberty_count_map);
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(102, conf.board_size), 1, conf.board_size, &mut pos.board, ren_id_board, &mut ren_element_map);
+        do_move(convert_code_to_address(102, conf.board_size), 1, conf.board_size, &mut pos.board, pos.ren_id_board, &mut pos.ren_element_map);
 
         // 盤面表示☆（＾～＾）
         show_board(conf.board_size, pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, ren_id_board);
+        show_ren_id_board(conf.board_size, pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(liberty_count_map);
+        show_libarty_count(pos.liberty_count_map);
+        // 連の要素を表示☆（＾～＾）
+        show_ren_element_map(pos.ren_element_map);
     }
 
     println!("Finished.");

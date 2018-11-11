@@ -15,17 +15,13 @@
 
 extern crate kifuwarabe_igo2018;
 
-// ランダムムーブ
-extern crate rand;
-use rand::Rng;
-
 /// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
 use std::fs;
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
 use kifuwarabe_igo2018::config_file::Config;
@@ -44,7 +40,12 @@ fn main() {
             // 局面ファイル確認。
             let pos = PositionFile::load("position.json");
             // 読み取ったらファイル削除。
-            fs::remove_file("position.json");
+
+            match fs::remove_file("position.json") {
+                Ok(_o) => {}
+                Err(e) => {panic!(e)}
+            };
+
             println!("Pos comment: '{}'.", pos.comment);
             println!("ply: '{}'.", pos.ply);
             println!("Turn: '{}'.", pos.turn);
@@ -61,16 +62,13 @@ fn main() {
             show_board_by_number(conf.board_size, pos.board);
 
             // 全部の交点に、連のIDを振る。
-            let mut ren_id_board = [0; 21 * 21];
-            let mut liberty_count_map = [0; 21*21];
-            let mut ren_element_map = HashMap::new();
-            check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map, &mut ren_element_map);
+            check_liberty_all_points(conf.board_size, pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
 
             // 連のIDを表示☆（＾～＾）
-            show_ren_id_board(conf.board_size, ren_id_board);
+            show_ren_id_board(conf.board_size, pos.ren_id_board);
 
             // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(liberty_count_map);
+            show_libarty_count(pos.liberty_count_map);
 
             // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 
@@ -94,9 +92,11 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, pos.board,
+                pos.ren_id_board, pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, pos.board,
+                pos.ren_id_board, pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
         }
