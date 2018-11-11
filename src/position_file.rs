@@ -6,18 +6,18 @@ use serde_json::Value;
 use std::fs::File;
 use std::io::Read;
 
-pub struct Position {
+pub struct PositionFile {
     /// コメント。
     pub comment: String,
-    /// 何手目か。
-    pub ply: i64,
+    /// 何手目か。 2000手数えれれば十分☆（*＾～＾*）
+    pub ply: usize,
     /// 手番の石の色☆（＾～＾） 1:黒, 2:白。
     pub turn: i8,
     /// 19路盤枠ありが入るサイズを確保しておく。使ってない数字で埋める☆（＾～＾）
     pub board: [i8; 21 * 21],
 }
-impl Position {
-    pub fn load(path:&str) -> Position {
+impl PositionFile {
+    pub fn load(path:&str) -> PositionFile {
         let mut file = match File::open(path) {
             Ok(n) => n,
             Err(err) => panic!("File open error. {:?}", err),
@@ -52,9 +52,9 @@ impl Position {
             // println!("Line: '{}'.", line);
         }
 
-        Position {
+        PositionFile {
             comment: document["comment"].as_str().unwrap().to_string(),
-            ply: document["ply"].as_i64().unwrap(),
+            ply: document["ply"].as_i64().unwrap() as usize,
             turn: match document["turn"].as_str().unwrap() {
                 "black" => 1,
                 "white" => 2,

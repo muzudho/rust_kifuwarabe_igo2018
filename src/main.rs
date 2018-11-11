@@ -14,7 +14,9 @@ use std::time::Duration;
 mod config_file;
 use config_file::Config;
 mod position_file;
-use position_file::Position;
+use position_file::PositionFile;
+mod position;
+use position::Position;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -41,7 +43,7 @@ fn main() {
         if Path::new("position.json").exists() {
 
             // 局面ファイル確認。
-            let pos = Position::load("position.json");
+            let pos = PositionFile::load("position.json");
             println!("Pos comment: '{}'.", pos.comment);
             println!("ply: '{}'.", pos.ply);
             println!("Turn: '{}'.", pos.turn);
@@ -53,20 +55,18 @@ fn main() {
 
 
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
-            let mut ply = pos.ply;
-            let mut turn = pos.turn;
-            let mut board = pos.board;
+            let mut pos = Position::default(pos.ply, pos.turn, pos.board);
 
             // 盤番地を表示☆（＾～＾）
             show_board_address(conf.board_size);
 
             // 盤を表示☆（＾～＾）
-            show_board_by_number(conf.board_size, board);
+            show_board_by_number(conf.board_size, pos.board);
 
             // 連のIDを振る。
             let mut ren_id_board = [0; 21 * 21];
             let mut liberty_count_map = [0; 21*21];
-            check_liberty(conf.board_size, board, &mut ren_id_board, &mut liberty_count_map);
+            check_liberty(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map);
 
             // 連のIDを表示☆（＾～＾）
             show_ren_id_board(conf.board_size, ren_id_board);
@@ -94,47 +94,13 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), turn, conf.board_size, board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), turn, conf.board_size, board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
             // ↓トライアウトの練習をする☆（＾～＾）
-
-            // 相手がパスしていれば真。
-            let mut opponent_passed = false;
-
-            // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
-            for i_ply in ply..401 {
-                let legal_moves = pick_move(turn, conf.board_size, board, ren_id_board, liberty_count_map, ko);
-                // 合法手の表示☆（＾～＾）
-                show_legal_moves(&legal_moves);
-                // 合法手があれば、ランダムに１つ選ぶ。
-                if do_random_move(turn, conf.board_size, &mut board, &legal_moves) {
-                    // パスなら
-                    if opponent_passed {
-                        // TODO ゲーム終了☆（＾～＾）
-                        println!("Pass: game end.");
-                        break;
-                    }
-                    opponent_passed = true;
-                }
-                else {
-                    // パスで無かったら。
-                    opponent_passed = false;
-                }
-
-                // 盤を表示☆（＾～＾）
-                println!("Ply: {}, Turn: {}.", i_ply, turn);
-                show_board(conf.board_size, board);
-
-                // 手番を反転する☆（＾～＾）
-                turn = get_opponent(turn);
-            }
-            // 連続パス が起こったら終了☆（＾～＾）400手目を打ったところでも終了☆（＾～＾）
-
-            // TODO コウをなんとかしろだぜ☆（*＾～＾*）
-            println!("Finished.");
+            tryout(&mut pos, conf.board_size, ren_id_board, liberty_count_map, ko);
         }
 
         thread::sleep(Duration::from_millis(1));
@@ -420,7 +386,44 @@ fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16;21*
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-fn tryout() {}
+fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) {
+    println!("Start tryout.");
+
+    // 相手がパスしていれば真。
+    let mut opponent_passed = false;
+
+    // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
+    for i_ply in pos.ply..401 {
+        let legal_moves = pick_move(pos.turn, board_size, pos.board, ren_id_board, liberty_count_map, ko);
+        // 合法手の表示☆（＾～＾）
+        show_legal_moves(&legal_moves);
+        // 合法手があれば、ランダムに１つ選ぶ。
+        if do_random_move(pos.turn, board_size, &mut pos.board, &legal_moves) {
+            // パスなら
+            if opponent_passed {
+                // TODO ゲーム終了☆（＾～＾）
+                println!("Pass: game end.");
+                break;
+            }
+            opponent_passed = true;
+        }
+        else {
+            // パスで無かったら。
+            opponent_passed = false;
+        }
+
+        // 盤を表示☆（＾～＾）
+        println!("Ply: {}, Turn: {}.", i_ply, pos.turn);
+        show_board(board_size, pos.board);
+
+        // 手番を反転する☆（＾～＾）
+        pos.turn = get_opponent(pos.turn);
+    }
+    // 連続パス が起こったら終了☆（＾～＾）400手目を打ったところでも終了☆（＾～＾）
+
+    // TODO コウをなんとかしろだぜ☆（*＾～＾*）
+    println!("Finished tryout.");
+}
 
 /// TODO 勝敗判定。
 /// 純碁ルールでは、終局図では簡単で　単に盤上の石の数が多い方の勝ち。
@@ -436,7 +439,7 @@ fn judge() -> i8 {
 /// TODO 次の１手を返す。
 /// 書式は yyxx。 端には枠があるので、右上隅が 0101。左下隅が 1919。
 fn think() -> i8 {
-    tryout();
+    // TODO tryout();
     judge();
     101
 }
