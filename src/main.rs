@@ -16,6 +16,9 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
+mod config;
+use config::Config;
+
 /// # 実行方法
 /// [Windows]+[R], "cmd",
 ///
@@ -29,31 +32,13 @@ use std::time::Duration;
 /// ```
 ///
 fn main() {
+
     // 設定ファイル読込。
-    let mut conf_file = match File::open("config.json") {
-        Ok(n) => n,
-        Err(err) => panic!("File open error. {:?}", err),
-    };
+    let conf = Config::load("config.json");
 
-    let mut conf_contents = String::new();
-    match conf_file.read_to_string(&mut conf_contents) {
-        Ok(n) => n,
-        Err(err) => panic!("File open error. {:?}", err),
-    };
+    println!("Config comment: '{}'.", conf.comment);
+    println!("Config conf_board_size: {}.", conf.board_size);
 
-    // https://docs.serde.rs/serde_json/value/enum.Value.html
-    let conf_v: Value = match serde_json::from_str(&conf_contents) {
-        Ok(n) => n,
-        Err(err) => panic!("File open error. {:?}", err),
-    };
-
-    // コメント取得。
-    let conf_comment = conf_v["comment"].as_str().expect("comment.").to_string();
-    println!("Config comment: '{}'.", conf_comment);
-
-    // 何路盤。
-    let board_size: usize = conf_v["boardSize"].as_i64().expect("boardSize.") as usize; // FIXME 変換方法が分からん☆（＾～＾）
-    println!("Config conf_board_size: {}.", board_size);
 
     loop {
         // ファイル確認。
@@ -102,7 +87,7 @@ fn main() {
             }
 
             // 盤面表示☆（＾～＾）
-            show_board(board_size, board);
+            show_board(conf.board_size, board);
 
             // 手番の石の色☆（＾～＾） 1:黒, 2:白。
             let mut turn = match pos_v["turn"].as_str().unwrap() {
@@ -119,33 +104,33 @@ fn main() {
             println!("Cell address: ");
             i = 0;
             for _stone in board.iter() {
-                if i == (board_size+2) * (board_size+2) {
+                if i == (conf.board_size+2) * (conf.board_size+2) {
                     break;
                 }
                 print!("{:3}, ", i);
-                if i % (board_size + 2) == (board_size + 1) {
+                if i % (conf.board_size + 2) == (conf.board_size + 1) {
                     println!();
                 }
                 i += 1;
             }
 
             // 盤を表示☆（＾～＾）
-            show_board_by_number(board_size, board);
+            show_board_by_number(conf.board_size, board);
 
             // 連のIDを振る。
             let mut ren_id_board = [0; 21 * 21];
             let mut liberty_count_map = [0; 21*21];
-            check_liberty(board_size, board, &mut ren_id_board, &mut liberty_count_map);
+            check_liberty(conf.board_size, board, &mut ren_id_board, &mut liberty_count_map);
 
             // 連のIDを表示☆（＾～＾）
             println!("Ren ID board: ");
             i = 0;
             for ren_id in ren_id_board.iter() {
-                if i == (board_size+2) * (board_size+2) {
+                if i == (conf.board_size+2) * (conf.board_size+2) {
                     break;
                 }
                 print!("{:4}, ", ren_id);
-                if i % (board_size + 2) == (board_size + 1) {
+                if i % (conf.board_size + 2) == (conf.board_size + 1) {
                     println!();
                 }
                 i += 1;
@@ -178,21 +163,23 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            let forbidden = is_forbidden(convert_code_to_address(704, board_size), turn, board_size, board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), turn, conf.board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, board_size), turn, board_size, board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), turn, conf.board_size, board, ren_id_board, liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
+
+            // ↓トライアウトの練習をする☆（＾～＾）
 
             // 相手がパスしていれば真。
             let mut opponent_passed = false;
 
             // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
             for i_ply in ply..401 {
-                let legal_moves = pick_move(turn, board_size, board, ren_id_board, liberty_count_map, ko);
+                let legal_moves = pick_move(turn, conf.board_size, board, ren_id_board, liberty_count_map, ko);
                 // 合法手の表示☆（＾～＾）
                 show_legal_moves(&legal_moves);
                 // 合法手があれば、ランダムに１つ選ぶ。
-                if do_random_move(turn, board_size, &mut board, &legal_moves) {
+                if do_random_move(turn, conf.board_size, &mut board, &legal_moves) {
                     // パスなら
                     if opponent_passed {
                         // TODO ゲーム終了☆（＾～＾）
@@ -208,7 +195,7 @@ fn main() {
 
                 // 盤を表示☆（＾～＾）
                 println!("Ply: {}, Turn: {}.", i_ply, turn);
-                show_board(board_size, board);
+                show_board(conf.board_size, board);
 
                 // 手番を反転する☆（＾～＾）
                 turn = get_opponent(turn);
