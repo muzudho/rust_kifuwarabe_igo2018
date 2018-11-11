@@ -48,28 +48,17 @@ fn main() {
             // 盤面表示☆（＾～＾）
             show_board(conf.board_size, pos.board);
 
+            // 読み取ったらファイル削除。
+            fs::remove_file("position.json");
+
+
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
             let mut ply = pos.ply;
             let mut turn = pos.turn;
             let mut board = pos.board;
 
-
-            // 読み取ったらファイル削除。
-            fs::remove_file("position.json");
-
             // 盤番地を表示☆（＾～＾）
-            println!("Cell address: ");
-            let mut i = 0;
-            for _stone in board.iter() {
-                if i == (conf.board_size+2) * (conf.board_size+2) {
-                    break;
-                }
-                print!("{:3}, ", i);
-                if i % (conf.board_size + 2) == (conf.board_size + 1) {
-                    println!();
-                }
-                i += 1;
-            }
+            show_board_address(conf.board_size);
 
             // 盤を表示☆（＾～＾）
             show_board_by_number(conf.board_size, board);
@@ -80,25 +69,10 @@ fn main() {
             check_liberty(conf.board_size, board, &mut ren_id_board, &mut liberty_count_map);
 
             // 連のIDを表示☆（＾～＾）
-            println!("Ren ID board: ");
-            i = 0;
-            for ren_id in ren_id_board.iter() {
-                if i == (conf.board_size+2) * (conf.board_size+2) {
-                    break;
-                }
-                print!("{:4}, ", ren_id);
-                if i % (conf.board_size + 2) == (conf.board_size + 1) {
-                    println!();
-                }
-                i += 1;
-            }
+            show_ren_id_board(conf.board_size, ren_id_board);
 
-            println!("Liberty count: ");
-            for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
-                if *lib_cnt != 0 {
-                    println!("[{:3}] {:3}", ren_id, lib_cnt);
-                }
-            }
+            // 呼吸点の数を表示☆（＾～＾）
+            show_libarty_count(liberty_count_map);
 
             // 試し打ちをする☆（＾～＾）
             //
@@ -189,6 +163,22 @@ fn show_board(board_size:usize, board:[i8; 21 * 21]){
     }
 }
 
+/// セル番地を表示☆（＾～＾）
+fn show_board_address(board_size:usize) {
+    println!("Cell address: ");
+    let end = (board_size+2) * (board_size+2) + 1;
+
+    for i in 0..end { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
+        if i == (board_size+2) * (board_size+2) {
+            break;
+        }
+        print!("{:3}, ", i);
+        if i % (board_size + 2) == (board_size + 1) {
+            println!();
+        }
+    }
+}
+
 /// 盤の表示☆（＾～＾）
 fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
     println!("Board: ");
@@ -203,8 +193,34 @@ fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
     }
 }
 
+/// 盤に振られた 連ID を表示だぜ☆（＾～＾）
+fn show_ren_id_board(board_size:usize, ren_id_board:[i16; 21 * 21]) {
+    println!("Ren ID board: ");
+    let mut i = 0;
+    for ren_id in ren_id_board.iter() {
+        if i == (board_size+2) * (board_size+2) {
+            break;
+        }
+        print!("{:4}, ", ren_id);
+        if i % (board_size + 2) == (board_size + 1) {
+            println!();
+        }
+        i += 1;
+    }
+}
+
+/// 呼吸点の数を表示☆（＾～＾）
+fn show_libarty_count(liberty_count_map:[i8; 21*21]) {
+    println!("Liberty count: ");
+    for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
+        if *lib_cnt != 0 {
+            println!("[{:3}] {:3}", ren_id, lib_cnt);
+        }
+    }
+}
+
 /// 合法手の表示☆（＾～＾）
-fn show_legal_moves(legal_moves:&[usize]){ // &Vec<usize>
+fn show_legal_moves(legal_moves:&[usize]) {
     print!("Legal moves: ");
     for legal_move in legal_moves {
         print!("{}, ", legal_move);
