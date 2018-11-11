@@ -24,7 +24,7 @@ use position::Position;
 /// cargo clippy
 ///
 /// ### 実行
-/// cargo run --release
+/// cargo run --example main
 /// ```
 ///
 
@@ -112,20 +112,29 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
     println!(".");
 }
 
+/// 石を置くぜ☆（*＾～＾*）
+/// # Return.
+/// - パスしたら真。
+pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]) -> bool {
+    println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
+
+    if target == 0 {
+        // パス
+        return true;
+    }
+
+    board[target] = color;
+    false
+}
+
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
 pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
-    println!("Best move: {} {:04}.", best_move, convert_address_to_code(best_move, board_size));
-    if best_move==0 {
-        // パス
-        return true;
-    }
 
     // 石を置く。
-    board[best_move] = color;
-    false
+    do_move(best_move, color, board_size, board)
 }
 
 // 符号を番地に変換。

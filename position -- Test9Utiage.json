@@ -1,0 +1,18 @@
+{
+	"comment": "9路盤 ウチアゲのテスト。 1-2x, 4-1x, 9-1x, 9-2x, 9-4x, 9-9x を試せ。",
+	"ply": 30,
+    "board": [
+        "+++++++++++",
+        "+oxo oxoo +",
+        "+ xoooxooo+",
+        "+ xxxxxxxx+",
+        "+         +",
+        "+         +",
+        "+         +",
+        "+ xxxxxxxx+",
+        "+oxooox oo+",
+        "+ x  oxoo +",
+        "+++++++++++"
+    ],
+    "turn": "black"
+}
