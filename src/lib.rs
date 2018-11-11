@@ -14,6 +14,7 @@ pub mod position;
 pub mod liberty;
 
 use position::Position;
+use std::collections::HashMap;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -113,9 +114,11 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 }
 
 /// 石を置くぜ☆（*＾～＾*）
+/// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]) -> bool {
+pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:[i16; 21 * 21],
+    ren_element_map:&mut HashMap<i16, Vec<i8>>) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
 
     if target == 0 {
@@ -124,17 +127,58 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
     }
 
     board[target] = color;
+
+    let top = target-(board_size+2); // 上の番地。
+    let right = target+1; // 右。
+    let bottom = target+(board_size+2); // 下。
+    let left = target-1; // 左。
+
+    // TODO 石が隣接していれば、連が変わる☆（＾～＾） 0～4つの連が隣接している☆（＾～＾）
+
+    // TODO 上、右、下、左。
+    if board[top] == color {
+        let ren_id = ren_id_board[top];
+
+    }
+    if board[right] == color {
+        
+    }
+    if board[bottom] == color {
+        
+    }
+    if board[left] == color {
+        
+    }
+
+    // TODO 連ID から 紐づくすべての石を取得したい☆（＾～＾）
+
+    // TODO 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾）
+
+    // TODO 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾）
+
+    // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
+
+    // TODO 隣接しているのが相手の石で、呼吸点が 1 なら、その連は取れる☆（＾～＾）
+
+    // TODO アンドゥを考えるなら、取った連を 棋譜としてスタックに積み上げか☆（＾～＾）
+
+    // TODO 純碁ルールなら アゲハマを覚えておかなくていい☆（＾～＾） 楽☆（＾～＾）
+
+    // TODO 相手の石をウチアゲたなら、置いた石の番地を preKo として覚えておく☆（＾～＾） 前の preKo は ko へ退避しておく☆（＾～＾）
+    // 相手がコウでなければ、当然取り返しに来る☆（＾～＾）preKo は ko へ、 preKo に置いた石の番地を入れる☆（＾～＾）
+
     false
 }
 
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], legal_moves:&[usize]) -> bool {
+pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:[i16;21*21],
+    ren_element_map:&mut HashMap<i16, Vec<i8>>, legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
-    do_move(best_move, color, board_size, board)
+    do_move(best_move, color, board_size, board, ren_id_board, ren_element_map)
 }
 
 // 符号を番地に変換。
@@ -254,7 +298,8 @@ pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:[i16
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21], ko:usize) {
+pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], liberty_count_map:[i8;21*21],
+    ren_element_map:&mut HashMap<i16, Vec<i8>>, ko:usize) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。
@@ -266,7 +311,7 @@ pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:[i16;21*21], lib
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
-        if do_random_move(pos.turn, board_size, &mut pos.board, &legal_moves) {
+        if do_random_move(pos.turn, board_size, &mut pos.board, ren_id_board, ren_element_map, &legal_moves) {
             // パスなら
             if opponent_passed {
                 // TODO ゲーム終了☆（＾～＾）

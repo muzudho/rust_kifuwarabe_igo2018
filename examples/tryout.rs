@@ -38,10 +38,6 @@ fn main() {
     // 設定ファイル読込。
     let conf = Config::load("config.json");
 
-    println!("Config comment: '{}'.", conf.comment);
-    println!("Config conf_board_size: {}.", conf.board_size);
-
-
     loop {
         if Path::new("position.json").exists() {
 

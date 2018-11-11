@@ -1,7 +1,9 @@
 /// 連と呼吸点の計算☆（＾～＾）
+use std::collections::HashMap;
 
 /// 全部の交点に、連のIDを振る。
-pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21], liberty_count_map:&mut [i8;21*21]) {
+pub fn check_liberty_all_points(board_size:usize, board:[i8;21*21], ren_id_board:&mut [i16;21*21],
+    liberty_count_map:&mut [i8;21*21], ren_element_map:&mut HashMap<i16, Vec<i8>>) {
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
     // 小さい盤で数えてみろだぜ☆（＾～＾）

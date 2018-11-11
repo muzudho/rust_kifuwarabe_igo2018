@@ -22,11 +22,10 @@ use rand::Rng;
 /// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
 use std::fs;
-
 use std::path::Path;
-
 use std::thread;
 use std::time::Duration;
+use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
 use kifuwarabe_igo2018::config_file::Config;
@@ -34,28 +33,23 @@ use kifuwarabe_igo2018::position_file::PositionFile;
 use kifuwarabe_igo2018::position::Position;
 use kifuwarabe_igo2018::liberty::*;
 
+
 fn main() {
     // 設定ファイル読込。
     let conf = Config::load("config.json");
-
-    println!("Config comment: '{}'.", conf.comment);
-    println!("Config conf_board_size: {}.", conf.board_size);
-
 
     loop {
         if Path::new("position.json").exists() {
 
             // 局面ファイル確認。
             let pos = PositionFile::load("position.json");
+            // 読み取ったらファイル削除。
+            fs::remove_file("position.json");
             println!("Pos comment: '{}'.", pos.comment);
             println!("ply: '{}'.", pos.ply);
             println!("Turn: '{}'.", pos.turn);
             // 盤面表示☆（＾～＾）
             show_board(conf.board_size, pos.board);
-
-            // 読み取ったらファイル削除。
-            fs::remove_file("position.json");
-
 
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
             let mut pos = Position::default(pos.ply, pos.turn, pos.board);
@@ -69,13 +63,16 @@ fn main() {
             // 全部の交点に、連のIDを振る。
             let mut ren_id_board = [0; 21 * 21];
             let mut liberty_count_map = [0; 21*21];
-            check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map);
+            let mut ren_element_map = HashMap::new();
+            check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map, &mut ren_element_map);
 
             // 連のIDを表示☆（＾～＾）
             show_ren_id_board(conf.board_size, ren_id_board);
 
             // 呼吸点の数を表示☆（＾～＾）
             show_libarty_count(liberty_count_map);
+
+            // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 
             // 試し打ちをする☆（＾～＾）
             //
