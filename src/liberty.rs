@@ -1,6 +1,6 @@
 /// 連と呼吸点の計算☆（＾～＾）
 
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use ren_element_map::RenElementMap;
 
 /// 全部の交点に、連のIDを振る。

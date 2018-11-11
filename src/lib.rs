@@ -15,7 +15,7 @@ pub mod position;
 pub mod ren_element_map;
 
 use position::Position;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use ren_element_map::RenElementMap;
 
 /// # 実行方法
@@ -148,18 +148,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16;
             }
         }
         // キー変更。
-        match ren_element_map.remove(adjacent_ren_id as i8) {
-            Some(vec) => {
-                if ren_element_map.contains_key(self_ren_id as i8) {
-                    // 既存ベクターに追加。
-                    ren_element_map.extend(self_ren_id as i8, vec);
-                } else {
-                    // ベクターを丸ごと移動。
-                    ren_element_map.insert(self_ren_id as i8, vec);
-                }
-            },
-            None => {panic!("adjacent_ren_id: {}.", adjacent_ren_id);}
-        };
+        ren_element_map.change_key(adjacent_ren_id as i8, self_ren_id as i8);
     } else {
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
         ren_id_board[target] = adjacent_ren_id;

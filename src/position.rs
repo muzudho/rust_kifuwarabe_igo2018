@@ -1,6 +1,6 @@
 /// 局面☆（＾▽＾）
 
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use ren_element_map::RenElementMap;
 
 pub struct Position {

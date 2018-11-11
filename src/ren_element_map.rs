@@ -47,4 +47,20 @@ impl RenElementMap {
     pub fn iter(&self) -> std::collections::hash_map::Iter<i8, Vec<i16>> {
         self.value.iter()
     }
+
+    // キーを変更。
+    pub fn change_key(&mut self, ren_id_before:i8, ren_id_after:i8){
+        match self.remove(ren_id_before as i8) {
+            Some(vec) => {
+                if self.contains_key(ren_id_after as i8) {
+                    // 既存なら、既存ベクターに追加。
+                    self.extend(ren_id_after as i8, vec);
+                } else {
+                    // 無ければ、ベクターを丸ごと移動。
+                    self.insert(ren_id_after as i8, vec);
+                }
+            },
+            None => {panic!("ren_id_before: {}, ren_id_after: {}.", ren_id_before, ren_id_after);}
+        };
+    }
 }
