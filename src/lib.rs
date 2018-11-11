@@ -125,6 +125,33 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
     println!(".");
 }
 
+/// 連IDを塗り替えるぜ☆（＾～＾）
+pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut [i16; 21 * 21],
+    ren_element_map:&mut HashMap<i8, Vec<i16>>
+) {
+    // 隣接する自分の連のID。 1000未満の数。
+    let ren_id = ren_id_board[adjacent];
+    // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
+    if target < ren_id as usize {
+        {
+            let addr_vec: &Vec<i16> = match ren_element_map.get(&(ren_id as i8)) {
+                Some(s) => {s},
+                None => {panic!("ren_id: {0} ",ren_id)}
+            };
+            for addr in addr_vec {
+                ren_id_board[*addr as usize] = adjacent as i16;
+            }
+        }
+        // キー変更。
+        match ren_element_map.remove(&(ren_id as i8)) {
+            Some(s) => {ren_element_map.insert(adjacent as i8, s)},
+            None => {panic!("ren_id: {}.", ren_id)}
+        };
+    } else {
+        ren_id_board[adjacent] = ren_id;
+    }
+}
+
 /// 石を置くぜ☆（*＾～＾*）
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
@@ -150,30 +177,16 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
     // 連がつながるか調べたいので、自分の色と比較☆（＾～＾）
     // TODO 上、右、下、左。
     if board[top] == color {
-        // 隣接する自分の連のID。 1000未満の数。
-        let ren_id = ren_id_board[top];
-        // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
-        if target < ren_id as usize {
-            for addr in ren_element_map.get(&(ren_id as i8)) {
-                ren_id_board[ren_id as usize] = top as i16;
-            }
-            // キー変更。
-            match ren_element_map.remove(&(ren_id as i8)) {
-                Some(s) => {ren_element_map.insert(top as i8, s)},
-                None => {panic!("ren_id: {}.", ren_id)}
-            };
-        } else {
-            ren_id_board[top] = ren_id;
-        }
+        refill_ren_id_board(target, top, ren_id_board, ren_element_map);
     }
     if board[right] == color {
-        
+        refill_ren_id_board(target, right, ren_id_board, ren_element_map);        
     }
     if board[bottom] == color {
-        
+        refill_ren_id_board(target, bottom, ren_id_board, ren_element_map);        
     }
     if board[left] == color {
-        
+        refill_ren_id_board(target, left, ren_id_board, ren_element_map);        
     }
 
     // TODO 連ID から 紐づくすべての石を取得したい☆（＾～＾）
