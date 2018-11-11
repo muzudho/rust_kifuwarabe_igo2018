@@ -33,7 +33,7 @@ fn main() {
     println!("Ply: '{}'.", pos.ply);
     println!("Turn: '{}'.", pos.turn);
     // 盤面表示☆（＾～＾）
-    show_board(conf.board_size, pos.board);
+    show_board(conf.board_size, &pos.board);
 
     println!("Finished.");
 }

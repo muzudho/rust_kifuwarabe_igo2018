@@ -5,6 +5,7 @@ use serde_json::Value;
 
 use std::fs::File;
 use std::io::Read;
+use board::Board;
 
 pub struct PositionFile {
     /// コメント。
@@ -14,7 +15,7 @@ pub struct PositionFile {
     /// 手番の石の色☆（＾～＾） 1:黒, 2:白。
     pub turn: i8,
     /// 19路盤枠ありが入るサイズを確保しておく。使ってない数字で埋める☆（＾～＾）
-    pub board: [i8; 21 * 21],
+    pub board: Board,
 }
 impl PositionFile {
     pub fn load(path:&str) -> PositionFile {
@@ -36,17 +37,17 @@ impl PositionFile {
 
 
         // 盤面作成。
-        let mut temp_board = [0; 21 * 21];
+        let mut temp_board = Board::new();
         let mut i = 0;
         for line in document["board"].as_array().unwrap().iter() {
             let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();
             for ch in &chars {
-                temp_board[i] = match ch {
+                temp_board.set(i, match ch {
                     'x' => 1, // 黒。
                     'o' => 2, // 白。
                     '+' => 3, // 枠。
                     _ => 0,   // スペース。
-                };
+                });
                 i += 1;
             }
             // println!("Line: '{}'.", line);

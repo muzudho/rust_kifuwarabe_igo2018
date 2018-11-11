@@ -15,10 +15,6 @@
 
 extern crate kifuwarabe_igo2018;
 
-// ランダムムーブ
-extern crate rand;
-use rand::Rng;
-
 /// 参考: https://github.com/serde-rs/json |シリアライズ、デシリアライズ。
 extern crate serde_json;
 use std::fs;
@@ -38,6 +34,12 @@ fn main() {
     // 設定ファイル読込。
     let conf = Config::load("config.json");
 
+    // ファイルをコピーするぜ☆（＾～＾）
+    match fs::copy("position -- Test9Ren.json", "position.json") {
+        Ok(_o) => {}
+        Err(e) => {panic!(e)}
+    };
+
     loop {
         if Path::new("position.json").exists() {
 
@@ -47,7 +49,7 @@ fn main() {
             println!("ply: '{}'.", pos.ply);
             println!("Turn: '{}'.", pos.turn);
             // 盤面表示☆（＾～＾）
-            show_board(conf.board_size, pos.board);
+            show_board(conf.board_size, &pos.board);
 
             // 読み取ったらファイル削除。
             fs::remove_file("position.json");
@@ -60,16 +62,16 @@ fn main() {
             show_board_address(conf.board_size);
 
             // 盤を表示☆（＾～＾）
-            show_board_by_number(conf.board_size, pos.board);
+            show_board_by_number(conf.board_size, &pos.board);
 
             // 全部の交点に、連のIDを振る。
-            check_liberty_all_points(conf.board_size, pos.board, &mut ren_id_board, &mut liberty_count_map);
+            check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
 
             // 連のIDを表示☆（＾～＾）
-            show_ren_id_board(conf.board_size, ren_id_board);
+            show_ren_id_board(conf.board_size, &pos.ren_id_board);
 
             // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(liberty_count_map);
+            show_libarty_count(pos.liberty_count_map);
 
             // 試し打ちをする☆（＾～＾）
             //
@@ -91,13 +93,15 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, &pos.board, &pos.ren_id_board,
+                pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, pos.board, ren_id_board, liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, &pos.board, &pos.ren_id_board,
+                pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
             // ↓トライアウトの練習をする☆（＾～＾）
-            tryout(&mut pos, conf.board_size, ren_id_board, liberty_count_map, ko);
+            tryout(&mut pos, conf.board_size, ko);
         }
 
         thread::sleep(Duration::from_millis(1));

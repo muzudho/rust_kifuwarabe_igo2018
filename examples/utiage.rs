@@ -49,7 +49,7 @@ fn main() {
         };
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, pos.board);
+        show_board(conf.board_size, &pos.board);
 
         // 代入ではなく、コピーを作っている☆（*＾～＾*）
         let mut pos = Position::default(pos.ply, pos.turn, pos.board);
@@ -58,7 +58,7 @@ fn main() {
         show_board_address(conf.board_size);
 
         // 全部の交点に、連のIDを振る。
-        check_liberty_all_points(conf.board_size, pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
+        check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
@@ -70,7 +70,7 @@ fn main() {
         do_move(convert_code_to_address(102, conf.board_size), 1, conf.board_size, &mut pos.board, &mut pos.ren_id_board, &mut pos.ren_element_map);
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, pos.board);
+        show_board(conf.board_size, &pos.board);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）

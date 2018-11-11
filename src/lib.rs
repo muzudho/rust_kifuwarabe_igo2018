@@ -8,6 +8,7 @@ use rand::Rng;
 extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
+pub mod board;
 pub mod config_file;
 pub mod liberty;
 pub mod position_file;
@@ -15,6 +16,7 @@ pub mod position;
 pub mod ren_element_map;
 pub mod ren_id_board;
 
+use board::Board;
 use position::Position;
 use ren_element_map::RenElementMap;
 use ren_id_board::RenIDBoard;
@@ -34,7 +36,7 @@ use liberty::*;
 ///
 
 /// 盤の表示☆（＾～＾）
-pub fn show_board(board_size:usize, board:[i8; 21 * 21]){
+pub fn show_board(board_size:usize, board:&Board){
     println!("Board: ");
     for (i, stone) in board.iter().enumerate() {
         if i == (board_size+2) * (board_size+2) {
@@ -71,7 +73,7 @@ pub fn show_board_address(board_size:usize) {
 }
 
 /// 盤の表示☆（＾～＾）
-pub fn show_board_by_number(board_size:usize, board:[i8; 21 * 21]) {
+pub fn show_board_by_number(board_size:usize, board:&Board) {
     println!("Board: ");
     for (i, stone) in board.iter().enumerate() {
         if i == (board_size+2) * (board_size+2) {
@@ -163,7 +165,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut RenID
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:&mut RenIDBoard,
+pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut Board, ren_id_board:&mut RenIDBoard,
     ren_element_map:&mut RenElementMap) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, board_size));
 
@@ -172,7 +174,7 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
         return true;
     }
 
-    board[target] = color;
+    board.set(target, color);
 
     let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
@@ -186,20 +188,20 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
     // - [v] 連のIDの更新。
     // TODO - [ ] 連の要素の更新。
     let mut small_id = target as i16;
-    small_id = if board[top] == color {
+    small_id = if board.get(top) == color {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
         refill_ren_id_board(target, top, ren_id_board, ren_element_map)
     } else {small_id};
-    small_id = if board[right] == color {
+    small_id = if board.get(right) == color {
         println!("Do move: 右とつながる。");
         refill_ren_id_board(target, right, ren_id_board, ren_element_map)
     } else {small_id};
-    small_id = if board[bottom] == color {
+    small_id = if board.get(bottom) == color {
         println!("Do move: 下とつながる。");
         refill_ren_id_board(target, bottom, ren_id_board, ren_element_map)
     } else {small_id};
-    small_id = if board[left] == color {
+    small_id = if board.get(left) == color {
         println!("Do move: 左とつながる。");
         refill_ren_id_board(target, left, ren_id_board, ren_element_map)
     } else {small_id};
@@ -233,7 +235,7 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_random_move(color:i8, board_size:usize, board:&mut[i8; 21 * 21], ren_id_board:&mut RenIDBoard,
+pub fn do_random_move(color:i8, board_size:usize, board:&mut Board, ren_id_board:&mut RenIDBoard,
     ren_element_map:&mut RenElementMap, legal_moves:&[usize]) -> bool {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
@@ -281,7 +283,7 @@ pub fn get_opponent(color:i8) -> i8 {
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
 /// * `color` - 置く石の色。 1:黒, 2:白.
-pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&RenIDBoard, liberty_count_map:[i8;21*21], ko:usize) -> bool {
+pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:[i8;21*21], ko:usize) -> bool {
     
     let top = target-(board_size+2); // 上の番地。
     let right = target+1; // 右。
@@ -312,7 +314,7 @@ pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], 
 
     if
         // 空点以外は、着手禁止点。
-        board[target] != 0
+        board.get(target) != 0
         // コウ（前にアゲるところに石を打ったばかりの番地）なら、着手禁止点。
         || target == ko
     {
@@ -321,17 +323,17 @@ pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], 
 
     if
         // 隣に空点があれば、自殺手ではない。
-        board[top] == 0 || board[right] == 0 || board[bottom] == 0 || board[left] == 0
+        board.get(top) == 0 || board.get(right) == 0 || board.get(bottom) == 0 || board.get(left) == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (board[top] == color && top_ren_id < 1000 && 1<liberty_count_map[top_ren_id])
-        || (board[right] == color && right_ren_id < 1000 && 1<liberty_count_map[right_ren_id])
-        || (board[bottom] == color && bottom_ren_id < 1000 && 1<liberty_count_map[bottom_ren_id])
-        || (board[left] == color && left_ren_id < 1000 && 1<liberty_count_map[left_ren_id])
+        || (board.get(top) == color && top_ren_id < 1000 && 1<liberty_count_map[top_ren_id])
+        || (board.get(right) == color && right_ren_id < 1000 && 1<liberty_count_map[right_ren_id])
+        || (board.get(bottom) == color && bottom_ren_id < 1000 && 1<liberty_count_map[bottom_ren_id])
+        || (board.get(left) == color && left_ren_id < 1000 && 1<liberty_count_map[left_ren_id])
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (board[top] == opponent && top_ren_id < 1000 && liberty_count_map[top_ren_id] < 2)
-        || (board[right] == opponent && right_ren_id < 1000 && liberty_count_map[right_ren_id] < 2)
-        || (board[bottom] == opponent && bottom_ren_id < 1000 && liberty_count_map[bottom_ren_id] < 2)
-        || (board[left] == opponent && left_ren_id < 1000 && liberty_count_map[left_ren_id] < 2)
+        || (board.get(top) == opponent && top_ren_id < 1000 && liberty_count_map[top_ren_id] < 2)
+        || (board.get(right) == opponent && right_ren_id < 1000 && liberty_count_map[right_ren_id] < 2)
+        || (board.get(bottom) == opponent && bottom_ren_id < 1000 && liberty_count_map[bottom_ren_id] < 2)
+        || (board.get(left) == opponent && left_ren_id < 1000 && liberty_count_map[left_ren_id] < 2)
     {
         return false;
     }
@@ -341,14 +343,14 @@ pub fn is_forbidden(target:usize, color:i8, board_size:usize, board:[i8;21*21], 
 }
 
 /// 合法手生成。
-pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&RenIDBoard, liberty_count_map:[i8;21*21], ko:usize) -> Vec<usize> {
+pub fn pick_move(color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:[i8;21*21], ko:usize) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
     let left_top = (board_size+2) + 1;
     let rigth_bottom = (board_size+2) * board_size + board_size;
 
     for target in left_top..rigth_bottom+1 {
-        if !is_forbidden(target, color, board_size, board, ren_id_board, liberty_count_map, ko) {
+        if !is_forbidden(target, color, board_size, &board, ren_id_board, liberty_count_map, ko) {
             vec.push(target);
         }
     }
@@ -358,8 +360,7 @@ pub fn pick_move(color:i8, board_size:usize, board:[i8;21*21], ren_id_board:&Ren
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:&mut RenIDBoard, liberty_count_map:[i8;21*21],
-    ren_element_map:&mut RenElementMap, ko:usize) {
+pub fn tryout(pos:&mut Position, board_size:usize, ko:usize) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。
@@ -367,11 +368,11 @@ pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:&mut RenIDBoard,
 
     // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
     for i_ply in pos.ply..401 {
-        let legal_moves = pick_move(pos.turn, board_size, pos.board, &ren_id_board, liberty_count_map, ko);
+        let legal_moves = pick_move(pos.turn, board_size, &pos.board, &pos.ren_id_board, pos.liberty_count_map, ko);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
-        if do_random_move(pos.turn, board_size, &mut pos.board, ren_id_board, ren_element_map, &legal_moves) {
+        if do_random_move(pos.turn, board_size, &mut pos.board, &mut pos.ren_id_board, &mut pos.ren_element_map, &legal_moves) {
             // パスなら
             if opponent_passed {
                 // TODO ゲーム終了☆（＾～＾）
@@ -387,7 +388,7 @@ pub fn tryout(pos:&mut Position, board_size:usize, ren_id_board:&mut RenIDBoard,
 
         // 盤を表示☆（＾～＾）
         println!("Ply: {}, Turn: {}.", i_ply, pos.turn);
-        show_board(board_size, pos.board);
+        show_board(board_size, &pos.board);
 
         // 手番を反転する☆（＾～＾）
         pos.turn = get_opponent(pos.turn);
