@@ -33,16 +33,20 @@ impl RenElementMap {
         self.value.get_mut(&ren_id)
     }
 
+    pub fn iter(&self) -> std::collections::hash_map::Iter<i16, Vec<i16>> {
+        self.value.iter()
+    }
+
     pub fn contains_key(&self, ren_id:i16) -> bool {
         self.value.contains_key(&ren_id)
     }
 
-    // 新規ベクターを追加。
+    /// 新規ベクターを追加。
     pub fn insert(&mut self, ren_id:i16, vec:Vec<i16>) {
         self.value.insert(ren_id, vec);
     }
 
-    // 既存ベクターに追加。
+    /// 既存ベクターに追加。
     pub fn extend(&mut self, ren_id:i16, vec:Vec<i16>) {
         match self.value.get_mut(&ren_id) {
             Some(s) => {s.extend(vec.iter().cloned());},
@@ -54,11 +58,7 @@ impl RenElementMap {
         self.value.remove(&ren_id)
     }
 
-    pub fn iter(&self) -> std::collections::hash_map::Iter<i16, Vec<i16>> {
-        self.value.iter()
-    }
-
-    // キーを変更。
+    /// キーを変更。
     pub fn change_key(&mut self, ren_id_before:i16, ren_id_after:i16){
         match self.remove(ren_id_before) {
             Some(vec) => {

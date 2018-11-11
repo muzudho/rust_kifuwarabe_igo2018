@@ -25,4 +25,11 @@ impl Board {
         self.value.iter()
     }
 
+    /// 石を置く。石を除去したいときは stone を 0 にする。
+    pub fn fill(&mut self, addr_vec:&Vec<i16>, stone:i8) {
+        for addr in addr_vec {
+            self.value[*addr as usize] = stone;
+        }
+    }
+
 }

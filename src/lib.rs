@@ -136,30 +136,55 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 /// 連IDを塗り替えるぜ☆（＾～＾）
 /// # Return.
 /// - 新しい連ID。
-pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut RenIDBoard,
-    ren_element_map:&mut RenElementMap
-) -> i16 {
+pub fn refill_ren_id_board(target:usize, adjacent:usize, pos:&mut Position) -> i16 {
     let self_ren_id = target as i16;
     // 隣接する自分の連のID。 1000未満の数。
-    let adjacent_ren_id = ren_id_board.get(adjacent);
+    let adjacent_ren_id = pos.ren_id_board.get(adjacent);
 
     // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
     if self_ren_id < adjacent_ren_id {
         println!("Do move: Self: {}, Adjacent: {}. 新しいIDの方が小さい。", self_ren_id, adjacent_ren_id);
         {
-            let addr_vec: &Vec<i16> = match ren_element_map.get(adjacent_ren_id) {
+            let adjacent_addr_vec: &Vec<i16> = match pos.ren_element_map.get(adjacent_ren_id) {
                 Some(s) => {s},
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
-            ren_id_board.fill(addr_vec, self_ren_id);
+            pos.ren_id_board.fill(adjacent_addr_vec, self_ren_id);
         }
+
         // キー変更。
-        ren_element_map.change_key(adjacent_ren_id, self_ren_id);
+        pos.ren_element_map.change_key(adjacent_ren_id, self_ren_id);
+        pos.liberty_count_map.change_key(adjacent_ren_id, self_ren_id);
+
         self_ren_id
     } else {
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
-        ren_id_board.set(target, adjacent_ren_id);
+        pos.ren_id_board.set(target, adjacent_ren_id);
         adjacent_ren_id
+    }
+}
+
+/// 連を盤から除去するぜ☆（＾～＾）
+pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
+    let adjacent_ren_id = pos.ren_id_board.get(adjacent);
+    let adj_lib_cnt = pos.liberty_count_map.get(adjacent_ren_id as usize);
+    println!("Do move: 隣の連ID {}, 隣の呼吸点数 {}。", adjacent_ren_id, adj_lib_cnt);
+
+    // 呼吸点
+    if adj_lib_cnt==1 {
+        // この連を盤から除去する。
+        {
+            let adjacent_addr_vec: &Vec<i16> = match pos.ren_element_map.get(adjacent_ren_id) {
+                Some(s) => {s},
+                None => {panic!("Adjacent: {}.", adjacent_ren_id)},
+            };
+            pos.board.fill(adjacent_addr_vec, 0);
+            pos.ren_id_board.fill(adjacent_addr_vec, 0);
+        }
+
+        // キー削除。
+        pos.ren_element_map.remove(adjacent_ren_id);
+        pos.liberty_count_map.set(adjacent_ren_id as usize, 0);
     }
 }
 
@@ -192,19 +217,19 @@ pub fn do_move(target:usize, color:i8, board_size:usize, pos:&mut Position) -> b
     small_id = if pos.board.get(top) == color {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
-        refill_ren_id_board(target, top, &mut pos.ren_id_board, &mut pos.ren_element_map)
+        refill_ren_id_board(target, top, pos)
     } else {small_id};
     small_id = if pos.board.get(right) == color {
         println!("Do move: 右とつながる。");
-        refill_ren_id_board(target, right, &mut pos.ren_id_board, &mut pos.ren_element_map)
+        refill_ren_id_board(target, right, pos)
     } else {small_id};
     small_id = if pos.board.get(bottom) == color {
         println!("Do move: 下とつながる。");
-        refill_ren_id_board(target, bottom, &mut pos.ren_id_board, &mut pos.ren_element_map)
+        refill_ren_id_board(target, bottom, pos)
     } else {small_id};
     small_id = if pos.board.get(left) == color {
         println!("Do move: 左とつながる。");
-        refill_ren_id_board(target, left, &mut pos.ren_id_board, &mut pos.ren_element_map)
+        refill_ren_id_board(target, left, pos)
     } else {small_id};
 
     // [v] 連ID から 紐づくすべての石を取得したい☆（＾～＾） -> RenElementMap を使う☆（＾～＾）
@@ -214,15 +239,32 @@ pub fn do_move(target:usize, color:i8, board_size:usize, pos:&mut Position) -> b
     // [v] 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾） -> 連の要素一覧に 置いた石の番地を 追加。
     pos.ren_element_map.add(small_id, target as i16);
 
-    // TODO - [ ] 呼吸点の更新。
-    // TODO 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引けばいいと思うが☆（＾～＾）？
-    let count_liberty = count_liberty_at_point(target, board_size, &pos.board);
-    // pos.liberty_count_map[]
+    // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
+    let target_liberty_count = count_liberty_at_point(target, board_size, &pos.board);
+    println!("Do move: Target_liberty_count: {}.", target_liberty_count);
+    pos.liberty_count_map.add(small_id as usize, (target_liberty_count - 1) as i16);
 
 
     // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
 
     // TODO 隣接しているのが相手の石で、呼吸点が 1 なら、その連は取れる☆（＾～＾）
+    let opponent = get_opponent(color);
+    if pos.board.get(top) == opponent {
+        println!("Do move: 上に相手の石。");
+        peel_off_by_ren_id(top, pos);
+    }
+    if pos.board.get(right) == opponent {
+        println!("Do move: 右に相手の石。");
+        peel_off_by_ren_id(right, pos);
+    }
+    if pos.board.get(bottom) == opponent {
+        println!("Do move: 下に相手の石。");
+        peel_off_by_ren_id(bottom, pos);
+    }
+    if pos.board.get(left) == opponent {
+        println!("Do move: 左に相手の石。");
+        peel_off_by_ren_id(left, pos);
+    }
 
     // TODO アンドゥを考えるなら、取った連を 棋譜としてスタックに積み上げか☆（＾～＾）
 

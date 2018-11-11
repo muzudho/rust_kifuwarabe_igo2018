@@ -25,6 +25,7 @@ impl RenIDBoard {
         self.value.iter()
     }
 
+    /// 石を置く。石を除去したいときは ren_id を 0 にする。
     pub fn fill(&mut self, addr_vec:&Vec<i16>, ren_id:i16) {
         for addr in addr_vec {
             self.value[*addr as usize] = ren_id;

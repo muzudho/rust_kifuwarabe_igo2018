@@ -29,4 +29,10 @@ impl LibertyCountMap {
         self.value.iter()
     }
 
+    /// キーを変更。
+    pub fn change_key(&mut self, ren_id_before:i16, ren_id_after:i16){
+        self.value[ren_id_after as usize] = self.value[ren_id_before as usize];
+        self.value[ren_id_before as usize] = 0;
+    }
+
 }
