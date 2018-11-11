@@ -1,6 +1,7 @@
 // 連のIDが入った盤☆（＾～＾）
 
 use std;
+use ren_element_map::RenElementMap;
 
 pub struct RenIDBoard {
     pub value: [i16; 21 * 21],
@@ -22,6 +23,12 @@ impl RenIDBoard {
 
     pub fn iter(&self) -> std::slice::Iter<i16> {
         self.value.iter()
+    }
+
+    pub fn fill(&mut self, addr_vec:&Vec<i16>, ren_id:i16) {
+        for addr in addr_vec {
+            self.value[*addr as usize] = ren_id;
+        }
     }
 
 }

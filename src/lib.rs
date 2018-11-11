@@ -129,32 +129,33 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 }
 
 /// 連IDを塗り替えるぜ☆（＾～＾）
+/// # Return.
+/// - 新しい連ID。
 pub fn refill_ren_id_board(target:usize, adjacent:usize, ren_id_board:&mut RenIDBoard,
     ren_element_map:&mut RenElementMap
-) {
+) -> i16 {
     let self_ren_id = target as i16;
     // 隣接する自分の連のID。 1000未満の数。
     let adjacent_ren_id = ren_id_board.get(adjacent);
 
     // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
     if self_ren_id < adjacent_ren_id {
-        println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が大きい。", self_ren_id, adjacent_ren_id);
+        println!("Do move: Self: {}, Adjacent: {}. 新しいIDの方が小さい。", self_ren_id, adjacent_ren_id);
         {
-            let addr_vec: &Vec<i16> = match ren_element_map.get(adjacent_ren_id as i8) {
+            let addr_vec: &Vec<i16> = match ren_element_map.get(adjacent_ren_id) {
                 Some(s) => {s},
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
-            for addr in addr_vec {
-                ren_id_board.set(*addr as usize, self_ren_id);
-            }
+            ren_id_board.fill(addr_vec, self_ren_id);
         }
         // キー変更。
-        ren_element_map.change_key(adjacent_ren_id as i8, self_ren_id as i8);
+        ren_element_map.change_key(adjacent_ren_id, self_ren_id);
+        self_ren_id
     } else {
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
         ren_id_board.set(target, adjacent_ren_id);
+        adjacent_ren_id
     }
-
 }
 
 /// 石を置くぜ☆（*＾～＾*）
@@ -178,30 +179,31 @@ pub fn do_move(target:usize, color:i8, board_size:usize, board:&mut[i8; 21 * 21]
     let left = target-1; // 左。
 
 
-    // 連の要素に追加。
-
     // TODO 石が隣接していれば、連が変わる☆（＾～＾） 0～4つの連が隣接している☆（＾～＾）
 
     // 連がつながるか調べたいので、自分の色と比較☆（＾～＾） 上、右、下、左。
     // - [v] 連のIDの更新。
     // TODO - [ ] 呼吸点の更新。
     // TODO - [ ] 連の要素の更新。
-    if board[top] == color {
+    let mut small_id = target as i16;
+    small_id = if board[top] == color {
         println!("Do move: 上とつながる。");
-        refill_ren_id_board(target, top, ren_id_board, ren_element_map);
-    }
-    if board[right] == color {
+        refill_ren_id_board(target, top, ren_id_board, ren_element_map)
+    } else {small_id};
+    small_id = if board[right] == color {
         println!("Do move: 右とつながる。");
-        refill_ren_id_board(target, right, ren_id_board, ren_element_map);        
-    }
-    if board[bottom] == color {
+        refill_ren_id_board(target, right, ren_id_board, ren_element_map)
+    } else {small_id};
+    small_id = if board[bottom] == color {
         println!("Do move: 下とつながる。");
-        refill_ren_id_board(target, bottom, ren_id_board, ren_element_map);        
-    }
-    if board[left] == color {
+        refill_ren_id_board(target, bottom, ren_id_board, ren_element_map)
+    } else {small_id};
+    small_id = if board[left] == color {
         println!("Do move: 左とつながる。");
-        refill_ren_id_board(target, left, ren_id_board, ren_element_map);        
-    }
+        refill_ren_id_board(target, left, ren_id_board, ren_element_map)
+    } else {small_id};
+    // 連の要素一覧に 新しい石の番地を 追加。
+    ren_element_map.add(small_id, target as i16);
 
     // TODO 連ID から 紐づくすべての石を取得したい☆（＾～＾）
 

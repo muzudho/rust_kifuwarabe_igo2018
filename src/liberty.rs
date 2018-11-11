@@ -57,15 +57,15 @@ fn walk_liberty(ren_id:i16, color:i8, board_size:usize, board:[i8;21*21], ren_id
 
     // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
     ren_id_board.set(target, ren_id);
-    if ren_id < 1000 && ren_element_map.contains_key(ren_id as i8) {
-        match ren_element_map.get_mut(ren_id as i8) {
+    if ren_id < 1000 && ren_element_map.contains_key(ren_id) {
+        match ren_element_map.get_mut(ren_id) {
             Some(s) => {s.push(target as i16);}
             None => {panic!("walk_liberty");}
         }
     } else {
         let mut vec = Vec::new();
         vec.push(target as i16);
-        ren_element_map.insert(ren_id as i8, vec);
+        ren_element_map.insert(ren_id, vec);
     }
 
     // 隣を探す。（再帰）
