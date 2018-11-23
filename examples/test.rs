@@ -65,13 +65,14 @@ fn main() {
             check_liberty_all_points(&mut pos);
 
             // 連のIDを表示☆（＾～＾）
-            show_ren_id_board(conf.board_size, &pos.ren_id_board);
+            show_ren_id_board(&pos);
 
             // 呼吸点の数を表示☆（＾～＾）
             show_libarty_count(&pos.liberty_count_map);
 
             // 空連の占有者を表示☆（＾～＾）
             show_empty_owner(&pos.empty_owner_map);
+            show_ren_address_map(&pos.empty_owner_map.space);
 
             // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 

@@ -60,13 +60,14 @@ fn main() {
         // 全部の交点に、連のIDを振る。
         check_liberty_all_points(&mut pos);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        show_ren_id_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_empty_owner(&pos.empty_owner_map);
+        show_ren_address_map(&pos.empty_owner_map.space);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(&pos.ren_element_map);
+        show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(102, conf.board_size), &mut pos);
@@ -74,13 +75,14 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        show_ren_id_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_empty_owner(&pos.empty_owner_map);
+        show_ren_address_map(&pos.empty_owner_map.space);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(&pos.ren_element_map);
+        show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(401, conf.board_size), &mut pos);
@@ -88,13 +90,14 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        show_ren_id_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_empty_owner(&pos.empty_owner_map);
+        show_ren_address_map(&pos.empty_owner_map.space);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(&pos.ren_element_map);
+        show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(901, conf.board_size), &mut pos);
@@ -102,13 +105,14 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        show_ren_id_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_empty_owner(&pos.empty_owner_map);
+        show_ren_address_map(&pos.empty_owner_map.space);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(&pos.ren_element_map);
+        show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(109, conf.board_size), &mut pos);
@@ -116,13 +120,14 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        show_ren_id_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_empty_owner(&pos.empty_owner_map);
+        show_ren_address_map(&pos.empty_owner_map.space);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(&pos.ren_element_map);
+        show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(409, conf.board_size), &mut pos);
@@ -130,13 +135,14 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        show_ren_id_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_empty_owner(&pos.empty_owner_map);
+        show_ren_address_map(&pos.empty_owner_map.space);
         // 連の要素を表示☆（＾～＾）
-        show_ren_element_map(&pos.ren_element_map);
+        show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(909, conf.board_size), &mut pos);

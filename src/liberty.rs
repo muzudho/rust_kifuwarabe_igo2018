@@ -96,15 +96,15 @@ fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
 
     // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
     pos.ren_id_board.set(target, ren_id);
-    if ren_id < 1000 && pos.ren_element_map.contains_key(ren_id) {
-        match pos.ren_element_map.get_mut(ren_id) {
+    if ren_id < 1000 && pos.ren_address_map.contains_key(ren_id) {
+        match pos.ren_address_map.get_mut(ren_id) {
             Some(s) => {s.push(target as i16);}
             None => {panic!("walk_liberty");}
         }
     } else {
         let mut vec = Vec::new();
         vec.push(target as i16);
-        pos.ren_element_map.insert(ren_id, vec);
+        pos.ren_address_map.insert(ren_id, vec);
     }
 
     // 隣を探す。（再帰）
@@ -127,7 +127,8 @@ fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
             }
 
             // 空点 かつ、連IDが振ってない --> 連IDを振る。隣も調べる。
-            pos.empty_ren_id_board.set(target, ren_id as i16);        
+            pos.empty_ren_id_board.set(target, ren_id as i16);
+            pos.empty_owner_map.space.add(ren_id as i16, target as i16);
         },
 
         1 => {

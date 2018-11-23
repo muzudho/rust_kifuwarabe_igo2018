@@ -4,13 +4,13 @@
 use std;
 use std::collections::HashMap;
 
-pub struct RenElementMap {
+pub struct RenAddressMap {
     // 連ID に紐づく、石の番地のリスト。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
     pub value: HashMap<i16,Vec<i16>>
 }
-impl RenElementMap {
-    pub fn new()-> RenElementMap {
-        RenElementMap {
+impl RenAddressMap {
+    pub fn new()-> RenAddressMap {
+        RenAddressMap {
             value: HashMap::new(),
         }
     }

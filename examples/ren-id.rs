@@ -80,4 +80,5 @@ fn main() {
 
     // 空連の占有者を表示☆（＾～＾）
     show_empty_owner(&pos.empty_owner_map);
+    show_ren_address_map(&pos.empty_owner_map.space);
 }

@@ -17,15 +17,15 @@ pub mod liberty;
 pub mod out_file;
 pub mod position_file;
 pub mod position;
-pub mod ren_element_map;
+pub mod ren_address_map;
 pub mod ren_id_board;
 
 use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
-use ren_element_map::RenElementMap;
-use ren_id_board::RenIDBoard;
+use ren_address_map::RenAddressMap;
+// use ren_id_board::RenIDBoard;
 use liberty::*;
 
 /// # 実行方法
@@ -138,9 +138,9 @@ pub fn show_empty_owner(empty_owner_map:&EmptyOwnerMap) {
 }
 
 /// 連の要素を表示☆（＾～＾）
-pub fn show_ren_element_map(ren_element_map:&RenElementMap) {
+pub fn show_ren_address_map(ren_address_map:&RenAddressMap) {
     println!("Ren element: ");
-    for (ren_id, addr_vec) in ren_element_map.iter() {
+    for (ren_id, addr_vec) in ren_address_map.iter() {
         print!("[{:3}] ", ren_id);
         for addr in addr_vec.iter() {
             print!("{:3} ", addr);
@@ -170,7 +170,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, pos:&mut Position) -> i
     if self_ren_id < adjacent_ren_id {
         println!("Do move: Self: {}, Adjacent: {}. 新しいIDの方が小さい。", self_ren_id, adjacent_ren_id);
         {
-            let adjacent_addr_vec: &Vec<i16> = match pos.ren_element_map.get(adjacent_ren_id) {
+            let adjacent_addr_vec: &Vec<i16> = match pos.ren_address_map.get(adjacent_ren_id) {
                 Some(s) => {s},
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
@@ -178,7 +178,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, pos:&mut Position) -> i
         }
 
         // キー変更。
-        pos.ren_element_map.change_key(adjacent_ren_id, self_ren_id);
+        pos.ren_address_map.change_key(adjacent_ren_id, self_ren_id);
         pos.liberty_count_map.change_key(adjacent_ren_id, self_ren_id);
 
         self_ren_id
@@ -199,7 +199,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
     if adj_lib_cnt==1 {
         // この連を盤から除去する。
         {
-            let adjacent_addr_vec: &Vec<i16> = match pos.ren_element_map.get(adjacent_ren_id) {
+            let adjacent_addr_vec: &Vec<i16> = match pos.ren_address_map.get(adjacent_ren_id) {
                 Some(s) => {s},
                 None => {panic!("Adjacent: {}.", adjacent_ren_id)},
             };
@@ -208,7 +208,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
         }
 
         // キー削除。
-        pos.ren_element_map.remove(adjacent_ren_id);
+        pos.ren_address_map.remove(adjacent_ren_id);
         pos.liberty_count_map.set(adjacent_ren_id as usize, 0);
     }
 }
@@ -257,12 +257,12 @@ pub fn do_move(target:usize, pos:&mut Position) -> bool {
         refill_ren_id_board(target, left, pos)
     } else {small_id};
 
-    // [v] 連ID から 紐づくすべての石を取得したい☆（＾～＾） -> RenElementMap を使う☆（＾～＾）
+    // [v] 連ID から 紐づくすべての石を取得したい☆（＾～＾） -> RenAddressMap を使う☆（＾～＾）
 
     // [v] 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾） -> RenIDBoard を使う☆（＾～＾）
 
     // [v] 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾） -> 連の要素一覧に 置いた石の番地を 追加。
-    pos.ren_element_map.add(small_id, target as i16);
+    pos.ren_address_map.add(small_id, target as i16);
 
     // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
     let target_liberty_count = count_liberty_at_point(target, &pos.board);
