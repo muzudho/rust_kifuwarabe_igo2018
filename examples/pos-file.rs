@@ -17,8 +17,9 @@ extern crate kifuwarabe_igo2018;
 
 use std::fs;
 use kifuwarabe_igo2018::*;
-use kifuwarabe_igo2018::config_file::Config;
-use kifuwarabe_igo2018::position_file::PositionFile;
+use config_file::Config;
+use position_file::PositionFile;
+use view::*;
 
 fn main() {
     // 設定ファイル読込。

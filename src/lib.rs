@@ -19,14 +19,11 @@ pub mod position_file;
 pub mod position;
 pub mod ren_address_map;
 pub mod address_ren_board;
+pub mod view;
 
-use board::Board;
-use empty_owner_map::EmptyOwnerMap;
-use liberty_count_map::LibertyCountMap;
 use position::Position;
-use ren_address_map::RenAddressMap;
-// use address_ren_board::AddressRenBoard;
 use liberty::*;
+use view::*;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -40,123 +37,6 @@ use liberty::*;
 /// cargo run --example main
 /// ```
 ///
-
-/// 盤の表示☆（＾～＾）
-pub fn show_board(board:&Board){
-    println!("Board: ");
-    for (i, stone) in board.iter().enumerate() {
-        if i == (board.get_size()+2) * (board.get_size()+2) {
-            break;
-        }
-
-        print!("{}", match stone {
-            0 => ' ',
-            1 => 'x',
-            2 => 'o',
-            _ => '+',
-        });
-
-        if i % (board.get_size() + 2) == (board.get_size() + 1) {
-            println!();
-        }
-    }
-}
-
-/// セル番地を表示☆（＾～＾）
-pub fn show_board_address(board_size:usize) {
-    println!("Cell address: ");
-    let end = (board_size+2) * (board_size+2) + 1;
-
-    for i in 0..end { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
-        if i == (board_size+2) * (board_size+2) {
-            break;
-        }
-        print!("{:3}, ", i);
-        if i % (board_size + 2) == (board_size + 1) {
-            println!();
-        }
-    }
-}
-
-/// 盤の表示☆（＾～＾）
-pub fn show_board_by_number(board:&Board) {
-    println!("Board: ");
-    for (i, stone) in board.iter().enumerate() {
-        if i == (board.get_size()+2) * (board.get_size()+2) {
-            break;
-        }
-        print!("{}, ", stone);
-        if i % (board.get_size() + 2) == (board.get_size() + 1) {
-            println!();
-        }
-    }
-}
-
-/// 盤に振られた 連ID を表示だぜ☆（＾～＾）
-pub fn show_address_ren_board(pos:&Position) {
-    println!("Ren ID board: ");
-    for (i, ren_id) in pos.address_ren_board.iter().enumerate() {
-        if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
-            break;
-        }
-        print!("{:4}, ", ren_id);
-        if i % (pos.board.get_size() + 2) == (pos.board.get_size() + 1) {
-            println!();
-        }
-    }
-
-    println!("Empty ren ID board: ");
-    for (i, ren_id) in pos.empty_owner_map.address_ren_board.iter().enumerate() {
-        if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
-            break;
-        }
-        print!("{:4}, ", ren_id);
-        if i % (pos.board.get_size() + 2) == (pos.board.get_size() + 1) {
-            println!();
-        }
-    }
-}
-
-/// 呼吸点の数を表示☆（＾～＾）
-pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
-    println!("Liberty count: ");
-    for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
-        if *lib_cnt != 0 {
-            println!("[{:3}] {:3}", ren_id, lib_cnt);
-        }
-    }
-}
-
-/// 空連の占有者を表示☆（＾～＾）
-pub fn show_empty_owner(empty_owner_map:&EmptyOwnerMap) {
-    println!("Empty owner: ");
-    for (ren_id, owner) in empty_owner_map.iter().enumerate() {
-        if *owner != 0 && *owner != 3 {
-            println!("[{:3}] {:3}", ren_id, owner);
-        }
-    }
-}
-
-/// 連の要素を表示☆（＾～＾）
-pub fn show_ren_address_map(ren_address_map:&RenAddressMap) {
-    println!("Ren element: ");
-    for (ren_id, addr_vec) in ren_address_map.iter() {
-        print!("[{:3}] ", ren_id);
-        for addr in addr_vec.iter() {
-            print!("{:3} ", addr);
-        }
-        println!(".");
-    }
-}
-
-/// 合法手の表示☆（＾～＾）
-pub fn show_legal_moves(legal_moves:&[usize]) {
-    print!("Legal moves: ");
-    for legal_move in legal_moves {
-        print!("{}, ", legal_move);
-    }
-    println!(".");
-}
 
 /// 連IDを塗り替えるぜ☆（＾～＾）
 /// # Return.

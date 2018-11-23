@@ -18,6 +18,7 @@ extern crate kifuwarabe_igo2018;
 use std::fs;
 use kifuwarabe_igo2018::*;
 use position::Position;
+use view::*;
 
 fn main() {
     // ファイルをコピーするぜ☆（＾～＾）

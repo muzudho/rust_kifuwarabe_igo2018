@@ -23,11 +23,11 @@ extern crate serde_json;
 use std::fs;
 
 use kifuwarabe_igo2018::*;
-use kifuwarabe_igo2018::config_file::Config;
-use kifuwarabe_igo2018::position_file::PositionFile;
-use kifuwarabe_igo2018::position::Position;
-use kifuwarabe_igo2018::liberty::*;
-
+use config_file::Config;
+use position_file::PositionFile;
+use position::Position;
+use liberty::*;
+use view::*;
 
 fn main() {
     // ファイルをコピーするぜ☆（＾～＾）

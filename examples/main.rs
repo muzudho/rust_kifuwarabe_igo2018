@@ -24,11 +24,11 @@ use std::time::Duration;
 // use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
-use kifuwarabe_igo2018::config_file::Config;
-use kifuwarabe_igo2018::position::Position;
-use kifuwarabe_igo2018::liberty::*;
+use config_file::Config;
+use position::Position;
+use liberty::*;
 use best_move::BestMove;
-
+use view::*;
 
 fn main() {
     // ファイルをコピーするぜ☆（＾～＾）
