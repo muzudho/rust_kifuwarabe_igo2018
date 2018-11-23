@@ -2,12 +2,12 @@
 
 use std;
 
-pub struct RenIDBoard {
+pub struct AddressRenBoard {
     pub value: [i16; 21 * 21],
 }
-impl RenIDBoard {
-    pub fn new() -> RenIDBoard {
-        RenIDBoard {
+impl AddressRenBoard {
+    pub fn new() -> AddressRenBoard {
+        AddressRenBoard {
             value: [0; 21 * 21]
         }
     }

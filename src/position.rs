@@ -4,7 +4,7 @@ use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use ren_address_map::RenAddressMap;
-use ren_id_board::RenIDBoard;
+use address_ren_board::AddressRenBoard;
 
 pub struct Position {
     /// 枠付きの盤面。
@@ -16,9 +16,7 @@ pub struct Position {
     /// 何手目か。
     pub ply: usize,
     /// 計算用。盤上に紐づく連ID。
-    pub ren_id_board: RenIDBoard,
-    /// 計算用。盤上に紐づく空連ID。
-    pub empty_ren_id_board: RenIDBoard,
+    pub address_ren_board: AddressRenBoard,
     /// 計算用。連に紐づく呼吸点の数。
     pub liberty_count_map: LibertyCountMap,
     /// 計算用。連に紐づく番地のリスト。
@@ -33,8 +31,7 @@ impl Position {
             ko: ko_address,
             turn: turn_count,
             ply: ply_count,
-            ren_id_board: RenIDBoard::new(),
-            empty_ren_id_board: RenIDBoard::new(),
+            address_ren_board: AddressRenBoard::new(),
             liberty_count_map: LibertyCountMap::new(),
             ren_address_map: RenAddressMap::new(),
             empty_owner_map: EmptyOwnerMap::new(),

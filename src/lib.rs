@@ -18,14 +18,14 @@ pub mod out_file;
 pub mod position_file;
 pub mod position;
 pub mod ren_address_map;
-pub mod ren_id_board;
+pub mod address_ren_board;
 
 use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
 use ren_address_map::RenAddressMap;
-// use ren_id_board::RenIDBoard;
+// use address_ren_board::AddressRenBoard;
 use liberty::*;
 
 /// # 実行方法
@@ -93,9 +93,9 @@ pub fn show_board_by_number(board:&Board) {
 }
 
 /// 盤に振られた 連ID を表示だぜ☆（＾～＾）
-pub fn show_ren_id_board(pos:&Position) {
+pub fn show_address_ren_board(pos:&Position) {
     println!("Ren ID board: ");
-    for (i, ren_id) in pos.ren_id_board.iter().enumerate() {
+    for (i, ren_id) in pos.address_ren_board.iter().enumerate() {
         if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
             break;
         }
@@ -106,7 +106,7 @@ pub fn show_ren_id_board(pos:&Position) {
     }
 
     println!("Empty ren ID board: ");
-    for (i, ren_id) in pos.empty_ren_id_board.iter().enumerate() {
+    for (i, ren_id) in pos.empty_owner_map.address_ren_board.iter().enumerate() {
         if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
             break;
         }
@@ -161,10 +161,10 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 /// 連IDを塗り替えるぜ☆（＾～＾）
 /// # Return.
 /// - 新しい連ID。
-pub fn refill_ren_id_board(target:usize, adjacent:usize, pos:&mut Position) -> i16 {
+pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position) -> i16 {
     let self_ren_id = target as i16;
     // 隣接する自分の連のID。 1000未満の数。
-    let adjacent_ren_id = pos.ren_id_board.get(adjacent);
+    let adjacent_ren_id = pos.address_ren_board.get(adjacent);
 
     // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
     if self_ren_id < adjacent_ren_id {
@@ -174,7 +174,7 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, pos:&mut Position) -> i
                 Some(s) => {s},
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
-            pos.ren_id_board.fill(adjacent_addr_vec, self_ren_id);
+            pos.address_ren_board.fill(adjacent_addr_vec, self_ren_id);
         }
 
         // キー変更。
@@ -184,14 +184,14 @@ pub fn refill_ren_id_board(target:usize, adjacent:usize, pos:&mut Position) -> i
         self_ren_id
     } else {
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
-        pos.ren_id_board.set(target, adjacent_ren_id);
+        pos.address_ren_board.set(target, adjacent_ren_id);
         adjacent_ren_id
     }
 }
 
 /// 連を盤から除去するぜ☆（＾～＾）
 pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
-    let adjacent_ren_id = pos.ren_id_board.get(adjacent);
+    let adjacent_ren_id = pos.address_ren_board.get(adjacent);
     let adj_lib_cnt = pos.liberty_count_map.get(adjacent_ren_id as usize);
     println!("Do move: 隣の連ID {}, 隣の呼吸点数 {}。", adjacent_ren_id, adj_lib_cnt);
 
@@ -204,7 +204,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
                 None => {panic!("Adjacent: {}.", adjacent_ren_id)},
             };
             pos.board.fill(adjacent_addr_vec, 0);
-            pos.ren_id_board.fill(adjacent_addr_vec, 0);
+            pos.address_ren_board.fill(adjacent_addr_vec, 0);
         }
 
         // キー削除。
@@ -242,24 +242,24 @@ pub fn do_move(target:usize, pos:&mut Position) -> bool {
     small_id = if pos.board.get(top) == pos.turn {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
-        refill_ren_id_board(target, top, pos)
+        refill_address_ren_board(target, top, pos)
     } else {small_id};
     small_id = if pos.board.get(right) == pos.turn {
         println!("Do move: 右とつながる。");
-        refill_ren_id_board(target, right, pos)
+        refill_address_ren_board(target, right, pos)
     } else {small_id};
     small_id = if pos.board.get(bottom) == pos.turn {
         println!("Do move: 下とつながる。");
-        refill_ren_id_board(target, bottom, pos)
+        refill_address_ren_board(target, bottom, pos)
     } else {small_id};
     small_id = if pos.board.get(left) == pos.turn {
         println!("Do move: 左とつながる。");
-        refill_ren_id_board(target, left, pos)
+        refill_address_ren_board(target, left, pos)
     } else {small_id};
 
     // [v] 連ID から 紐づくすべての石を取得したい☆（＾～＾） -> RenAddressMap を使う☆（＾～＾）
 
-    // [v] 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾） -> RenIDBoard を使う☆（＾～＾）
+    // [v] 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾） -> AddressRenBoard を使う☆（＾～＾）
 
     // [v] 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾） -> 連の要素一覧に 置いた石の番地を 追加。
     pos.ren_address_map.add(small_id, target as i16);
@@ -362,10 +362,10 @@ pub fn is_forbidden(target:usize, pos:&Position) -> bool {
     let right = target+1; // 右。
     let bottom = target+(pos.board.get_size()+2); // 下。
     let left = target-1; // 左。
-    let top_ren_id = pos.ren_id_board.get(top) as usize; // 上の連のID。
-    let right_ren_id = pos.ren_id_board.get(right) as usize; // 上の連のID。
-    let bottom_ren_id = pos.ren_id_board.get(bottom) as usize; // 上の連のID。
-    let left_ren_id = pos.ren_id_board.get(left) as usize; // 上の連のID。
+    let top_ren_id = pos.address_ren_board.get(top) as usize; // 上の連のID。
+    let right_ren_id = pos.address_ren_board.get(right) as usize; // 上の連のID。
+    let bottom_ren_id = pos.address_ren_board.get(bottom) as usize; // 上の連のID。
+    let left_ren_id = pos.address_ren_board.get(left) as usize; // 上の連のID。
     let opponent = get_opponent(pos.turn); // 相手の石の色。
 
     /*

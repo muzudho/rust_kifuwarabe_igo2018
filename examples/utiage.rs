@@ -60,7 +60,7 @@ fn main() {
         // 全部の交点に、連のIDを振る。
         check_liberty_all_points(&mut pos);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(&pos);
+        show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
@@ -75,7 +75,7 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(&pos);
+        show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
@@ -90,7 +90,7 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(&pos);
+        show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
@@ -105,7 +105,7 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(&pos);
+        show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
@@ -120,7 +120,7 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(&pos);
+        show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
@@ -135,7 +135,7 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
-        show_ren_id_board(&pos);
+        show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
