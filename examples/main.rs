@@ -59,7 +59,7 @@ fn main() {
             println!("ply: '{}'.", pos.ply);
 
             // 全部の交点に、連のIDを振る。
-            check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
+            check_liberty_all_points(&mut pos);
 
             // 試し打ちをする☆（＾～＾）
             let legal_moves = pick_move(&pos);

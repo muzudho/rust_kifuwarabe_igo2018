@@ -58,11 +58,13 @@ fn main() {
         show_board_address(conf.board_size);
 
         // 全部の交点に、連のIDを振る。
-        check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
+        check_liberty_all_points(&mut pos);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
+        // 空連の占有者を表示☆（＾～＾）
+        show_empty_owner(&pos.empty_owner_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 
@@ -75,6 +77,8 @@ fn main() {
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
+        // 空連の占有者を表示☆（＾～＾）
+        show_empty_owner(&pos.empty_owner_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 
@@ -87,6 +91,8 @@ fn main() {
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
+        // 空連の占有者を表示☆（＾～＾）
+        show_empty_owner(&pos.empty_owner_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 
@@ -99,6 +105,8 @@ fn main() {
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
+        // 空連の占有者を表示☆（＾～＾）
+        show_empty_owner(&pos.empty_owner_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 
@@ -111,6 +119,8 @@ fn main() {
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
+        // 空連の占有者を表示☆（＾～＾）
+        show_empty_owner(&pos.empty_owner_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 
@@ -123,6 +133,8 @@ fn main() {
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
         show_libarty_count(&pos.liberty_count_map);
+        // 空連の占有者を表示☆（＾～＾）
+        show_empty_owner(&pos.empty_owner_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
 

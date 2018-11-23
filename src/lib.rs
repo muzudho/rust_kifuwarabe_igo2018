@@ -11,6 +11,7 @@ extern crate serde_json;
 pub mod best_move;
 pub mod board;
 pub mod config_file;
+pub mod empty_owner_map;
 pub mod liberty_count_map;
 pub mod liberty;
 pub mod out_file;
@@ -20,6 +21,7 @@ pub mod ren_element_map;
 pub mod ren_id_board;
 
 use board::Board;
+use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
 use ren_element_map::RenElementMap;
@@ -91,14 +93,25 @@ pub fn show_board_by_number(board:&Board) {
 }
 
 /// 盤に振られた 連ID を表示だぜ☆（＾～＾）
-pub fn show_ren_id_board(board_size:usize, ren_id_board:&RenIDBoard) {
+pub fn show_ren_id_board(pos:&Position) {
     println!("Ren ID board: ");
-    for (i, ren_id) in ren_id_board.iter().enumerate() {
-        if i == (board_size+2) * (board_size+2) {
+    for (i, ren_id) in pos.ren_id_board.iter().enumerate() {
+        if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
             break;
         }
         print!("{:4}, ", ren_id);
-        if i % (board_size + 2) == (board_size + 1) {
+        if i % (pos.board.get_size() + 2) == (pos.board.get_size() + 1) {
+            println!();
+        }
+    }
+
+    println!("Empty ren ID board: ");
+    for (i, ren_id) in pos.empty_ren_id_board.iter().enumerate() {
+        if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
+            break;
+        }
+        print!("{:4}, ", ren_id);
+        if i % (pos.board.get_size() + 2) == (pos.board.get_size() + 1) {
             println!();
         }
     }
@@ -110,6 +123,16 @@ pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
     for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
         if *lib_cnt != 0 {
             println!("[{:3}] {:3}", ren_id, lib_cnt);
+        }
+    }
+}
+
+/// 空連の占有者を表示☆（＾～＾）
+pub fn show_empty_owner(empty_owner_map:&EmptyOwnerMap) {
+    println!("Empty owner: ");
+    for (ren_id, owner) in empty_owner_map.iter().enumerate() {
+        if *owner != 0 && *owner != 3 {
+            println!("[{:3}] {:3}", ren_id, owner);
         }
     }
 }
@@ -242,7 +265,7 @@ pub fn do_move(target:usize, pos:&mut Position) -> bool {
     pos.ren_element_map.add(small_id, target as i16);
 
     // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
-    let target_liberty_count = count_liberty_at_point(target, pos.board.get_size(), &pos.board);
+    let target_liberty_count = count_liberty_at_point(target, &pos.board);
     println!("Do move: Target_liberty_count: {}.", target_liberty_count);
     pos.liberty_count_map.add(small_id as usize, i16::from(target_liberty_count - 1));
 
