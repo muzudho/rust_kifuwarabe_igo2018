@@ -67,7 +67,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(102, conf.board_size), 1, &mut pos);
+        do_move(convert_code_to_address(102, conf.board_size), &mut pos);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -79,7 +79,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(401, conf.board_size), 1, &mut pos);
+        do_move(convert_code_to_address(401, conf.board_size), &mut pos);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -91,7 +91,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(901, conf.board_size), 1, &mut pos);
+        do_move(convert_code_to_address(901, conf.board_size), &mut pos);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -103,7 +103,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(109, conf.board_size), 1, &mut pos);
+        do_move(convert_code_to_address(109, conf.board_size), &mut pos);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -115,7 +115,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(409, conf.board_size), 1, &mut pos);
+        do_move(convert_code_to_address(409, conf.board_size), &mut pos);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -127,7 +127,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(909, conf.board_size), 1, &mut pos);
+        do_move(convert_code_to_address(909, conf.board_size), &mut pos);
     }
 
     println!("Finished.");

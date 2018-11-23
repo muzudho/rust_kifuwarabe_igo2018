@@ -193,7 +193,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, color:i8, pos:&mut Position) -> bool {
+pub fn do_move(target:usize, pos:&mut Position) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.board.get_size()));
 
     if target == 0 {
@@ -201,7 +201,7 @@ pub fn do_move(target:usize, color:i8, pos:&mut Position) -> bool {
         return true;
     }
 
-    pos.board.set(target, color);
+    pos.board.set(target, pos.turn);
 
     let top = target-(pos.board.get_size()+2); // 上の番地。
     let right = target+1; // 右。
@@ -215,20 +215,20 @@ pub fn do_move(target:usize, color:i8, pos:&mut Position) -> bool {
     // - [v] 連のIDの更新。
     // TODO - [ ] 連の要素の更新。
     let mut small_id = target as i16;
-    small_id = if pos.board.get(top) == color {
+    small_id = if pos.board.get(top) == pos.turn {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
         refill_ren_id_board(target, top, pos)
     } else {small_id};
-    small_id = if pos.board.get(right) == color {
+    small_id = if pos.board.get(right) == pos.turn {
         println!("Do move: 右とつながる。");
         refill_ren_id_board(target, right, pos)
     } else {small_id};
-    small_id = if pos.board.get(bottom) == color {
+    small_id = if pos.board.get(bottom) == pos.turn {
         println!("Do move: 下とつながる。");
         refill_ren_id_board(target, bottom, pos)
     } else {small_id};
-    small_id = if pos.board.get(left) == color {
+    small_id = if pos.board.get(left) == pos.turn {
         println!("Do move: 左とつながる。");
         refill_ren_id_board(target, left, pos)
     } else {small_id};
@@ -243,13 +243,13 @@ pub fn do_move(target:usize, color:i8, pos:&mut Position) -> bool {
     // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
     let target_liberty_count = count_liberty_at_point(target, pos.board.get_size(), &pos.board);
     println!("Do move: Target_liberty_count: {}.", target_liberty_count);
-    pos.liberty_count_map.add(small_id as usize, (target_liberty_count - 1) as i16);
+    pos.liberty_count_map.add(small_id as usize, i16::from(target_liberty_count - 1));
 
 
     // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
 
     // TODO 隣接しているのが相手の石で、呼吸点が 1 なら、その連は取れる☆（＾～＾）
-    let opponent = get_opponent(color);
+    let opponent = get_opponent(pos.turn);
     if pos.board.get(top) == opponent {
         println!("Do move: 上に相手の石。");
         peel_off_by_ren_id(top, pos);
@@ -274,17 +274,22 @@ pub fn do_move(target:usize, color:i8, pos:&mut Position) -> bool {
     // TODO 相手の石をウチアゲたなら、置いた石の番地を preKo として覚えておく☆（＾～＾） 前の preKo は ko へ退避しておく☆（＾～＾）
     // 相手がコウでなければ、当然取り返しに来る☆（＾～＾）preKo は ko へ、 preKo に置いた石の番地を入れる☆（＾～＾）
 
+    // 手番をひっくり返す。
+    pos.turn = opponent;
+
     false
 }
 
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
-/// - パスしたら真。
-pub fn do_random_move(color:i8, pos:&mut Position, legal_moves:&[usize]) -> bool {
+/// - 石を打った番地。
+pub fn do_random_move(pos:&mut Position, legal_moves:&[usize]) -> usize {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
-    do_move(best_move, color, pos)
+    do_move(best_move, pos);
+
+    best_move
 }
 
 // 符号を番地に変換。
@@ -327,17 +332,17 @@ pub fn get_opponent(color:i8) -> i8 {
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
 /// * `color` - 置く石の色。 1:黒, 2:白.
-pub fn is_forbidden(target:usize, color:i8, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:&LibertyCountMap, ko:usize) -> bool {
+pub fn is_forbidden(target:usize, pos:&Position) -> bool {
     
-    let top = target-(board.get_size()+2); // 上の番地。
+    let top = target-(pos.board.get_size()+2); // 上の番地。
     let right = target+1; // 右。
-    let bottom = target+(board.get_size()+2); // 下。
+    let bottom = target+(pos.board.get_size()+2); // 下。
     let left = target-1; // 左。
-    let top_ren_id = ren_id_board.get(top) as usize; // 上の連のID。
-    let right_ren_id = ren_id_board.get(right) as usize; // 上の連のID。
-    let bottom_ren_id = ren_id_board.get(bottom) as usize; // 上の連のID。
-    let left_ren_id = ren_id_board.get(left) as usize; // 上の連のID。
-    let opponent = get_opponent(color); // 相手の石の色。
+    let top_ren_id = pos.ren_id_board.get(top) as usize; // 上の連のID。
+    let right_ren_id = pos.ren_id_board.get(right) as usize; // 上の連のID。
+    let bottom_ren_id = pos.ren_id_board.get(bottom) as usize; // 上の連のID。
+    let left_ren_id = pos.ren_id_board.get(left) as usize; // 上の連のID。
+    let opponent = get_opponent(pos.turn); // 相手の石の色。
 
     /*
     println!("forbidden? board[target] != 0 -> {}", board[target] != 0);
@@ -358,26 +363,26 @@ pub fn is_forbidden(target:usize, color:i8, board:&Board, ren_id_board:&RenIDBoa
 
     if
         // 空点以外は、着手禁止点。
-        board.get(target) != 0
+        pos.board.get(target) != 0
         // コウ（前にアゲるところに石を打ったばかりの番地）なら、着手禁止点。
-        || target == ko
+        || target == pos.ko
     {
         return true;
     }
 
     if
         // 隣に空点があれば、自殺手ではない。
-        board.get(top) == 0 || board.get(right) == 0 || board.get(bottom) == 0 || board.get(left) == 0
+        pos.board.get(top) == 0 || pos.board.get(right) == 0 || pos.board.get(bottom) == 0 || pos.board.get(left) == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (board.get(top) == color && top_ren_id < 1000 && 1<liberty_count_map.get(top_ren_id))
-        || (board.get(right) == color && right_ren_id < 1000 && 1<liberty_count_map.get(right_ren_id))
-        || (board.get(bottom) == color && bottom_ren_id < 1000 && 1<liberty_count_map.get(bottom_ren_id))
-        || (board.get(left) == color && left_ren_id < 1000 && 1<liberty_count_map.get(left_ren_id))
+        || (pos.board.get(top) == pos.turn && top_ren_id < 1000 && 1<pos.liberty_count_map.get(top_ren_id))
+        || (pos.board.get(right) == pos.turn && right_ren_id < 1000 && 1<pos.liberty_count_map.get(right_ren_id))
+        || (pos.board.get(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.liberty_count_map.get(bottom_ren_id))
+        || (pos.board.get(left) == pos.turn && left_ren_id < 1000 && 1<pos.liberty_count_map.get(left_ren_id))
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (board.get(top) == opponent && top_ren_id < 1000 && liberty_count_map.get(top_ren_id) < 2)
-        || (board.get(right) == opponent && right_ren_id < 1000 && liberty_count_map.get(right_ren_id) < 2)
-        || (board.get(bottom) == opponent && bottom_ren_id < 1000 && liberty_count_map.get(bottom_ren_id) < 2)
-        || (board.get(left) == opponent && left_ren_id < 1000 && liberty_count_map.get(left_ren_id) < 2)
+        || (pos.board.get(top) == opponent && top_ren_id < 1000 && pos.liberty_count_map.get(top_ren_id) < 2)
+        || (pos.board.get(right) == opponent && right_ren_id < 1000 && pos.liberty_count_map.get(right_ren_id) < 2)
+        || (pos.board.get(bottom) == opponent && bottom_ren_id < 1000 && pos.liberty_count_map.get(bottom_ren_id) < 2)
+        || (pos.board.get(left) == opponent && left_ren_id < 1000 && pos.liberty_count_map.get(left_ren_id) < 2)
     {
         return false;
     }
@@ -386,15 +391,15 @@ pub fn is_forbidden(target:usize, color:i8, board:&Board, ren_id_board:&RenIDBoa
     true
 }
 
-/// 合法手生成。
-pub fn pick_move(color:i8, board:&Board, ren_id_board:&RenIDBoard, liberty_count_map:&LibertyCountMap, ko:usize) -> Vec<usize> {
+/// 指定局面での合法手生成。
+pub fn pick_move(pos:&Position) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
-    let left_top = (board.get_size()+2) + 1;
-    let rigth_bottom = (board.get_size()+2) * board.get_size() + board.get_size();
+    let left_top = (pos.board.get_size()+2) + 1;
+    let rigth_bottom = (pos.board.get_size()+2) * pos.board.get_size() + pos.board.get_size();
 
     for target in left_top..rigth_bottom+1 {
-        if !is_forbidden(target, color, &board, ren_id_board, liberty_count_map, ko) {
+        if !is_forbidden(target, pos) {
             vec.push(target);
         }
     }
@@ -412,11 +417,11 @@ pub fn tryout(pos:&mut Position) {
 
     // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
     for i_ply in pos.ply..401 {
-        let legal_moves = pick_move(pos.turn, &pos.board, &pos.ren_id_board, &pos.liberty_count_map, pos.ko);
+        let legal_moves = pick_move(&pos);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
-        if do_random_move(pos.turn, pos, &legal_moves) {
+        if do_random_move(pos, &legal_moves) == 0 {
             // パスなら
             if opponent_passed {
                 // TODO ゲーム終了☆（＾～＾）

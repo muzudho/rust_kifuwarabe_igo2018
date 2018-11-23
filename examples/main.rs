@@ -61,6 +61,9 @@ fn main() {
             check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
 
             // 試し打ちをする☆（＾～＾）
+            let legal_moves = pick_move(&pos);
+            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves), pos.board.get_size());
+            println!("BestMove: '{}'.", move_code);
         }
 
         thread::sleep(Duration::from_millis(1));
