@@ -13,6 +13,9 @@ pub struct Config {
 
     /// 何路盤。
     pub board_size: usize,
+
+    /// 大会用 out.txt 局面ファイルへのパス。
+    pub out_path: String,
 }
 impl Config {
     pub fn load(path:&str) -> Config {
@@ -37,6 +40,7 @@ impl Config {
         Config {
             comment: document["comment"].as_str().expect("comment.").to_string(),
             board_size: document["boardSize"].as_i64().expect("boardSize.") as usize, // FIXME 変換方法が分からん☆（＾～＾）as使う☆（＾～＾）
+            out_path: document["outFile"].as_str().expect("outFile.").to_string(),
         }
     }
 }

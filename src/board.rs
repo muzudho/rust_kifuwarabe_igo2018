@@ -2,14 +2,19 @@
 
 use std;
 
+/// デフォルトで 19路盤☆（＾～＾）
 pub struct Board {
-    /// 石は i8 の -128～127 で足りる☆（＾～＾）
+    /// 石の色は i8 の -128～127 で足りる☆（＾～＾）
+    /// サイズは 19x19に枠を付けたものを最大とする☆（＾～＾）
     pub value: [i8; 21 * 21],
+    /// 何路盤か。
+    size: usize,
 }
 impl Board {
-    pub fn new() -> Board {
+    pub fn default(board_size:usize) -> Board {
         Board {
             value: [0; 21 * 21],
+            size: board_size,
         }
     }
 
@@ -23,6 +28,14 @@ impl Board {
 
     pub fn iter(&self) -> std::slice::Iter<i8> {
         self.value.iter()
+    }
+
+    pub fn set_size(&mut self, size:usize){
+        self.size = size;
+    }
+
+    pub fn get_size(&self) -> usize {
+        self.size
     }
 
     /// 石を置く。石を除去したいときは stone を 0 にする。

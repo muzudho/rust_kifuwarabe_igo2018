@@ -18,7 +18,7 @@ pub struct PositionFile {
     pub board: Board,
 }
 impl PositionFile {
-    pub fn load(path:&str) -> PositionFile {
+    pub fn load(board_size:usize, path:&str) -> PositionFile {
         let mut file = match File::open(path) {
             Ok(n) => n,
             Err(err) => panic!("File open error. {:?}", err),
@@ -37,7 +37,7 @@ impl PositionFile {
 
 
         // 盤面作成。
-        let mut temp_board = Board::new();
+        let mut temp_board = Board::default(board_size);
         let mut i = 0;
         for line in document["board"].as_array().unwrap().iter() {
             let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();

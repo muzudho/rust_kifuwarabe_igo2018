@@ -31,12 +31,12 @@ fn main() {
     };
 
     // 局面ファイル確認。
-    let pos = PositionFile::load("position.json");
+    let pos = PositionFile::load(conf.board_size, "position.json");
     println!("Comment: '{}'.", pos.comment);
     println!("Ply: '{}'.", pos.ply);
     println!("Turn: '{}'.", pos.turn);
     // 盤面表示☆（＾～＾）
-    show_board(conf.board_size, &pos.board);
+    show_board(&pos.board);
 
     println!("Finished.");
 }

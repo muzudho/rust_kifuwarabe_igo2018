@@ -40,7 +40,7 @@ fn main() {
     if Path::new("position.json").exists() {
 
         // 局面ファイル読込。
-        let pos = PositionFile::load("position.json");
+        let pos = PositionFile::load(conf.board_size, "position.json");
         // 読み取ったらファイル削除。
 
         match fs::remove_file("position.json") {
@@ -49,7 +49,7 @@ fn main() {
         };
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, &pos.board);
+        show_board(&pos.board);
 
         // 代入ではなく、コピーを作っている☆（*＾～＾*）
         let mut pos = Position::default(pos.board, 0, pos.turn, pos.ply);
@@ -67,10 +67,10 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(102, conf.board_size), 1, conf.board_size, &mut pos);
+        do_move(convert_code_to_address(102, conf.board_size), 1, &mut pos);
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, &pos.board);
+        show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
@@ -79,10 +79,10 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(401, conf.board_size), 1, conf.board_size, &mut pos);
+        do_move(convert_code_to_address(401, conf.board_size), 1, &mut pos);
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, &pos.board);
+        show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
@@ -91,10 +91,10 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(901, conf.board_size), 1, conf.board_size, &mut pos);
+        do_move(convert_code_to_address(901, conf.board_size), 1, &mut pos);
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, &pos.board);
+        show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
@@ -103,10 +103,10 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(109, conf.board_size), 1, conf.board_size, &mut pos);
+        do_move(convert_code_to_address(109, conf.board_size), 1, &mut pos);
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, &pos.board);
+        show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
@@ -115,10 +115,10 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(409, conf.board_size), 1, conf.board_size, &mut pos);
+        do_move(convert_code_to_address(409, conf.board_size), 1, &mut pos);
 
         // 盤面表示☆（＾～＾）
-        show_board(conf.board_size, &pos.board);
+        show_board(&pos.board);
         // 連のIDを表示☆（＾～＾）
         show_ren_id_board(conf.board_size, &pos.ren_id_board);
         // 呼吸点の数を表示☆（＾～＾）
@@ -127,8 +127,7 @@ fn main() {
         show_ren_element_map(&pos.ren_element_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(909, conf.board_size), 1, conf.board_size, &mut pos);
-
+        do_move(convert_code_to_address(909, conf.board_size), 1, &mut pos);
     }
 
     println!("Finished.");

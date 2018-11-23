@@ -6,7 +6,7 @@ use board::Board;
 use position::Position;
 
 impl Position {
-    pub fn load_out(path:&str) -> Position {
+    pub fn load_out(board_size:usize, path:&str) -> Position {
         let mut file = match File::open(path) {
             Ok(n) => n,
             Err(err) => panic!("File open error. {:?}", err),
@@ -24,7 +24,7 @@ impl Position {
         let lines: Vec<&str> = contents.split('\n').collect();
 
         // 盤面作成☆（＾～＾）
-        let mut temp_board = Board::new();
+        let mut temp_board = Board::default(board_size);
         // 黒のアゲハマ。
         let mut _temp_black_age_hama = 0;
         // 白のアゲハマ。

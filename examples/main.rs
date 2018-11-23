@@ -1,4 +1,4 @@
-/// コンフィグファイルを読み取る例☆（＾～＾）
+/// 大会参加用☆（＾～＾）
 /// 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -25,79 +25,42 @@ use std::time::Duration;
 
 use kifuwarabe_igo2018::*;
 use kifuwarabe_igo2018::config_file::Config;
-use kifuwarabe_igo2018::position_file::PositionFile;
 use kifuwarabe_igo2018::position::Position;
 use kifuwarabe_igo2018::liberty::*;
 
 
 fn main() {
+    // ファイルをコピーするぜ☆（＾～＾）
+    match fs::copy("config -- Air2018.json", "config.json") {
+        Ok(_o) => {}
+        Err(e) => {panic!(e)}
+    };
+
     // 設定ファイル読込。
     let conf = Config::load("config.json");
 
     loop {
-        if Path::new("position.json").exists() {
+        // 局面ファイルの有無確認。
+        if Path::new(&conf.out_path).exists() {
 
             // 局面ファイル確認。
-            let pos = PositionFile::load("position.json");
-            // 読み取ったらファイル削除。
+            let mut pos = Position::load_out(conf.board_size, &conf.out_path);
 
-            match fs::remove_file("position.json") {
+            // 読み取ったらファイル削除。
+            match fs::remove_file(&conf.out_path) {
                 Ok(_o) => {}
                 Err(e) => {panic!(e)}
             };
 
-            println!("Pos comment: '{}'.", pos.comment);
-            println!("ply: '{}'.", pos.ply);
-            println!("Turn: '{}'.", pos.turn);
             // 盤面表示☆（＾～＾）
-            show_board(conf.board_size, &pos.board);
-
-            // 代入ではなく、コピーを作っている☆（*＾～＾*）
-            let mut pos = Position::default(pos.board, 0, pos.turn, pos.ply);
-
-            // 盤番地を表示☆（＾～＾）
-            show_board_address(conf.board_size);
-
-            // 盤を表示☆（＾～＾）
-            show_board_by_number(conf.board_size, &pos.board);
+            show_board(&pos.board);
+            println!("Turn: '{}'.", pos.turn);
+            println!("ply: '{}'.", pos.ply);
 
             // 全部の交点に、連のIDを振る。
             check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
 
-            // 連のIDを表示☆（＾～＾）
-            show_ren_id_board(conf.board_size, &pos.ren_id_board);
-
-            // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(&pos.liberty_count_map);
-
-            // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
-
             // 試し打ちをする☆（＾～＾）
-            //
-            // 例えば 3x3 の盤の中段右は x=3, y=2 と数えて、
-            //
-            // +++++
-            // +   +
-            // +  *+
-            // +   +
-            // +++++
-            //
-            // 符号は 302、番地は 5 とする。
-            // 符号は人間が読み書きする用なので 入出力ファイルでのみ使用し、プログラム中では 番地 のみ使う。
-            /*
-            println!("Conv {} -> {}", 704, convert_code_to_address(704, board_size));
-            println!("Conv {} -> {}", 101, convert_code_to_address(101, board_size));
-            println!("Conv {} -> {}", 102, convert_code_to_address(102, board_size));
-            println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
-            println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
-             */
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, &pos.board,
-                &pos.ren_id_board, &pos.liberty_count_map, pos.ko);
-            println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, &pos.board,
-                &pos.ren_id_board, &pos.liberty_count_map, pos.ko);
-            println!("forbidden? {}", forbidden);
-
         }
 
         thread::sleep(Duration::from_millis(1));
