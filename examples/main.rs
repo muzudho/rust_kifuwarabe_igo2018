@@ -27,6 +27,7 @@ use kifuwarabe_igo2018::*;
 use kifuwarabe_igo2018::config_file::Config;
 use kifuwarabe_igo2018::position::Position;
 use kifuwarabe_igo2018::liberty::*;
+use best_move::BestMove;
 
 
 fn main() {
@@ -64,6 +65,9 @@ fn main() {
             let legal_moves = pick_move(&pos);
             let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves), pos.board.get_size());
             println!("BestMove: '{}'.", move_code);
+
+            // in.txt ファイル出力。
+            BestMove::save(&conf.in_path, move_code as usize);
         }
 
         thread::sleep(Duration::from_millis(1));

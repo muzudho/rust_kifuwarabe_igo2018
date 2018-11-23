@@ -8,6 +8,7 @@ use rand::Rng;
 extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
+pub mod best_move;
 pub mod board;
 pub mod config_file;
 pub mod liberty_count_map;

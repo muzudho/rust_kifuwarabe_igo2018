@@ -27,10 +27,10 @@ fn main() {
     };
 
     // 局面ファイル確認。
-    let pos = Position::load_out("out.txt");
+    let pos = Position::load_out(19, "out.txt");
 
     // 盤面表示☆（＾～＾）
-    show_board(19, &pos.board);
+    show_board(&pos.board);
 
     println!("ko: '{}'.", pos.ko);
     println!("turn: '{}'.", pos.turn);

@@ -27,5 +27,6 @@
     "sente": "black",
     "rule": "jungo",
     "komiJungo": 6.5,
-	"outFile": "C:/MuzudhoDrive/projects_cpp/cgfgoban109_for_kifuwarabe2018_ローカルテスト環境/out.txt"
+	"outFile": "C:/MuzudhoDrive/projects_cpp/cgfgoban109_for_kifuwarabe2018_ローカルテスト環境/out.txt",
+	"inFile": "C:/MuzudhoDrive/projects_cpp/cgfgoban109_for_kifuwarabe2018_ローカルテスト環境/in.txt"
 }
