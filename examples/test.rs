@@ -6,11 +6,11 @@
 /// ```
 /// ### コンパイル。
 /// cd C:\MuzudhoDrive\projects_rust\rust_kifuwarabe_igo2018
-/// cargo clippy --example main
+/// cargo clippy --example test
 /// 
 /// ### 実行。
 /// cls
-/// cargo run --example main
+/// cargo run --example test
 /// ```
 
 extern crate kifuwarabe_igo2018;
@@ -91,11 +91,9 @@ fn main() {
             println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, &pos.board,
-                &pos.ren_id_board, &pos.liberty_count_map, pos.ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), &pos);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, &pos.board,
-                &pos.ren_id_board, &pos.liberty_count_map, pos.ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), &pos);
             println!("forbidden? {}", forbidden);
 
         }
