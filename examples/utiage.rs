@@ -77,6 +77,58 @@ fn main() {
         show_libarty_count(&pos.liberty_count_map);
         // 連の要素を表示☆（＾～＾）
         show_ren_element_map(&pos.ren_element_map);
+
+        // 試し打ちをする☆（＾～＾）
+        do_move(convert_code_to_address(401, conf.board_size), 1, conf.board_size, &mut pos);
+
+        // 盤面表示☆（＾～＾）
+        show_board(conf.board_size, &pos.board);
+        // 連のIDを表示☆（＾～＾）
+        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        // 呼吸点の数を表示☆（＾～＾）
+        show_libarty_count(&pos.liberty_count_map);
+        // 連の要素を表示☆（＾～＾）
+        show_ren_element_map(&pos.ren_element_map);
+
+        // 試し打ちをする☆（＾～＾）
+        do_move(convert_code_to_address(901, conf.board_size), 1, conf.board_size, &mut pos);
+
+        // 盤面表示☆（＾～＾）
+        show_board(conf.board_size, &pos.board);
+        // 連のIDを表示☆（＾～＾）
+        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        // 呼吸点の数を表示☆（＾～＾）
+        show_libarty_count(&pos.liberty_count_map);
+        // 連の要素を表示☆（＾～＾）
+        show_ren_element_map(&pos.ren_element_map);
+
+        // 試し打ちをする☆（＾～＾）
+        do_move(convert_code_to_address(109, conf.board_size), 1, conf.board_size, &mut pos);
+
+        // 盤面表示☆（＾～＾）
+        show_board(conf.board_size, &pos.board);
+        // 連のIDを表示☆（＾～＾）
+        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        // 呼吸点の数を表示☆（＾～＾）
+        show_libarty_count(&pos.liberty_count_map);
+        // 連の要素を表示☆（＾～＾）
+        show_ren_element_map(&pos.ren_element_map);
+
+        // 試し打ちをする☆（＾～＾）
+        do_move(convert_code_to_address(409, conf.board_size), 1, conf.board_size, &mut pos);
+
+        // 盤面表示☆（＾～＾）
+        show_board(conf.board_size, &pos.board);
+        // 連のIDを表示☆（＾～＾）
+        show_ren_id_board(conf.board_size, &pos.ren_id_board);
+        // 呼吸点の数を表示☆（＾～＾）
+        show_libarty_count(&pos.liberty_count_map);
+        // 連の要素を表示☆（＾～＾）
+        show_ren_element_map(&pos.ren_element_map);
+
+        // 試し打ちをする☆（＾～＾）
+        do_move(convert_code_to_address(909, conf.board_size), 1, conf.board_size, &mut pos);
+
     }
 
     println!("Finished.");

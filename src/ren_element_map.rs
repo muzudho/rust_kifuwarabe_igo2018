@@ -20,9 +20,15 @@ impl RenElementMap {
         match self.value.get_mut(&ren_id) {
             Some(vec) => {
                 vec.push(addr);
+                return;
             },
-            None => {panic!("Ren id: {}, Addr: {}.", ren_id, addr)}
+            None => {},
         };
+
+        // 無い要素なら、新規作成。
+        let mut vec = Vec::new();
+        vec.push(addr);
+        self.value.insert(ren_id, vec);
     }
 
     pub fn get(&self, ren_id:i16) -> Option<&Vec<i16>> {

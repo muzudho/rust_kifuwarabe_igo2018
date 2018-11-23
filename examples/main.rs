@@ -5,11 +5,11 @@
 /// 
 /// ```
 /// ### コンパイル。
+/// cd C:\MuzudhoDrive\projects_rust\rust_kifuwarabe_igo2018
 /// cargo clippy --example main
 /// 
 /// ### 実行。
 /// cls
-/// cd C:\MuzudhoDrive\projects_rust\rust_kifuwarabe_igo2018
 /// cargo run --example main
 /// ```
 
@@ -50,7 +50,7 @@ fn main() {
             println!("ply: '{}'.", pos.ply);
             println!("Turn: '{}'.", pos.turn);
             // 盤面表示☆（＾～＾）
-            show_board(conf.board_size, pos.board);
+            show_board(conf.board_size, &pos.board);
 
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
             let mut pos = Position::default(pos.ply, pos.turn, pos.board);
@@ -62,13 +62,13 @@ fn main() {
             show_board_by_number(conf.board_size, &pos.board);
 
             // 全部の交点に、連のIDを振る。
-            check_liberty_all_points(conf.board_size, pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
+            check_liberty_all_points(conf.board_size, &pos.board, &mut pos.ren_id_board, &mut pos.liberty_count_map, &mut pos.ren_element_map);
 
             // 連のIDを表示☆（＾～＾）
-            show_ren_id_board(conf.board_size, pos.ren_id_board);
+            show_ren_id_board(conf.board_size, &pos.ren_id_board);
 
             // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(pos.liberty_count_map);
+            show_libarty_count(&pos.liberty_count_map);
 
             // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 
@@ -92,11 +92,11 @@ fn main() {
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
             let ko = 0;
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, pos.board,
-                pos.ren_id_board, pos.liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, &pos.board,
+                &pos.ren_id_board, &pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, pos.board,
-                pos.ren_id_board, pos.liberty_count_map, ko);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, &pos.board,
+                &pos.ren_id_board, &pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
         }
