@@ -71,7 +71,7 @@ fn main() {
             show_ren_id_board(conf.board_size, &pos.ren_id_board);
 
             // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(pos.liberty_count_map);
+            show_libarty_count(&pos.liberty_count_map);
 
             // 試し打ちをする☆（＾～＾）
             //
@@ -94,10 +94,10 @@ fn main() {
              */
             let ko = 0;
             let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, &pos.board, &pos.ren_id_board,
-                pos.liberty_count_map, ko);
+                &pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
             let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, &pos.board, &pos.ren_id_board,
-                pos.liberty_count_map, ko);
+                &pos.liberty_count_map, ko);
             println!("forbidden? {}", forbidden);
 
             // ↓トライアウトの練習をする☆（＾～＾）

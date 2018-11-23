@@ -12,6 +12,7 @@ pub mod board;
 pub mod config_file;
 pub mod liberty_count_map;
 pub mod liberty;
+pub mod out_file;
 pub mod position_file;
 pub mod position;
 pub mod ren_element_map;

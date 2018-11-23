@@ -25,7 +25,10 @@ fn main() {
     let conf = Config::load("config.json");
 
     // ファイルをコピーするぜ☆（＾～＾）
-    fs::copy("position -- Test9Ren.json", "position.json");
+    match fs::copy("position -- Test9Ren.json", "position.json") {
+        Ok(_o) => {}
+        Err(e) => {panic!(e)}
+    };
 
     // 局面ファイル確認。
     let pos = PositionFile::load("position.json");
