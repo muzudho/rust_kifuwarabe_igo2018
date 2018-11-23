@@ -21,10 +21,10 @@ use std::fs;
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
-// use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
 use config_file::Config;
+use out_file::OutFile;
 use position::Position;
 use liberty::*;
 use best_move::BestMove;
@@ -45,7 +45,7 @@ fn main() {
         if Path::new(&conf.out_path).exists() {
 
             // 局面ファイル確認。
-            let mut pos = Position::load_out(conf.board_size, &conf.out_path);
+            let (mut pos, pre_move) = OutFile::load_out(conf.board_size, &conf.out_path);
 
             // 読み取ったらファイル削除。
             match fs::remove_file(&conf.out_path) {
@@ -57,6 +57,7 @@ fn main() {
             show_board(&pos.board);
             println!("Turn: '{}'.", pos.turn);
             println!("ply: '{}'.", pos.ply);
+            println!("Pre move: '{}'.", pre_move);
 
             // 全部の交点に、連のIDを振る。
             check_liberty_all_points(&mut pos);

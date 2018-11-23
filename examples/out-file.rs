@@ -17,7 +17,7 @@ extern crate kifuwarabe_igo2018;
 
 use std::fs;
 use kifuwarabe_igo2018::*;
-use position::Position;
+use out_file::OutFile;
 use view::*;
 
 fn main() {
@@ -28,12 +28,13 @@ fn main() {
     };
 
     // 局面ファイル確認。
-    let pos = Position::load_out(19, "out.txt");
+    let (pos, pre_move) = OutFile::load_out(19, "out.txt");
 
     // 盤面表示☆（＾～＾）
     show_board(&pos.board);
 
-    println!("ko: '{}'.", pos.ko);
-    println!("turn: '{}'.", pos.turn);
+    println!("Ko: '{}'.", pos.ko);
+    println!("Turn: '{}'.", pos.turn);
+    println!("Pre move: '{}'.", pre_move);
     println!("Finished.");
 }

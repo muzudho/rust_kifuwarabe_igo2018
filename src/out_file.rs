@@ -6,8 +6,15 @@ use std::{thread, time};
 use board::Board;
 use position::Position;
 
-impl Position {
-    pub fn load_out(board_size:usize, path:&str) -> Position {
+pub struct OutFile {
+
+}
+impl OutFile {
+
+    /// # Returns.
+    /// - 局面。
+    /// - 相手が打った場所の符号。
+    pub fn load_out(board_size:usize, path:&str) -> (Position, i32) {
 
         // out.txt ファイルを読取に行く。別のプロセスが使用していて、エラーになることがよくある。
         let mut file;
@@ -45,6 +52,9 @@ impl Position {
         let mut _temp_white_seconds = 0;
         let mut temp_ko = 0;
         let mut temp_turn = 0;
+        // 相手が打った場所の符号。
+        let mut temp_pre_move = 0;
+
         let mut cell = 0;
         for (row, line) in lines.iter().enumerate() {
             // 0行～20行まで盤上☆（＾～＾）
@@ -63,10 +73,11 @@ impl Position {
                 _temp_white_seconds = numbers[3];
                 temp_ko = numbers[4];
                 temp_turn = numbers[5];
+                temp_pre_move = numbers[6];
             }
             // 以降の行は無視。
         }
 
-        Position::default(temp_board, temp_ko as usize, temp_turn as i8, 0)
+        (Position::default(temp_board, temp_ko as usize, temp_turn as i8, 0), temp_pre_move)
     }
 }
