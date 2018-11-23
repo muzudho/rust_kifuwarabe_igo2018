@@ -52,11 +52,13 @@ fn main() {
             show_board(conf.board_size, &pos.board);
 
             // 読み取ったらファイル削除。
-            fs::remove_file("position.json");
-
+            match fs::remove_file("position.json") {
+                Ok(_o) => {}
+                Err(e) => {panic!(e)}
+            };
 
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
-            let mut pos = Position::default(pos.ply, pos.turn, pos.board);
+            let mut pos = Position::default(pos.board, 0, pos.turn, pos.ply);
 
             // 盤番地を表示☆（＾～＾）
             show_board_address(conf.board_size);
@@ -92,16 +94,15 @@ fn main() {
             println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
-            let ko = 0;
             let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), pos.turn, conf.board_size, &pos.board, &pos.ren_id_board,
-                &pos.liberty_count_map, ko);
+                &pos.liberty_count_map, pos.ko);
             println!("forbidden? {}", forbidden);
             let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), pos.turn, conf.board_size, &pos.board, &pos.ren_id_board,
-                &pos.liberty_count_map, ko);
+                &pos.liberty_count_map, pos.ko);
             println!("forbidden? {}", forbidden);
 
             // ↓トライアウトの練習をする☆（＾～＾）
-            tryout(&mut pos, conf.board_size, ko);
+            tryout(&mut pos, conf.board_size);
         }
 
         thread::sleep(Duration::from_millis(1));

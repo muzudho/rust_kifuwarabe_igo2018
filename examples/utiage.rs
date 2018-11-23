@@ -52,7 +52,7 @@ fn main() {
         show_board(conf.board_size, &pos.board);
 
         // 代入ではなく、コピーを作っている☆（*＾～＾*）
-        let mut pos = Position::default(pos.ply, pos.turn, pos.board);
+        let mut pos = Position::default(pos.board, 0, pos.turn, pos.ply);
 
         // 盤番地を表示☆（＾～＾）
         show_board_address(conf.board_size);

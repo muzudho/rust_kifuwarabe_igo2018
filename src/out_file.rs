@@ -16,7 +16,7 @@ pub struct OutFile {
     /// 白の累計思考時間（秒）。
     pub white_seconds: i32,
     /// コウの番地。'XXYY'書式の数。無ければ 0。
-    pub ko: i16,
+    pub ko: usize,
     /// 手番の石の色☆（＾～＾） 1:黒, 2:白。
     pub turn: i8,
 }
@@ -74,7 +74,7 @@ impl OutFile {
             white_age_hama: temp_white_age_hama as i16,
             black_seconds: temp_black_seconds,
             white_seconds: temp_white_seconds,
-            ko: temp_ko as i16,
+            ko: temp_ko as usize,
             turn: temp_turn as i8,
         }
     }

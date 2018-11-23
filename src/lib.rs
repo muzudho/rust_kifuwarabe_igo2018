@@ -404,7 +404,7 @@ pub fn pick_move(color:i8, board_size:usize, board:&Board, ren_id_board:&RenIDBo
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-pub fn tryout(pos:&mut Position, board_size:usize, ko:usize) {
+pub fn tryout(pos:&mut Position, board_size:usize) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。
@@ -412,7 +412,7 @@ pub fn tryout(pos:&mut Position, board_size:usize, ko:usize) {
 
     // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
     for i_ply in pos.ply..401 {
-        let legal_moves = pick_move(pos.turn, board_size, &pos.board, &pos.ren_id_board, &pos.liberty_count_map, ko);
+        let legal_moves = pick_move(pos.turn, board_size, &pos.board, &pos.ren_id_board, &pos.liberty_count_map, pos.ko);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
