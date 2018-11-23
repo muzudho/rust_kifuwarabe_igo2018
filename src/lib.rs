@@ -394,6 +394,11 @@ pub fn is_forbidden(target:usize, pos:&Position) -> bool {
         return true;
     }
 
+    // FIXME 目つぶしは、着手禁止点扱いにする。連をつなぐ有効な手の場合もあるが。
+    if pos.empty_owner_map.is_eye_filling(pos.turn, target as i16) {
+        return true;
+    }
+
     if
         // 隣に空点があれば、自殺手ではない。
         pos.board.get(top) == 0 || pos.board.get(right) == 0 || pos.board.get(bottom) == 0 || pos.board.get(left) == 0
