@@ -8,7 +8,7 @@ use ren_id_board::RenIDBoard;
 pub struct Position {
     /// 枠付きの盤面。
     pub board: Board,
-    /// コウの番地。
+    /// コウの番地。'XXYY'書式の数。無ければ 0。
     pub ko: usize,
     /// 手番。1:黒、2:白。
     pub turn: i8,

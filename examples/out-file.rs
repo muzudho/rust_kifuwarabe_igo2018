@@ -17,7 +17,7 @@ extern crate kifuwarabe_igo2018;
 
 use std::fs;
 use kifuwarabe_igo2018::*;
-use kifuwarabe_igo2018::out_file::OutFile;
+use position::Position;
 
 fn main() {
     // ファイルをコピーするぜ☆（＾～＾）
@@ -27,15 +27,11 @@ fn main() {
     };
 
     // 局面ファイル確認。
-    let pos = OutFile::load("out.txt");
+    let pos = Position::load_out("out.txt");
 
     // 盤面表示☆（＾～＾）
     show_board(19, &pos.board);
 
-    println!("blackAgeHama: '{}'.", pos.black_age_hama);
-    println!("whiteAgeHama: '{}'.", pos.white_age_hama);
-    println!("blackSeconds: '{}'.", pos.black_seconds);
-    println!("whiteSeconds: '{}'.", pos.white_seconds);
     println!("ko: '{}'.", pos.ko);
     println!("turn: '{}'.", pos.turn);
     println!("Finished.");
