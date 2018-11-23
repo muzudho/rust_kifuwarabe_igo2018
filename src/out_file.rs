@@ -2,15 +2,25 @@
 
 use std::fs::File;
 use std::io::Read;
+use std::{thread, time};
 use board::Board;
 use position::Position;
 
 impl Position {
     pub fn load_out(board_size:usize, path:&str) -> Position {
-        let mut file = match File::open(path) {
-            Ok(n) => n,
-            Err(err) => panic!("File open error. {:?}", err),
-        };
+
+        // out.txt ファイルを読取に行く。別のプロセスが使用していて、エラーになることがよくある。
+        let mut file;
+        loop {
+            match File::open(path) {
+                Ok(n) => {file = n; break;},
+                Err(err) => {
+                    println!("File open error. {:?}", err);
+                    // 0.3秒ぐらい待機してから繰り返し。
+                    thread::sleep(time::Duration::from_millis(300));
+                }
+            };
+        }
 
         let mut contents = String::new();
         match file.read_to_string(&mut contents) {
