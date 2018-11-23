@@ -17,12 +17,14 @@ pub mod liberty;
 pub mod out_file;
 pub mod position_file;
 pub mod position;
+pub mod record;
 pub mod ren_address_map;
 pub mod address_ren_board;
 pub mod view;
 
 use position::Position;
 use liberty::*;
+use record::*;
 use view::*;
 
 /// # 実行方法
@@ -70,7 +72,10 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
 }
 
 /// 連を盤から除去するぜ☆（＾～＾）
-pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
+/// # Arguments.
+/// * `record` - 打ち上げた石の番地を覚えるのに使う。
+pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record) {
+    // 除去される連ID。
     let adjacent_ren_id = pos.address_ren_board.get(adjacent);
     let adj_lib_cnt = pos.liberty_count_map.get(adjacent_ren_id as usize);
     println!("Do move: 隣の連ID {}, 隣の呼吸点数 {}。", adjacent_ren_id, adj_lib_cnt);
@@ -78,6 +83,8 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
     // 呼吸点
     if adj_lib_cnt==1 {
         // この連を盤から除去する。
+
+        // 除去されるアドレス一覧。
         {
             let adjacent_addr_vec: &Vec<i16> = match pos.ren_address_map.get(adjacent_ren_id) {
                 Some(s) => {s},
@@ -85,6 +92,8 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
             };
             pos.board.fill(adjacent_addr_vec, 0);
             pos.address_ren_board.fill(adjacent_addr_vec, 0);
+
+            record.get_mut_current().add_agehama(adjacent_addr_vec);
         }
 
         // キー削除。
@@ -97,8 +106,11 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position) {
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, pos:&mut Position) -> bool {
+pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.board.get_size()));
+
+    record.countUp();
+    record.get_mut_current().move_addr = target as i16;
 
     if target == 0 {
         // パス
@@ -152,23 +164,46 @@ pub fn do_move(target:usize, pos:&mut Position) -> bool {
 
     // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
 
+    // 今回のコウは消す。
+    pos.ko = 0;
+
     // TODO 隣接しているのが相手の石で、呼吸点が 1 なら、その連は取れる☆（＾～＾）
     let opponent = get_opponent(pos.turn);
     if pos.board.get(top) == opponent {
         println!("Do move: 上に相手の石。");
-        peel_off_by_ren_id(top, pos);
+        peel_off_by_ren_id(top, pos, record);
+
+        // コウ。
+        if 1==record.get_mut_current().agehama_addrs.len() {
+            pos.ko = top as i16;
+        }
     }
     if pos.board.get(right) == opponent {
         println!("Do move: 右に相手の石。");
-        peel_off_by_ren_id(right, pos);
+        peel_off_by_ren_id(right, pos, record);
+
+        // コウ。
+        if 1==record.get_mut_current().agehama_addrs.len() {
+            pos.ko = right as i16;
+        }
     }
     if pos.board.get(bottom) == opponent {
         println!("Do move: 下に相手の石。");
-        peel_off_by_ren_id(bottom, pos);
+        peel_off_by_ren_id(bottom, pos, record);
+
+        // コウ。
+        if 1==record.get_mut_current().agehama_addrs.len() {
+            pos.ko = bottom as i16;
+        }
     }
     if pos.board.get(left) == opponent {
         println!("Do move: 左に相手の石。");
-        peel_off_by_ren_id(left, pos);
+        peel_off_by_ren_id(left, pos, record);
+
+        // コウ。
+        if 1==record.get_mut_current().agehama_addrs.len() {
+            pos.ko = left as i16;
+        }
     }
 
     // TODO アンドゥを考えるなら、取った連を 棋譜としてスタックに積み上げか☆（＾～＾）
@@ -187,11 +222,11 @@ pub fn do_move(target:usize, pos:&mut Position) -> bool {
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - 石を打った番地。
-pub fn do_random_move(pos:&mut Position, legal_moves:&[usize]) -> usize {
+pub fn do_random_move(pos:&mut Position, legal_moves:&[usize], record:&mut Record) -> usize {
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
-    do_move(best_move, pos);
+    do_move(best_move, pos, record);
 
     best_move
 }
@@ -235,8 +270,9 @@ pub fn get_opponent(color:i8) -> i8 {
 /// 着手禁止点（自殺手またはコウ）なら真。
 /// # Arguments.
 /// * `target` - 石を置きたい空点の番地。
-/// * `color` - 置く石の色。 1:黒, 2:白.
-pub fn is_forbidden(target:usize, pos:&Position) -> bool {
+/// * `pos` - 局面。
+/// * `record` - スーパーコウの判定に使う予定。
+pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     
     let top = target-(pos.board.get_size()+2); // 上の番地。
     let right = target+1; // 右。
@@ -268,8 +304,8 @@ pub fn is_forbidden(target:usize, pos:&Position) -> bool {
     if
         // 空点以外は、着手禁止点。
         pos.board.get(target) != 0
-        // コウ（前にアゲるところに石を打ったばかりの番地）なら、着手禁止点。
-        || target == pos.ko
+        // コウ（前にアゲた１つの石の番地）なら、着手禁止点。
+        || target as i16 == pos.ko
     {
         return true;
     }
@@ -301,14 +337,14 @@ pub fn is_forbidden(target:usize, pos:&Position) -> bool {
 }
 
 /// 指定局面での合法手生成。
-pub fn pick_move(pos:&Position) -> Vec<usize> {
+pub fn pick_move(pos:&Position, record:&Record) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
     let left_top = (pos.board.get_size()+2) + 1;
     let rigth_bottom = (pos.board.get_size()+2) * pos.board.get_size() + pos.board.get_size();
 
     for target in left_top..rigth_bottom+1 {
-        if !is_forbidden(target, pos) {
+        if !is_forbidden(target, pos, record) {
             vec.push(target);
         }
     }
@@ -318,19 +354,19 @@ pub fn pick_move(pos:&Position) -> Vec<usize> {
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-pub fn tryout(pos:&mut Position) {
+pub fn tryout(pos:&mut Position, record:&mut Record) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。
     let mut opponent_passed = false;
 
-    // ランダムムーブする☆（＾～＾） 上限は 400手でいいだろ☆（＾ｑ＾）
-    for i_ply in pos.ply..401 {
-        let legal_moves = pick_move(&pos);
+    // ランダムムーブする☆（＾～＾） 上限は 2000手でいいだろ☆（＾ｑ＾）
+    for i_time in 0 .. 2001 {
+        let legal_moves = pick_move(&pos, record);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
-        if do_random_move(pos, &legal_moves) == 0 {
+        if do_random_move(pos, &legal_moves, record) == 0 {
             // パスなら
             if opponent_passed {
                 // TODO ゲーム終了☆（＾～＾）
@@ -345,7 +381,7 @@ pub fn tryout(pos:&mut Position) {
         }
 
         // 盤を表示☆（＾～＾）
-        println!("Ply: {}, Turn: {}.", i_ply, pos.turn);
+        println!("Time: {}, Turn: {}.", i_time, pos.turn);
         show_board(&pos.board);
 
         // 手番を反転する☆（＾～＾）

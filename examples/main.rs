@@ -25,7 +25,7 @@ use std::time::Duration;
 use kifuwarabe_igo2018::*;
 use config_file::Config;
 use out_file::OutFile;
-use position::Position;
+use record::Record;
 use liberty::*;
 use best_move::BestMove;
 use view::*;
@@ -40,6 +40,8 @@ fn main() {
     // 設定ファイル読込。
     let conf = Config::load("config.json");
 
+    // 棋譜。
+    let mut record = Record::new();
     loop {
         // 局面ファイルの有無確認。
         if Path::new(&conf.out_path).exists() {
@@ -56,15 +58,20 @@ fn main() {
             // 盤面表示☆（＾～＾）
             show_board(&pos.board);
             println!("Turn: '{}'.", pos.turn);
-            println!("ply: '{}'.", pos.ply);
+
+            // 相手の指した手を棋譜に入れる。
             println!("Pre move: '{}'.", pre_move);
+            record.countUp();
+            record.get_mut_current().move_addr = convert_code_to_address(pre_move, pos.board.get_size()) as i16;
+            // TODO 打ち上げた番地が分からん☆（＾～＾）アンドゥで困る☆（＾～＾）
+            println!("Record size: '{}'.", record.len());
 
             // 全部の交点に、連のIDを振る。
             check_liberty_all_points(&mut pos);
 
             // 試し打ちをする☆（＾～＾）
-            let legal_moves = pick_move(&pos);
-            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves), pos.board.get_size());
+            let legal_moves = pick_move(&pos, &record);
+            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record), pos.board.get_size());
             println!("BestMove: '{}'.", move_code);
 
             // in.txt ファイル出力。

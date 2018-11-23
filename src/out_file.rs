@@ -3,6 +3,8 @@
 use std::fs::File;
 use std::io::Read;
 use std::{thread, time};
+
+use *;
 use board::Board;
 use position::Position;
 
@@ -14,7 +16,7 @@ impl OutFile {
     /// # Returns.
     /// - 局面。
     /// - 相手が打った場所の符号。
-    pub fn load_out(board_size:usize, path:&str) -> (Position, i32) {
+    pub fn load_out(board_size:usize, path:&str) -> (Position, i16) {
 
         // out.txt ファイルを読取に行く。別のプロセスが使用していて、エラーになることがよくある。
         let mut file;
@@ -50,7 +52,8 @@ impl OutFile {
         let mut _temp_black_seconds = 0;
         // 白の累計思考時間（秒）。
         let mut _temp_white_seconds = 0;
-        let mut temp_ko = 0;
+        // コウの場所の符号。
+        let mut temp_ko_code = 0;
         let mut temp_turn = 0;
         // 相手が打った場所の符号。
         let mut temp_pre_move = 0;
@@ -71,13 +74,13 @@ impl OutFile {
                 _temp_white_age_hama = numbers[1];
                 _temp_black_seconds = numbers[2];
                 _temp_white_seconds = numbers[3];
-                temp_ko = numbers[4];
+                temp_ko_code = numbers[4] as i16;
                 temp_turn = numbers[5];
-                temp_pre_move = numbers[6];
+                temp_pre_move = numbers[6] as i16;
             }
             // 以降の行は無視。
         }
 
-        (Position::default(temp_board, temp_ko as usize, temp_turn as i8, 0), temp_pre_move)
+        (Position::default(temp_board, convert_code_to_address(temp_ko_code, board_size) as i16, temp_turn as i8), temp_pre_move)
     }
 }

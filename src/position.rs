@@ -9,12 +9,10 @@ use address_ren_board::AddressRenBoard;
 pub struct Position {
     /// 枠付きの盤面。
     pub board: Board,
-    /// コウの番地。'XXYY'書式の数。無ければ 0。
-    pub ko: usize,
+    /// コウの番地。
+    pub ko: i16,
     /// 手番。1:黒、2:白。
     pub turn: i8,
-    /// 何手目か。
-    pub ply: usize,
     /// 計算用。盤上に紐づく連ID。
     pub address_ren_board: AddressRenBoard,
     /// 計算用。連に紐づく呼吸点の数。
@@ -25,12 +23,11 @@ pub struct Position {
     pub empty_owner_map: EmptyOwnerMap,
 }
 impl Position {
-    pub fn default(board_stones:Board, ko_address:usize, turn_count:i8, ply_count:usize) -> Position {
+    pub fn default(board_stones:Board, ko_address:i16, turn_count:i8) -> Position {
         Position {
             board: board_stones,
             ko: ko_address,
             turn: turn_count,
-            ply: ply_count,
             address_ren_board: AddressRenBoard::new(),
             liberty_count_map: LibertyCountMap::new(),
             ren_address_map: RenAddressMap::new(),
