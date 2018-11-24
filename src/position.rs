@@ -6,6 +6,7 @@ use liberty_count_map::LibertyCountMap;
 use ren_address_map::RenAddressMap;
 use address_ren_board::AddressRenBoard;
 
+/// ゲーム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数みたいな便利さで使っている☆（＾～＾）
 pub struct Position {
     /// 枠付きの盤面。
     pub board: Board,

@@ -21,11 +21,13 @@ pub mod record;
 pub mod ren_address_map;
 pub mod address_ren_board;
 pub mod view;
+pub mod zobrist_hash;
 
 use position::Position;
 use liberty::*;
 use record::*;
 use view::*;
+// use zobrist_hash::*;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",

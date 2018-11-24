@@ -23,6 +23,7 @@ pub fn show_board(board:&Board){
             println!();
         }
     }
+    println!("Hash: '{}'.", board.get_hash());
 }
 
 /// セル番地を表示☆（＾～＾）
