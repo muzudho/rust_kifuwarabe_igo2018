@@ -6,12 +6,16 @@ pub struct RecordItem {
 
     // 打ち上げた石の番地を覚えるのに使う。
     pub agehama_addrs: Vec<i16>,
+
+    // 盤面ハッシュ。スーパーコウ判定に使う☆（＾～＾）
+    pub board_hash: u64,
 }
 impl RecordItem {
     pub fn new() -> RecordItem {
         RecordItem {
             move_addr: 0,
             agehama_addrs: Vec::new(),
+            board_hash: 0,
         }
     }
 
@@ -42,12 +46,42 @@ impl Record {
         self.items.pop()
     }
 
+    pub fn get_current(&self) -> &RecordItem {
+        let index = self.items.len()-1;
+        &self.items[index]
+    }
+
+    pub fn set_current(&mut self, target:i16, board_hash:u64) {
+        let index = self.items.len()-1;
+        self.items[index].move_addr = target;
+        self.items[index].board_hash = board_hash;
+    }
+
+    pub fn add_current_agehama(&mut self, agehama:&Vec<i16>){
+        let index = self.items.len()-1;
+        self.items[index].add_agehama(agehama);
+    }
+
+    /*
     pub fn get_mut_current(&mut self) -> &mut RecordItem {
         let index = self.items.len()-1;
         &mut self.items[index]
     }
+     */
 
     pub fn len(&self) -> usize {
         self.items.len()
+    }
+
+    /// スーパー コウのとき、真☆（＾～＾）
+    pub fn is_super_ko(&self) -> bool {
+        let last = self.get_current();
+
+        for i in 0..self.len()-1 {
+            if last.board_hash == self.items[i].board_hash {
+                return true;
+            }
+        }
+        false
     }
 }

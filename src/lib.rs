@@ -95,7 +95,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
             pos.board.fill(adjacent_addr_vec, 0);
             pos.address_ren_board.fill(adjacent_addr_vec, 0);
 
-            record.get_mut_current().add_agehama(adjacent_addr_vec);
+            record.add_current_agehama(adjacent_addr_vec);
         }
 
         // キー削除。
@@ -112,7 +112,6 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.board.get_size()));
 
     record.count_up();
-    record.get_mut_current().move_addr = target as i16;
 
     if target == 0 {
         // パス
@@ -120,6 +119,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     }
 
     pos.board.set(target, pos.turn);
+    record.set_current(target as i16, pos.board.get_hash());
 
     let top = target-(pos.board.get_size()+2); // 上の番地。
     let right = target+1; // 右。
@@ -176,7 +176,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
         peel_off_by_ren_id(top, pos, record);
 
         // コウ。
-        if 1==record.get_mut_current().agehama_addrs.len() {
+        if 1 == record.get_current().agehama_addrs.len() {
             pos.ko = top as i16;
         }
     }
@@ -185,7 +185,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
         peel_off_by_ren_id(right, pos, record);
 
         // コウ。
-        if 1==record.get_mut_current().agehama_addrs.len() {
+        if 1 == record.get_current().agehama_addrs.len() {
             pos.ko = right as i16;
         }
     }
@@ -194,7 +194,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
         peel_off_by_ren_id(bottom, pos, record);
 
         // コウ。
-        if 1==record.get_mut_current().agehama_addrs.len() {
+        if 1 == record.get_current().agehama_addrs.len() {
             pos.ko = bottom as i16;
         }
     }
@@ -203,7 +203,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
         peel_off_by_ren_id(left, pos, record);
 
         // コウ。
-        if 1==record.get_mut_current().agehama_addrs.len() {
+        if 1 == record.get_current().agehama_addrs.len() {
             pos.ko = left as i16;
         }
     }

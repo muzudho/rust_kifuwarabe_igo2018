@@ -2,6 +2,7 @@ use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
+use record::*;
 use ren_address_map::RenAddressMap;
 
 /// 盤の表示☆（＾～＾）
@@ -24,6 +25,13 @@ pub fn show_board(board:&Board){
         }
     }
     println!("Hash: '{}'.", board.get_hash());
+}
+
+/// スーパーコウかどうか表示☆（＾～＾）
+pub fn show_super_ko(record:&Record) {
+    if record.is_super_ko() {
+        println!("Super ko.");
+    }
 }
 
 /// セル番地を表示☆（＾～＾）

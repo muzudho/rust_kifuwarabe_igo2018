@@ -61,8 +61,8 @@ fn main() {
 
             // 相手の指した手を棋譜に入れる。
             println!("Pre move: '{}'.", pre_move);
-            record.countUp();
-            record.get_mut_current().move_addr = convert_code_to_address(pre_move, pos.board.get_size()) as i16;
+            record.count_up();
+            record.set_current(convert_code_to_address(pre_move, pos.board.get_size()) as i16, pos.board.get_hash());
             // TODO 打ち上げた番地が分からん☆（＾～＾）アンドゥで困る☆（＾～＾）
             println!("Record size: '{}'.", record.len());
 

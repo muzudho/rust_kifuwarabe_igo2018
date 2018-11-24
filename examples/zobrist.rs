@@ -111,4 +111,274 @@ fn main() {
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
     }
+
+    println!("３コウのテスト。");
+    {
+        // +++++++++
+        // +       +
+        // +       +
+        // +       +
+        // +       +
+        // +++++++++
+
+        do_move(convert_code_to_address(103, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // +       +
+        // +       +
+        // +x      +
+        // +       +
+        // +++++++++
+
+        do_move(convert_code_to_address(102, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // +       +
+        // +o      +
+        // +x      +
+        // +       +
+        // +++++++++
+
+        do_move(convert_code_to_address(204, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // +       +
+        // +o      +
+        // +x      +
+        // + x     +
+        // +++++++++
+
+        do_move(convert_code_to_address(201, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o     +
+        // +o      +
+        // +x      +
+        // + x     +
+        // +++++++++
+
+        do_move(convert_code_to_address(303, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o     +
+        // +o      +
+        // +x x    +
+        // + x     +
+        // +++++++++
+
+        do_move(convert_code_to_address(302, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o     +
+        // +o o    +
+        // +x x    +
+        // + x     +
+        // +++++++++
+
+        do_move(convert_code_to_address(404, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o     +
+        // +o o    +
+        // +x x    +
+        // + x x   +
+        // +++++++++
+
+        do_move(convert_code_to_address(401, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o   +
+        // +o o    +
+        // +x x    +
+        // + x x   +
+        // +++++++++
+
+        do_move(convert_code_to_address(503, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o   +
+        // +o o    +
+        // +x x x  +
+        // + x x   +
+        // +++++++++
+
+        do_move(convert_code_to_address(502, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o   +
+        // +o o o  +
+        // +x x x  +
+        // + x x   +
+        // +++++++++
+
+        do_move(convert_code_to_address(604, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o   +
+        // +o o o  +
+        // +x x x  +
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(601, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o o o  +
+        // +x x x  +
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(703, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o o o  +
+        // +x x x x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(702, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o o o o+
+        // +x x x x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(202, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +oxo o o+
+        // +x x x x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(403, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +oxo o o+
+        // +x xox x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(602, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +oxo oxo+
+        // +x xox x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(203, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o o oxo+
+        // +xoxox x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(402, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o oxoxo+
+        // +xox x x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o oxo o+
+        // +xox xox+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(202, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +oxoxo o+
+        // +x x xox+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(403, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +oxo o o+
+        // +x xoxox+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(602, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +oxo oxo+
+        // +x xox x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(203, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o o oxo+
+        // +xoxox x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(402, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o oxoxo+
+        // +xox x x+
+        // + x x x +
+        // +++++++++
+
+        do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
+        show_board(&pos.board);
+        show_super_ko(&record);
+        // +++++++++
+        // + o o o +
+        // +o oxo o+
+        // +xox xox+
+        // + x x x +
+        // +++++++++
+    }
 }
