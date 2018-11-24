@@ -2,6 +2,7 @@
 
 use board::Board;
 use position::Position;
+use view::*;
 
 /// 4方向の空点を数えるだけ☆（＾～＾）
 pub fn count_liberty_at_point(target:usize, board:&Board) -> i8 {
@@ -184,23 +185,66 @@ fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
     walk_empty(ren_id, pos, left);
 }
 
-// 石を置いたところの空点は消える☆（＾～＾）
-pub fn delete_empty(pos:&mut Position, target:usize) {
 
-    // 空連ID。
-    let empty_ren_id = pos.empty_owner_map.address_ren_board.get(target);
+/// 連の一点を指定し、そこを切断する。その結果、次のいずれかが起こる。
+/// --> 連から１つのアドレスが減る。
+/// --> 2～4つの連に分割する。
+/// # Arguments.
+/// * 'cutting_addr' - 石を置いて、消えるところ。
+pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize) {
 
     // その番地のリスト。
 
     // 指定の連IDを探索し、一番小さい番地を返す関数。
 
-    // 上側の空連を起点に探索し、一番小さい番地。
+    {
+        // 空連ID。
+        let empty_ren_id = pos.empty_owner_map.address_ren_board.get(cutting_addr);
 
-    // 右側の空連を起点に探索し、一番小さい番地。
+        // 石を置いた交点から探索。
+        println!("board size: {}.", pos.board.get_size());
+        println!("cutting_addr: {}.", cutting_addr);
 
-    // 下側の空連を起点に探索し、一番小さい番地。
+        pos.address_ren_board_searcher.count_up_mark();
 
-    // 左側の空連を起点に探索し、一番小さい番地。
+        {
+            // 上側の空連を起点に探索し、一番小さい番地。
+            let start = pos.board.get_top_of(cutting_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+            println!("空連{} の上を探索。 min_addr: {}.", empty_ren_id, min_addr);
+            print!("番地: ");
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+
+        {
+            // 右側の空連を起点に探索し、一番小さい番地。
+            let start = pos.board.get_right_of(cutting_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+            println!("空連{} の右を探索。 min_addr: {}.", empty_ren_id, min_addr);        
+            print!("番地: ");
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+
+        {
+            // 下側の空連を起点に探索し、一番小さい番地。
+            let start = pos.board.get_bottom_of(cutting_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+            println!("空連{} の下を探索。 min_addr: {}.", empty_ren_id, min_addr);        
+            print!("番地: ");
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+
+        {
+            // 左側の空連を起点に探索し、一番小さい番地。
+            let start = pos.board.get_left_of(cutting_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+            println!("空連{} の左を探索。 min_addr: {}.", empty_ren_id, min_addr);
+            print!("番地: ");
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+    }
+
+    // pos.address_ren_board_searcher.
 
     // 探索前の空連は破棄。
 

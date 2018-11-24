@@ -86,32 +86,58 @@ fn main() {
         println!("board size: {}.", pos.board.get_size());
         println!("mark: {}.", mark);
 
+        pos.address_ren_board_searcher.count_up_mark();
+
         {
             // 空連12 の 0102 点から上を探索。
             let start = pos.board.get_top_of(mark);
             let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
-            println!("空連{} の {:04} 点から上を探索。 min_addr: {}.", ren_id, convert_address_to_code(start, pos.board.get_size()), min_addr);
+            print!("空連{} の {:04} 点から上を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));
+            if min_addr == 0 {
+                println!("空連なし。");
+            } else {
+                print!("新しい空連: {}, 番地: ", min_addr);
+                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+            }
         }
 
         {
             // 空連12 の 0102 点から右を探索。
             let start = pos.board.get_right_of(mark);
             let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
-            println!("空連{} の {:04} 点から右を探索。 min_addr: {}.", ren_id, convert_address_to_code(start, pos.board.get_size()), min_addr);        
+            print!("空連{} の {:04} 点から右を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
+            if min_addr == 0 {
+                println!("空連なし。");
+            } else {
+                print!("新しい空連: {}, 番地: ", min_addr);
+                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+            }
         }
 
         {
             // 空連12 の 0102 点から下を探索。
             let start = pos.board.get_bottom_of(mark);
             let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
-            println!("空連{} の {:04} 点から下を探索。 min_addr: {}.", ren_id, convert_address_to_code(start, pos.board.get_size()), min_addr);        
+            print!("空連{} の {:04} 点から下を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
+            if min_addr == 0 {
+                println!("空連なし。");
+            } else {
+                print!("新しい空連: {}, 番地: ", min_addr);
+                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+            }
         }
 
         {
             // 空連12 の 0102 点から左を探索。
             let start = pos.board.get_left_of(mark);
             let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
-            println!("空連{} の {:04} 点から左を探索。 min_addr: {}.", ren_id, convert_address_to_code(start, pos.board.get_size()), min_addr);        
+            print!("空連{} の {:04} 点から左を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
+            if min_addr == 0 {
+                println!("空連なし。");
+            } else {
+                print!("新しい空連: {}, 番地: ", min_addr);
+                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+            }
         }
     }
 }

@@ -129,3 +129,11 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
     }
     println!(".");
 }
+
+/// ベクターを表示☆（＾～＾）
+pub fn show_vector_i16(vec:&Vec<i16>) {
+    for value in vec.iter() {
+        print!("{:3}, ", value);
+    }
+    println!(".");
+}
