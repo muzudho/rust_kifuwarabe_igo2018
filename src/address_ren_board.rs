@@ -14,12 +14,12 @@ impl AddressRenBoard {
         }
     }
 
-    pub fn get(&self, index:usize) -> i16 {
-        self.value[index]
+    pub fn get(&self, addr:usize) -> i16 {
+        self.value[addr]
     }
 
-    pub fn set(&mut self, index:usize, id:i16) {
-        self.value[index] = id;
+    pub fn set(&mut self, addr:usize, ren_id:i16) {
+        self.value[addr] = ren_id;
     }
 
     pub fn iter(&self) -> std::slice::Iter<i16> {

@@ -17,35 +17,49 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
             }
 
             // 空点 かつ、連IDが振ってない --> 連IDを振る。隣も調べる。
+
+            // 番地に 空連ID を紐づける。検索を開始したセル番号でも振っとく。
             pos.get_mut_ren_database().get_mut_address_empty_ren_board().set(target, ren_id as i16);
+
+            // 連IDに 番地を追加する。
             pos.get_mut_ren_database().get_mut_empty_ren_map().add_addr(ren_id as i16, target as i16);
         },
 
         1 => {
-            if pos.get_ren_database().get_empty_ren_territory(ren_id) == 3 {
-                // 占有者は白黒両方の場合、更新なし。
-            } else if pos.get_ren_database().get_empty_ren_territory(ren_id) == 2 {
-                // 黒石 かつ、占有者が 黒、白の両方になる。
-                pos.get_mut_ren_database().set_empty_ren_territory(ren_id, 3);
-            } else {
-                // 占有者は黒石か。
-                pos.get_mut_ren_database().set_empty_ren_territory(ren_id, 1);
-            }
+            match pos.get_mut_ren_database().get_mut_empty_ren_map().get_mut_ren(ren_id as i16) {
+                Some(ren_obj) => {
+                    if ren_obj.get_territory() == 3 {
+                        // 占有者は白黒両方の場合、更新なし。
+                    } else if ren_obj.get_territory() == 2 {
+                        // 黒石 かつ、占有者が 黒、白の両方になる。
+                        ren_obj.set_territory(3);
+                    } else {
+                        // 占有者は黒石か。
+                        ren_obj.set_territory(1);
+                    }
+                },
+                None => {}
+            };
 
             // 隣は調べない。
             return;
         },
 
         2 => {
-            if pos.get_ren_database().get_empty_ren_territory(ren_id) == 3 {
-                // 占有者は白黒両方の場合、更新なし。
-            } else if pos.get_ren_database().get_empty_ren_territory(ren_id) == 1 {
-                // 白石 かつ、占有者が 黒、白の両方になる。
-                pos.get_mut_ren_database().set_empty_ren_territory(ren_id, 3);
-            } else {
-                // 占有者は白石か。
-                pos.get_mut_ren_database().set_empty_ren_territory(ren_id, 2);
-            }
+            match pos.get_mut_ren_database().get_mut_empty_ren_map().get_mut_ren(ren_id as i16) {
+                Some(ren_obj) => {
+                    if ren_obj.get_territory() == 3 {
+                        // 占有者は白黒両方の場合、更新なし。
+                    } else if ren_obj.get_territory() == 1 {
+                        // 白石 かつ、占有者が 黒、白の両方になる。
+                        ren_obj.set_territory(3);
+                    } else {
+                        // 占有者は白石か。
+                        ren_obj.set_territory(2);
+                    }
+                },
+                None => {}
+            };
 
             // 隣は調べない。
             return;
@@ -162,8 +176,13 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize, address_ren_board_se
     }
 
     if 0 < shrink.len() {
+        let old_territory = match pos.get_ren_database().get_empty_ren_map().get_ren(empty_ren_id) {
+            Some(ren_obj) => ren_obj.get_territory(),
+            None => {println!("空連テリトリーの取得失敗。連ID: {}.", empty_ren_id); 0},
+        };
+
         pos.get_mut_ren_database().get_mut_empty_ren_map().remove_ren(empty_ren_id);
-        pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(empty_ren_id, RenObject::default(empty_ren_id, shrink));
+        pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(empty_ren_id, RenObject::default(empty_ren_id, shrink, old_territory));
 
         print!("縮まった空連の作り直し。番地: ");
         match &pos.get_mut_ren_database().get_mut_empty_ren_map().get_ren(empty_ren_id) {

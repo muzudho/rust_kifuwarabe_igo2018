@@ -16,14 +16,6 @@ pub struct RenDatabase {
 
     /// 計算用。探索中のマーク。盤上に紐づく空連ID。
     address_empty_ren_board: AddressRenBoard,
-
-    /// 空連IDに紐づく占有者。番地でアクセスするので、ボード形式で持つ☆（＾～＾）
-    /// 空連の占有者は、以下のいずれか☆（＾～＾）
-    /// 0. 未調査、または 隣接する石がない。
-    /// 1. 黒石か枠のいずれかだけに隣接する。
-    /// 2. 白石か枠のいずれかだけに隣接する。
-    /// 3. 黒石と白石の両方に隣接する。
-    empty_ren_territory: [usize; 21*21],
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
@@ -32,7 +24,6 @@ impl RenDatabase {
             empty_ren_map: RenMap::new(),
             address_stone_ren_board: AddressRenBoard::new(),
             address_empty_ren_board: AddressRenBoard::new(),
-            empty_ren_territory: [0; 21*21],
         }
     }
 
@@ -67,52 +58,6 @@ impl RenDatabase {
     pub fn get_mut_address_empty_ren_board(&mut self) -> &mut AddressRenBoard {
         &mut self.address_empty_ren_board
     }
-
-
-    pub fn get_empty_ren_territory_board(&self) -> [usize; 21*21] {
-        self.empty_ren_territory
-    }
-
-    pub fn get_empty_ren_territory(&self, index:usize) -> usize {
-        self.empty_ren_territory[index]
-    }
-
-    pub fn set_empty_ren_territory(&mut self, index:usize, empty_ren_territory:usize) {
-        self.empty_ren_territory[index] = empty_ren_territory;
-    }
-
-    /// 表示用など。
-    pub fn iter_empty_ren_territory(&self) -> std::slice::Iter<usize> {
-        self.empty_ren_territory.iter()
-    }
-
-    /// キーを変更。
-    pub fn change_key_empty_ren_territory(&mut self, ren_id_before:i16, ren_id_after:i16){
-        self.empty_ren_territory[ren_id_after as usize] = self.empty_ren_territory[ren_id_before as usize];
-        self.empty_ren_territory[ren_id_before as usize] = 0;
-    }
-
-    /// 目つぶしなら真。
-    pub fn is_eye_filling(&self, color:i8, target:i16) -> bool {
-        let ren_id = self.get_address_empty_ren_board().get(target as usize);
-        if ren_id == 0 {
-            return false;
-        }
-
-        let owner = self.get_empty_ren_territory(target as usize);
-        if owner == 0 || owner == 3 {
-            return false;
-        }
-
-        if owner as i8 != color {
-            return false;
-        }
-
-        match self.get_empty_ren_map().get_ren(ren_id as i16) {
-            Some(ren_obj) => { 1 == ren_obj.len_addr() },
-            None => { false },
-        }
-    }
 }
 
 
@@ -139,10 +84,8 @@ impl RenMap {
             None => {},
         };
 
-        // 無い連なら、新規作成。
-        let mut ren_obj = RenObject::new();
-        // 番地追加。
-        ren_obj.add_addr(addr);
+        // 無い連なら、新規作成して追加。
+        let mut ren_obj = RenObject::default(ren_id, vec![addr], 0);
         self.map.insert(ren_id, ren_obj);
     }
 
@@ -220,19 +163,31 @@ pub struct RenObject {
 
     /// 含む番地。
     addresses: Vec<i16>,
+
+    /// 空連IDに紐づく占有者。番地でアクセスするので、ボード形式で持つ☆（＾～＾）
+    /// 空連の占有者は、以下のいずれか☆（＾～＾）
+    /// 0. 未調査、または 隣接する石がない。
+    /// 1. 黒石か枠のいずれかだけに隣接する。
+    /// 2. 白石か枠のいずれかだけに隣接する。
+    /// 3. 黒石と白石の両方に隣接する。
+    territory: i8,
 }
 impl RenObject {
+    /*
     pub fn new() -> RenObject {
         RenObject {
             id: 0,
             addresses: Vec::new(),
+            territory: 0,
         }
     }
+     */
 
-    pub fn default(ren_id:i16, member_addresses:Vec<i16>) -> RenObject {
+    pub fn default(ren_id:i16, member_addresses:Vec<i16>, empty_territory:i8) -> RenObject {
         RenObject {
             id: ren_id,
             addresses: member_addresses,
+            territory: empty_territory,
         }
     }
 
@@ -266,6 +221,25 @@ impl RenObject {
 
     pub fn to_addr_vec(&self) -> Vec<i16> {
         self.addresses.to_vec()
+    }
+
+
+
+    pub fn get_territory(&self) -> i8 {
+        self.territory
+    }
+
+    pub fn set_territory(&mut self, territory:i8) {
+        self.territory = territory;
+    }
+
+    /// 自分の目つぶしなら真。
+    pub fn is_eye_filling(&self, color:i8) -> bool {
+        if self.territory != color {
+            return false;
+        }
+
+        1 == self.len_addr()
     }
 }
 

@@ -79,7 +79,7 @@ fn main() {
     show_libarty_count(&pos.liberty_count_map);
 
     // 空連の占有者を表示☆（＾～＾）
-    show_empty_ren_territory(&pos.get_ren_database().get_empty_ren_territory_board());
+    show_territory(&pos.get_ren_database().get_empty_ren_map());
     show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
 
     {
@@ -162,8 +162,13 @@ fn main() {
         }
 
         if !shrink.is_empty() {
+            let old_territory = match pos.get_ren_database().get_empty_ren_map().get_ren(ren_id) {
+                Some(ren_obj) => ren_obj.get_territory(),
+                None => {println!("テスト テリトリーの取得失敗。連ID: {}.", ren_id); 0},
+            };
+
             pos.get_mut_ren_database().get_mut_empty_ren_map().remove_ren(ren_id);
-            pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(ren_id, RenObject::default(ren_id, shrink));
+            pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(ren_id, RenObject::default(ren_id, shrink, old_territory));
 
             print!("縮まった空連の作り直し。番地: ");
             match &pos.get_ren_database().get_empty_ren_map().get_ren(ren_id) {

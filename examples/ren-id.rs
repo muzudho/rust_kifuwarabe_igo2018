@@ -79,12 +79,48 @@ fn main() {
     show_libarty_count(&pos.liberty_count_map);
 
     // 空連の占有者を表示☆（＾～＾）
-    show_empty_ren_territory(&pos.get_territory());
-    show_ren_address_map(&pos.get_territory().space);
+    show_territory(&pos.get_ren_database().get_empty_ren_map());
+    show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
 
     // 目つぶしの確認☆（＾～＾）
-    println!("eye_fill: 0401x {}", pos.get_territory().is_eye_filling(1, convert_code_to_address(401, pos.board.get_size()) as i16));
-    println!("eye_fill: 0704o {}", pos.get_territory().is_eye_filling(2, convert_code_to_address(704, pos.board.get_size()) as i16));
-    println!("eye_fill: 0404x {}", pos.get_territory().is_eye_filling(1, convert_code_to_address(404, pos.board.get_size()) as i16));
-    println!("eye_fill: 0909o {}", pos.get_territory().is_eye_filling(2, convert_code_to_address(909, pos.board.get_size()) as i16));
+    {
+        let addr = convert_code_to_address(401, pos.board.get_size()) as i16;
+        let color = 1;
+        match pos.get_ren_database().get_empty_ren_map().get_ren(addr) {
+            Some(ren_obj) => {
+                println!("eye_fill: 0401x {}", ren_obj.is_eye_filling(color));
+            },
+            None => {},
+        }
+    }
+    {
+        let addr = convert_code_to_address(704, pos.board.get_size()) as i16;
+        let color = 2;
+        match pos.get_ren_database().get_empty_ren_map().get_ren(addr) {
+            Some(ren_obj) => {
+                println!("eye_fill: 0704o {}", ren_obj.is_eye_filling(color));
+            },
+            None => {},
+        }
+    }
+    {
+        let addr = convert_code_to_address(404, pos.board.get_size()) as i16;
+        let color = 1;
+        match pos.get_ren_database().get_empty_ren_map().get_ren(addr) {
+            Some(ren_obj) => {
+                println!("eye_fill: 0404x {}", ren_obj.is_eye_filling(color));
+            },
+            None => {},
+        }
+    }
+    {
+        let addr = convert_code_to_address(909, pos.board.get_size()) as i16;
+        let color = 2;
+        match pos.get_ren_database().get_empty_ren_map().get_ren(addr) {
+            Some(ren_obj) => {
+                println!("eye_fill: 0909o {}", ren_obj.is_eye_filling(color));
+            },
+            None => {},
+        }
+    }
 }

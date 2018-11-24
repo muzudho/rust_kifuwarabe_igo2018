@@ -100,11 +100,12 @@ pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
 }
 
 /// 空連の占有者を表示☆（＾～＾）
-pub fn show_empty_ren_territory(empty_ren_territory:&[usize; 21*21]) {
-    println!("Empty owner: ");
-    for (ren_id, owner) in empty_ren_territory.iter().enumerate() {
-        if *owner != 0 && *owner != 3 {
-            println!("[{:3}] {:3}", ren_id, owner);
+pub fn show_territory(ren_map:&RenMap) {
+    println!("Territory: ");
+    for (ren_id, ren_obj) in ren_map.iter() {
+        let territory = ren_obj.get_territory();
+        if territory != 0 && territory != 3 {
+            println!("[{:3}] {:3}", ren_id, territory);
         }
     }
 }

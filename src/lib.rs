@@ -343,8 +343,13 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     }
 
     // FIXME 目つぶしは、着手禁止点扱いにする。連をつなぐ有効な手の場合もあるが。
-    if pos.get_ren_database().is_eye_filling(pos.turn, target as i16) {
-        return true;
+    match pos.get_ren_database().get_empty_ren_map().get_ren(target as i16) {
+        Some(ren_obj) => {
+            if ren_obj.is_eye_filling(pos.turn) {
+                return true;
+            }
+        },
+        None => {},
     }
 
     if

@@ -28,17 +28,22 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
         return;
     }
 
-    // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
+    // 探している色の石なら
+    // 番地に 連ID を紐づける。検索を開始したセル番号でも振っとく。
     pos.get_mut_ren_database().get_mut_address_stone_ren_board().set(target, ren_id);
+
     if ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().contains_key(ren_id) {
         match pos.get_mut_ren_database().get_mut_stone_ren_map().get_mut_ren(ren_id) {
             Some(ren_obj) => {ren_obj.add_addr(target as i16);}
             None => {panic!("walk_liberty");}
         }
     } else {
-        // let mut vec = Vec::new();
-        // vec.push(target as i16);
-        pos.get_mut_ren_database().get_mut_stone_ren_map().insert_ren(ren_id, RenObject::default(ren_id, vec![target as i16]));
+        let old_territory = match pos.get_ren_database().get_empty_ren_map().get_ren(ren_id) {
+            Some(ren_obj) => ren_obj.get_territory(),
+            None => {println!("石連テリトリーの取得失敗。連ID: {}.", ren_id); 0},
+        };
+
+        pos.get_mut_ren_database().get_mut_stone_ren_map().insert_ren(ren_id, RenObject::default(ren_id, vec![target as i16], old_territory));
     }
 
     // 隣を探す。（再帰）
