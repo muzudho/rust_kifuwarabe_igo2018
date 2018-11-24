@@ -6,7 +6,7 @@ use ren_database::*;
 
 pub struct EmptyOwnerMap {
     /// 計算用。探索中のマーク。盤上に紐づく空連ID。
-    pub address_ren_board: AddressRenBoard,
+    pub address_empty_ren_board: AddressRenBoard,
 
     /// 空連IDに紐づく占有者。番地でアクセスするので、ボード形式で持つ☆（＾～＾）
     /// 空連の占有者は、以下のいずれか☆（＾～＾）
@@ -19,7 +19,7 @@ pub struct EmptyOwnerMap {
 impl EmptyOwnerMap {
     pub fn new() -> EmptyOwnerMap {
         EmptyOwnerMap {
-            address_ren_board: AddressRenBoard::new(),
+            address_empty_ren_board: AddressRenBoard::new(),
             territory: EmptyRenTerritory::new(),
         }
     }
@@ -34,7 +34,7 @@ impl EmptyOwnerMap {
 
     /// 目つぶしなら真。
     pub fn is_eye_filling(&self, color:i8, target:i16, ren_database:&RenDatabase) -> bool {
-        let ren_id = self.address_ren_board.get(target as usize);
+        let ren_id = self.address_empty_ren_board.get(target as usize);
         if ren_id == 0 {
             return false;
         }

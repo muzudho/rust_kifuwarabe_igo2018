@@ -67,7 +67,7 @@ pub fn show_board_by_number(board:&Board) {
 /// 盤に振られた 連ID を表示だぜ☆（＾～＾）
 pub fn show_address_ren_board(pos:&Position) {
     println!("Ren ID board: ");
-    for (i, ren_id) in pos.address_ren_board.iter().enumerate() {
+    for (i, ren_id) in pos.address_stone_ren_board.iter().enumerate() {
         if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
             break;
         }
@@ -78,7 +78,7 @@ pub fn show_address_ren_board(pos:&Position) {
     }
 
     println!("Empty ren ID board: ");
-    for (i, ren_id) in pos.empty_owner_map.address_ren_board.iter().enumerate() {
+    for (i, ren_id) in pos.empty_owner_map.address_empty_ren_board.iter().enumerate() {
         if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
             break;
         }

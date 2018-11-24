@@ -16,7 +16,7 @@ pub struct Position {
     /// 手番。1:黒、2:白。
     pub turn: i8,
     /// 計算用。盤上に紐づく連ID。
-    pub address_ren_board: AddressRenBoard,
+    pub address_stone_ren_board: AddressRenBoard,
     /// 計算用。連に紐づく呼吸点の数。
     pub liberty_count_map: LibertyCountMap,
     /// 計算用。空連の占有者。 0:未調査、1:黒、2:白、3:黒白両方。
@@ -32,7 +32,7 @@ impl Position {
             board: board_stones,
             ko: ko_address,
             turn: turn_count,
-            address_ren_board: AddressRenBoard::new(),
+            address_stone_ren_board: AddressRenBoard::new(),
             liberty_count_map: LibertyCountMap::new(),
             empty_owner_map: EmptyOwnerMap::new(),
             address_ren_board_searcher: AddressRenBoardSearcher::new(),

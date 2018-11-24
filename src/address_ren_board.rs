@@ -4,6 +4,7 @@ use std;
 use ren_database::*;
 
 pub struct AddressRenBoard {
+    // 番地と連IDの紐づけ。
     pub value: [i16; 21 * 21],
 }
 impl AddressRenBoard {

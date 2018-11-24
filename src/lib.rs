@@ -54,7 +54,7 @@ use view::*;
 pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position) -> i16 {
     let self_ren_id = target as i16;
     // 隣接する自分の連のID。 1000未満の数。
-    let adjacent_ren_id = pos.address_ren_board.get(adjacent);
+    let adjacent_ren_id = pos.address_stone_ren_board.get(adjacent);
 
     // IDの数が 小さくない方 を、小さい方に塗り替える☆（＾～＾）
     if self_ren_id < adjacent_ren_id {
@@ -67,7 +67,7 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
 
-            pos.address_ren_board.fill_by_vec(&adjacent_ren_addr_vec, self_ren_id);
+            pos.address_stone_ren_board.fill_by_vec(&adjacent_ren_addr_vec, self_ren_id);
         }
 
         // キー変更。
@@ -77,7 +77,7 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
         self_ren_id
     } else {
         println!("Do move: Self: {}, Adjacent: {}. 隣のIDの方が小さい。", self_ren_id, adjacent_ren_id);
-        pos.address_ren_board.set(target, adjacent_ren_id);
+        pos.address_stone_ren_board.set(target, adjacent_ren_id);
         adjacent_ren_id
     }
 }
@@ -87,7 +87,7 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
 /// * `record` - 打ち上げた石の番地を覚えるのに使う。
 pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record) {
     // 除去される連ID。
-    let adjacent_ren_id = pos.address_ren_board.get(adjacent);
+    let adjacent_ren_id = pos.address_stone_ren_board.get(adjacent);
     let adj_lib_cnt = pos.liberty_count_map.get(adjacent_ren_id as usize);
     println!("Do move: 隣の連ID {}, 隣の呼吸点数 {}。", adjacent_ren_id, adj_lib_cnt);
 
@@ -104,7 +104,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
 
             pos.board.fill_by_vec(&adjacent_ren_addr_vec, 0);
 
-            pos.address_ren_board.fill_by_vec(&adjacent_ren_addr_vec, 0);
+            pos.address_stone_ren_board.fill_by_vec(&adjacent_ren_addr_vec, 0);
 
             record.add_current_agehama_by_vec(&adjacent_ren_addr_vec);
         }
@@ -310,10 +310,10 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     let right = target+1; // 右。
     let bottom = target+(pos.board.get_size()+2); // 下。
     let left = target-1; // 左。
-    let top_ren_id = pos.address_ren_board.get(top) as usize; // 上の連のID。
-    let right_ren_id = pos.address_ren_board.get(right) as usize; // 上の連のID。
-    let bottom_ren_id = pos.address_ren_board.get(bottom) as usize; // 上の連のID。
-    let left_ren_id = pos.address_ren_board.get(left) as usize; // 上の連のID。
+    let top_ren_id = pos.address_stone_ren_board.get(top) as usize; // 上の連のID。
+    let right_ren_id = pos.address_stone_ren_board.get(right) as usize; // 上の連のID。
+    let bottom_ren_id = pos.address_stone_ren_board.get(bottom) as usize; // 上の連のID。
+    let left_ren_id = pos.address_stone_ren_board.get(left) as usize; // 上の連のID。
     let opponent = get_opponent(pos.turn); // 相手の石の色。
 
     /*
