@@ -14,31 +14,31 @@ pub struct EmptyRenTerritory {
     /// 1. 黒石か枠のいずれかだけに隣接する。
     /// 2. 白石か枠のいずれかだけに隣接する。
     /// 3. 黒石と白石の両方に隣接する。
-    owner: [usize; 21*21],
+    empty_ren_territory: [usize; 21*21],
 }
 impl EmptyRenTerritory {
     pub fn new() -> EmptyRenTerritory {
         EmptyRenTerritory {
-            owner: [0; 21*21],
+            empty_ren_territory: [0; 21*21],
         }
     }
 
     pub fn get_owner(&self, index:usize) -> usize {
-        self.owner[index]
+        self.empty_ren_territory[index]
     }
 
     pub fn set_owner(&mut self, index:usize, empty_owner:usize) {
-        self.owner[index] = empty_owner;
+        self.empty_ren_territory[index] = empty_owner;
     }
 
     /// 表示用など。
     pub fn iter_owner(&self) -> std::slice::Iter<usize> {
-        self.owner.iter()
+        self.empty_ren_territory.iter()
     }
 
     /// キーを変更。
     pub fn change_key(&mut self, ren_id_before:i16, ren_id_after:i16){
-        self.owner[ren_id_after as usize] = self.owner[ren_id_before as usize];
-        self.owner[ren_id_before as usize] = 0;
+        self.empty_ren_territory[ren_id_after as usize] = self.empty_ren_territory[ren_id_before as usize];
+        self.empty_ren_territory[ren_id_before as usize] = 0;
     }
 }
