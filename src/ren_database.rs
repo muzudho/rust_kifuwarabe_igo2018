@@ -13,6 +13,9 @@ pub struct RenDatabase {
 
     /// 計算用。盤上に紐づく連ID。
     address_stone_ren_board: AddressRenBoard,
+
+    /// 計算用。探索中のマーク。盤上に紐づく空連ID。
+    address_empty_ren_board: AddressRenBoard,
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
@@ -20,6 +23,7 @@ impl RenDatabase {
             stone_ren_map: RenMap::new(),
             empty_ren_map: RenMap::new(),
             address_stone_ren_board: AddressRenBoard::new(),
+            address_empty_ren_board: AddressRenBoard::new(),
         }
     }
 
@@ -45,6 +49,14 @@ impl RenDatabase {
 
     pub fn get_mut_address_stone_ren_board(&mut self) -> &mut AddressRenBoard {
         &mut self.address_stone_ren_board
+    }
+
+    pub fn get_address_empty_ren_board(&self) -> &AddressRenBoard {
+        &self.address_empty_ren_board
+    }
+
+    pub fn get_mut_address_empty_ren_board(&mut self) -> &mut AddressRenBoard {
+        &mut self.address_empty_ren_board
     }
 }
 

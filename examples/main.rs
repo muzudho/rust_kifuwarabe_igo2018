@@ -22,6 +22,7 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
+use address_ren_board_searcher::*;
 use kifuwarabe_igo2018::*;
 use config_file::Config;
 use out_file::OutFile;
@@ -39,6 +40,9 @@ fn main() {
 
     // 設定ファイル読込。
     let conf = Config::load("config.json");
+
+    // 計算用。
+    let mut address_ren_board_searcher = AddressRenBoardSearcher::new();
 
     // 棋譜。
     let mut record = Record::new();
@@ -71,7 +75,7 @@ fn main() {
 
             // 試し打ちをする☆（＾～＾）
             let legal_moves = pick_move(&pos, &record);
-            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record), pos.board.get_size());
+            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut address_ren_board_searcher), pos.board.get_size());
             println!("BestMove: '{}'.", move_code);
 
             // in.txt ファイル出力。

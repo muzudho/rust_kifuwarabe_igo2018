@@ -27,6 +27,7 @@ pub mod stone_ren;
 pub mod view;
 pub mod zobrist_hash;
 
+use address_ren_board_searcher::*;
 use position::Position;
 use empty_ren::*;
 use liberty::*;
@@ -119,7 +120,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
 /// 自殺手、コウの可能性は事前に除去しておくこと☆（＾～＾）
 /// # Return.
 /// - パスしたら真。
-pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
+pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_board_searcher:&mut AddressRenBoardSearcher) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.board.get_size()));
 
     record.count_up();
@@ -132,7 +133,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     pos.board.set(target, pos.turn);
     record.set_current(target as i16, pos.board.get_hash());
     // 空連を切る。
-    cut_empty_ren(pos, target);
+    cut_empty_ren(pos, target, address_ren_board_searcher);
 
     let top = pos.board.get_top_of(target); // 上の番地。
     let right = pos.board.get_right_of(target); // 右。
@@ -254,11 +255,12 @@ pub fn undo_move(pos:&mut Position, record:&mut Record) {
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
 /// # Return.
 /// - 石を打った番地。
-pub fn do_random_move(pos:&mut Position, legal_moves:&[usize], record:&mut Record) -> usize {
+pub fn do_random_move(pos:&mut Position, legal_moves:&[usize], record:&mut Record, address_ren_board_searcher:&mut AddressRenBoardSearcher) -> usize {
+
     let best_move = if (*legal_moves).is_empty() {0}else{*rand::thread_rng().choose(legal_moves).unwrap()};
 
     // 石を置く。
-    do_move(best_move, pos, record);
+    do_move(best_move, pos, record, address_ren_board_searcher);
 
     best_move
 }
@@ -386,7 +388,7 @@ pub fn pick_move(pos:&Position, record:&Record) -> Vec<usize> {
 
 /// TODO トライアウト。
 /// 盤上に適当に石を置き続けて終局図に持っていくこと。どちらも石を置けなくなったら終了。
-pub fn tryout(pos:&mut Position, record:&mut Record) {
+pub fn tryout(pos:&mut Position, record:&mut Record, address_ren_board_searcher:&mut AddressRenBoardSearcher) {
     println!("Start tryout.");
 
     // 相手がパスしていれば真。
@@ -398,7 +400,7 @@ pub fn tryout(pos:&mut Position, record:&mut Record) {
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
-        if do_random_move(pos, &legal_moves, record) == 0 {
+        if do_random_move(pos, &legal_moves, record, address_ren_board_searcher) == 0 {
             // パスなら
             if opponent_passed {
                 // TODO ゲーム終了☆（＾～＾）

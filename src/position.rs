@@ -19,8 +19,6 @@ pub struct Position {
     pub liberty_count_map: LibertyCountMap,
     /// 計算用。空連の占有者。 0:未調査、1:黒、2:白、3:黒白両方。
     pub empty_owner_map: EmptyOwnerMap,
-    /// 計算用。
-    pub address_ren_board_searcher: AddressRenBoardSearcher,
     /// 連のデータベース☆（＾～＾）
     ren_database: RenDatabase,
 }
@@ -32,7 +30,6 @@ impl Position {
             turn: turn_count,
             liberty_count_map: LibertyCountMap::new(),
             empty_owner_map: EmptyOwnerMap::new(),
-            address_ren_board_searcher: AddressRenBoardSearcher::new(),
             ren_database: RenDatabase::new(),
         }
     }
