@@ -24,7 +24,7 @@ impl ZobristHash {
             white: [0; 21*21],
         };
 
-        // めんどくさいんで、枠にもランダムな数を入れておく。
+        // めんどくさいんで、枠にもランダムな数を入れておく。それなら 何路盤でも対応できる☆（＾～＾）
         for i in 0..441 {
             zob.black[i] = rand::thread_rng().next_u64();
             zob.white[i] = rand::thread_rng().next_u64();

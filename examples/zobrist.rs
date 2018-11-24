@@ -1,4 +1,4 @@
-/// 連IDのテスト☆（＾～＾）
+/// ゾブリストハッシュのテスト☆（＾～＾）
 /// 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -9,11 +9,11 @@
 /// 
 /// ### コンパイル。
 /// cd C:\MuzudhoDrive\projects_rust\rust_kifuwarabe_igo2018
-/// cargo clippy --example ren-id
+/// cargo clippy --example zobrist
 /// 
 /// ### 実行。
 /// cls
-/// cargo run --example ren-id
+/// cargo run --example zobrist
 /// ```
 
 extern crate kifuwarabe_igo2018;
@@ -24,9 +24,10 @@ use std::fs;
 
 use kifuwarabe_igo2018::*;
 use config_file::Config;
+use liberty::*;
 use position_file::PositionFile;
 use position::Position;
-use liberty::*;
+use record::*;
 use view::*;
 
 fn main() {
@@ -40,7 +41,7 @@ fn main() {
     let conf = Config::load("config.json");
 
     // ファイルをコピーするぜ☆（＾～＾）
-    match fs::copy("position -- Test9Ren.json", "position.json") {
+    match fs::copy("position -- Example9.json", "position.json") {
         Ok(_o) => {}
         Err(e) => {panic!(e)}
     };
@@ -60,31 +61,32 @@ fn main() {
     // 盤面表示☆（＾～＾）
     show_board(&pos.board);
 
+    let mut record = Record::new();
     // 代入ではなく、コピーを作っている☆（*＾～＾*）
     let mut pos = Position::default(pos.board, 0, pos.turn);
-
-    // 盤番地を表示☆（＾～＾）
-    show_board_address(conf.board_size);
-
-    // 盤を表示☆（＾～＾）
-    show_board_by_number(&pos.board);
 
     // 全部の交点に、連のIDを振る。
     check_liberty_all_points(&mut pos);
 
-    // 連のIDを表示☆（＾～＾）
-    show_address_ren_board(&pos);
+    // 試し打ち☆（＾～＾）
+    do_move(convert_code_to_address(303, pos.board.get_size()), &mut pos, &mut record);
+    // 盤面表示☆（＾～＾）
+    show_board(&pos.board);
 
-    // 呼吸点の数を表示☆（＾～＾）
-    show_libarty_count(&pos.liberty_count_map);
+    // TODO アンドゥしたい☆（＾～＾）
 
-    // 空連の占有者を表示☆（＾～＾）
-    show_empty_owner(&pos.empty_owner_map);
-    show_ren_address_map(&pos.empty_owner_map.space);
+    // 試し打ち☆（＾～＾）
+    do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
+    // 盤面表示☆（＾～＾）
+    show_board(&pos.board);
 
-    // 目つぶしの確認☆（＾～＾）
-    println!("eye_fill: 0401x {}", pos.empty_owner_map.is_eye_filling(1, convert_code_to_address(401, pos.board.get_size()) as i16));
-    println!("eye_fill: 0704o {}", pos.empty_owner_map.is_eye_filling(2, convert_code_to_address(704, pos.board.get_size()) as i16));
-    println!("eye_fill: 0404x {}", pos.empty_owner_map.is_eye_filling(1, convert_code_to_address(404, pos.board.get_size()) as i16));
-    println!("eye_fill: 0909o {}", pos.empty_owner_map.is_eye_filling(2, convert_code_to_address(909, pos.board.get_size()) as i16));
+    // 試し打ち☆（＾～＾）
+    do_move(convert_code_to_address(306, pos.board.get_size()), &mut pos, &mut record);
+    // 盤面表示☆（＾～＾）
+    show_board(&pos.board);
+
+    // 試し打ち☆（＾～＾）
+    do_move(convert_code_to_address(606, pos.board.get_size()), &mut pos, &mut record);
+    // 盤面表示☆（＾～＾）
+    show_board(&pos.board);
 }
