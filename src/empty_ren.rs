@@ -90,6 +90,7 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize) {
         // 石を置いた交点から探索。
         println!("board size: {}.", pos.board.get_size());
         println!("cutting_addr: {}.", cutting_addr);
+        pos.empty_owner_map.space.remove_item(empty_ren_id, cutting_addr as i16);
 
         pos.address_ren_board_searcher.count_up_mark();
         let mut shrink: Vec<i16> = Vec::new();

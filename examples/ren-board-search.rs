@@ -80,19 +80,20 @@ fn main() {
     show_ren_address_map(&pos.empty_owner_map.space);
 
     {
-        // 空連12 の 0102 点から探索。
+        // 空連12 の上の 0102 点に石を置く☆（＾～＾）
         let ren_id = 12;
-        let mark = convert_code_to_address(102, pos.board.get_size());
+        let stone_addr = convert_code_to_address(102, pos.board.get_size());
         println!("board size: {}.", pos.board.get_size());
-        println!("mark: {}.", mark);
+        println!("stone_addr: {}.", stone_addr);
+        pos.empty_owner_map.space.remove_item(ren_id, stone_addr as i16);
 
         pos.address_ren_board_searcher.count_up_mark();
         let mut shrink: Vec<i16> = Vec::new();
 
         {
             // 空連12 の 0102 点から上を探索。
-            let start = pos.board.get_top_of(mark);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
+            let start = pos.board.get_top_of(stone_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, stone_addr);
             print!("空連{} の {:04} 点から上を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));
             if min_addr == 0 {
                 println!("空連なし。");
@@ -108,8 +109,8 @@ fn main() {
 
         {
             // 空連12 の 0102 点から右を探索。
-            let start = pos.board.get_right_of(mark);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
+            let start = pos.board.get_right_of(stone_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, stone_addr);
             print!("空連{} の {:04} 点から右を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
             if min_addr == 0 {
                 println!("空連なし。");
@@ -125,8 +126,8 @@ fn main() {
 
         {
             // 空連12 の 0102 点から下を探索。
-            let start = pos.board.get_bottom_of(mark);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
+            let start = pos.board.get_bottom_of(stone_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, stone_addr);
             print!("空連{} の {:04} 点から下を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
             if min_addr == 0 {
                 println!("空連なし。");
@@ -142,8 +143,8 @@ fn main() {
 
         {
             // 空連12 の 0102 点から左を探索。
-            let start = pos.board.get_left_of(mark);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, mark);
+            let start = pos.board.get_left_of(stone_addr);
+            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, ren_id, start, stone_addr);
             print!("空連{} の {:04} 点から左を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
             if min_addr == 0 {
                 println!("空連なし。");

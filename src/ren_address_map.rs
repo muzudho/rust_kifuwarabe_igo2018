@@ -64,6 +64,19 @@ impl RenAddressMap {
         self.value.remove(&ren_id)
     }
 
+    /// 指定した連から、指定した番地を除外する。
+    pub fn remove_item(&mut self, ren_id:i16, removing_addr:i16) {
+        // println!("連{} の {}番地を除外。", ren_id, removing_addr);
+        match self.get_mut(ren_id) {
+            Some(n) => {
+                // println!("連{} はあった。 {}番地を除外。", ren_id, removing_addr);
+                let index = n.iter().position(|&r| r == removing_addr).unwrap();
+                n.remove(index);
+            },
+            None => {panic!("削除したかった番地がなかった。")},
+        };
+    }
+
     /// キーを変更。
     pub fn change_key(&mut self, ren_id_before:i16, ren_id_after:i16){
         match self.remove(ren_id_before) {

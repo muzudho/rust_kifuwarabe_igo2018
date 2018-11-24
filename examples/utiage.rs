@@ -54,6 +54,7 @@ fn main() {
 
         // 代入ではなく、コピーを作っている☆（*＾～＾*）
         let mut pos = Position::default(pos.board, 0, pos.turn);
+        let mut record = Record::new();
 
         // 盤番地を表示☆（＾～＾）
         show_board_address(conf.board_size);
@@ -71,7 +72,7 @@ fn main() {
         show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(102, conf.board_size), &mut pos);
+        do_move(convert_code_to_address(102, conf.board_size), &mut pos, &mut record);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -86,7 +87,7 @@ fn main() {
         show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(401, conf.board_size), &mut pos);
+        do_move(convert_code_to_address(401, conf.board_size), &mut pos, &mut record);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -101,7 +102,7 @@ fn main() {
         show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(901, conf.board_size), &mut pos);
+        do_move(convert_code_to_address(901, conf.board_size), &mut pos, &mut record);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -116,7 +117,7 @@ fn main() {
         show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(109, conf.board_size), &mut pos);
+        do_move(convert_code_to_address(109, conf.board_size), &mut pos, &mut record);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -131,7 +132,7 @@ fn main() {
         show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(409, conf.board_size), &mut pos);
+        do_move(convert_code_to_address(409, conf.board_size), &mut pos, &mut record);
 
         // 盤面表示☆（＾～＾）
         show_board(&pos.board);
@@ -146,7 +147,7 @@ fn main() {
         show_ren_address_map(&pos.ren_address_map);
 
         // 試し打ちをする☆（＾～＾）
-        do_move(convert_code_to_address(909, conf.board_size), &mut pos);
+        do_move(convert_code_to_address(909, conf.board_size), &mut pos, &mut record);
     }
 
     println!("Finished.");
