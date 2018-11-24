@@ -3,7 +3,6 @@
 use std;
 use std::collections::HashMap;
 use address_ren_board::*;
-use empty_ren_territory::*;
 
 /// 石連と、空連に大きく分かれる☆（＾～＾）
 pub struct RenDatabase {
@@ -24,7 +23,7 @@ pub struct RenDatabase {
     /// 1. 黒石か枠のいずれかだけに隣接する。
     /// 2. 白石か枠のいずれかだけに隣接する。
     /// 3. 黒石と白石の両方に隣接する。
-    territory: EmptyRenTerritory,
+    empty_ren_territory: [usize; 21*21],
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
@@ -33,7 +32,7 @@ impl RenDatabase {
             empty_ren_map: RenMap::new(),
             address_stone_ren_board: AddressRenBoard::new(),
             address_empty_ren_board: AddressRenBoard::new(),
-            territory: EmptyRenTerritory::new(),
+            empty_ren_territory: [0; 21*21],
         }
     }
 
@@ -70,12 +69,27 @@ impl RenDatabase {
     }
 
 
-    pub fn get_territory(&self) -> &EmptyRenTerritory {
-        &self.territory
+    pub fn get_empty_ren_territory_board(&self) -> [usize; 21*21] {
+        self.empty_ren_territory
     }
 
-    pub fn get_mut_territory(&mut self) -> &mut EmptyRenTerritory {
-        &mut self.territory
+    pub fn get_empty_ren_territory(&self, index:usize) -> usize {
+        self.empty_ren_territory[index]
+    }
+
+    pub fn set_empty_ren_territory(&mut self, index:usize, empty_ren_territory:usize) {
+        self.empty_ren_territory[index] = empty_ren_territory;
+    }
+
+    /// 表示用など。
+    pub fn iter_empty_ren_territory(&self) -> std::slice::Iter<usize> {
+        self.empty_ren_territory.iter()
+    }
+
+    /// キーを変更。
+    pub fn change_key_empty_ren_territory(&mut self, ren_id_before:i16, ren_id_after:i16){
+        self.empty_ren_territory[ren_id_after as usize] = self.empty_ren_territory[ren_id_before as usize];
+        self.empty_ren_territory[ren_id_before as usize] = 0;
     }
 
     /// 目つぶしなら真。
@@ -85,7 +99,7 @@ impl RenDatabase {
             return false;
         }
 
-        let owner = self.territory.get_owner(target as usize);
+        let owner = self.get_empty_ren_territory(target as usize);
         if owner == 0 || owner == 3 {
             return false;
         }

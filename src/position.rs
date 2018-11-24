@@ -5,7 +5,6 @@ use liberty_count_map::LibertyCountMap;
 use ren_database::*;
 use address_ren_board::AddressRenBoard;
 use address_ren_board_searcher::*;
-use empty_ren_territory::*;
 
 /// ゲーム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数みたいな便利さで使っている☆（＾～＾）
 pub struct Position {

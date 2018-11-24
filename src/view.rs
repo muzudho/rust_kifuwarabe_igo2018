@@ -1,6 +1,5 @@
 use address_ren_board::*;
 use board::Board;
-use empty_ren_territory::*;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
 use record::*;
@@ -101,9 +100,9 @@ pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
 }
 
 /// 空連の占有者を表示☆（＾～＾）
-pub fn show_empty_ren_territory(empty_ren_territory:&EmptyRenTerritory) {
+pub fn show_empty_ren_territory(empty_ren_territory:&[usize; 21*21]) {
     println!("Empty owner: ");
-    for (ren_id, owner) in empty_ren_territory.iter_owner().enumerate() {
+    for (ren_id, owner) in empty_ren_territory.iter().enumerate() {
         if *owner != 0 && *owner != 3 {
             println!("[{:3}] {:3}", ren_id, owner);
         }
