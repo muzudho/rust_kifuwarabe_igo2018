@@ -79,7 +79,7 @@ fn main() {
     show_libarty_count(&pos.liberty_count_map);
 
     // 空連の占有者を表示☆（＾～＾）
-    show_empty_owner(&pos.empty_owner_map);
+    show_empty_ren_territory(&pos.get_territory());
     show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
 
     {

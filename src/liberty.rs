@@ -33,7 +33,7 @@ pub fn count_liberty_at_point(target:usize, board:&Board) -> i8 {
 pub fn check_liberty_all_points(pos:&mut Position) {
 
     // TODO クリアーはしなくていいのか？
-    // pos.empty_owner_map.set(start, 0);
+    // pos.get_territory().set(start, 0);
 
     // 枠の中の左上隅から右下隅まで検索☆（＾～＾）
     // 小さい盤で数えてみろだぜ☆（＾～＾）

@@ -72,8 +72,8 @@ fn main() {
             show_libarty_count(&pos.liberty_count_map);
 
             // 空連の占有者を表示☆（＾～＾）
-            show_empty_owner(&pos.empty_owner_map);
-            show_ren_address_map(&pos.empty_owner_map.space);
+            show_empty_ren_territory(&pos.get_territory());
+            show_ren_address_map(&pos.get_territory().space);
 
             // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 

@@ -22,14 +22,14 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
         },
 
         1 => {
-            if pos.empty_owner_map.get_territory().get_owner(ren_id) == 3 {
+            if pos.get_territory().get_owner(ren_id) == 3 {
                 // 占有者は白黒両方の場合、更新なし。
-            } else if pos.empty_owner_map.get_territory().get_owner(ren_id) == 2 {
+            } else if pos.get_territory().get_owner(ren_id) == 2 {
                 // 黒石 かつ、占有者が 黒、白の両方になる。
-                pos.empty_owner_map.get_mut_territory().set_owner(ren_id, 3);
+                pos.get_mut_territory().set_owner(ren_id, 3);
             } else {
                 // 占有者は黒石か。
-                pos.empty_owner_map.get_mut_territory().set_owner(ren_id, 1);
+                pos.get_mut_territory().set_owner(ren_id, 1);
             }
 
             // 隣は調べない。
@@ -37,14 +37,14 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
         },
 
         2 => {
-            if pos.empty_owner_map.get_territory().get_owner(ren_id) == 3 {
+            if pos.get_territory().get_owner(ren_id) == 3 {
                 // 占有者は白黒両方の場合、更新なし。
-            } else if pos.empty_owner_map.get_territory().get_owner(ren_id) == 1 {
+            } else if pos.get_territory().get_owner(ren_id) == 1 {
                 // 白石 かつ、占有者が 黒、白の両方になる。
-                pos.empty_owner_map.get_mut_territory().set_owner(ren_id, 3);
+                pos.get_mut_territory().set_owner(ren_id, 3);
             } else {
                 // 占有者は白石か。
-                pos.empty_owner_map.get_mut_territory().set_owner(ren_id, 2);
+                pos.get_mut_territory().set_owner(ren_id, 2);
             }
 
             // 隣は調べない。
