@@ -4,6 +4,7 @@ use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use ren_address_map::RenAddressMap;
+use ren_database::*;
 use address_ren_board::AddressRenBoard;
 use address_ren_board_searcher::*;
 
@@ -25,6 +26,8 @@ pub struct Position {
     pub empty_owner_map: EmptyOwnerMap,
     /// 計算用。
     pub address_ren_board_searcher: AddressRenBoardSearcher,
+    /// 連のデータベース☆（＾～＾）
+    ren_database: RenDatabase,
 }
 impl Position {
     pub fn default(board_stones:Board, ko_address:i16, turn_count:i8) -> Position {
@@ -37,7 +40,16 @@ impl Position {
             ren_address_map: RenAddressMap::new(),
             empty_owner_map: EmptyOwnerMap::new(),
             address_ren_board_searcher: AddressRenBoardSearcher::new(),
+            ren_database: RenDatabase::new(),
         }
+    }
+    
+    pub fn get_ren_database(&self) -> &RenDatabase {
+        &self.ren_database
+    }
+    
+    pub fn get_mut_ren_database(&mut self) -> &mut RenDatabase {
+        &mut self.ren_database
     }
 
     /// 枠の中の左上隅から右下隅まで検索☆（＾～＾）

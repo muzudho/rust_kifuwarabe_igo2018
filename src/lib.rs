@@ -23,6 +23,7 @@ pub mod position_file;
 pub mod position;
 pub mod record;
 pub mod ren_address_map;
+pub mod ren_database;
 pub mod stone_ren;
 pub mod view;
 pub mod zobrist_hash;
