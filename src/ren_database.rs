@@ -2,6 +2,7 @@
 
 use std;
 use std::collections::HashMap;
+use address_ren_board::*;
 
 /// 石連と、空連に大きく分かれる☆（＾～＾）
 pub struct RenDatabase {
@@ -9,12 +10,16 @@ pub struct RenDatabase {
     stone_ren_map: RenMap,
     // 空連ID に紐づくもの。
     empty_ren_map: RenMap,
+
+    /// 計算用。盤上に紐づく連ID。
+    address_stone_ren_board: AddressRenBoard,
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
         RenDatabase {
             stone_ren_map: RenMap::new(),
             empty_ren_map: RenMap::new(),
+            address_stone_ren_board: AddressRenBoard::new(),
         }
     }
 
@@ -32,6 +37,14 @@ impl RenDatabase {
 
     pub fn get_mut_empty_ren_map(&mut self) -> &mut RenMap {
         &mut self.empty_ren_map
+    }
+
+    pub fn get_address_stone_ren_board(&self) -> &AddressRenBoard {
+        &self.address_stone_ren_board
+    }
+
+    pub fn get_mut_address_stone_ren_board(&mut self) -> &mut AddressRenBoard {
+        &mut self.address_stone_ren_board
     }
 }
 

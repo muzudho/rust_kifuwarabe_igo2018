@@ -1,3 +1,4 @@
+use address_ren_board::*;
 use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
@@ -67,7 +68,7 @@ pub fn show_board_by_number(board:&Board) {
 /// 盤に振られた 連ID を表示だぜ☆（＾～＾）
 pub fn show_address_ren_board(pos:&Position) {
     println!("Ren ID board: ");
-    for (i, ren_id) in pos.address_stone_ren_board.iter().enumerate() {
+    for (i, ren_id) in pos.get_ren_database().get_address_stone_ren_board().iter().enumerate() {
         if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
             break;
         }
