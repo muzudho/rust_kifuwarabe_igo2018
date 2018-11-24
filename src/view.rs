@@ -102,7 +102,7 @@ pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
 /// 空連の占有者を表示☆（＾～＾）
 pub fn show_empty_owner(empty_owner_map:&EmptyOwnerMap) {
     println!("Empty owner: ");
-    for (ren_id, owner) in empty_owner_map.iter_owner().enumerate() {
+    for (ren_id, owner) in empty_owner_map.get_territory().iter_owner().enumerate() {
         if *owner != 0 && *owner != 3 {
             println!("[{:3}] {:3}", ren_id, owner);
         }

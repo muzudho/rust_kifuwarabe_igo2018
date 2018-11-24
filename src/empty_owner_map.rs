@@ -1,20 +1,20 @@
 /// 空連IDに占有者を紐づけるぜ☆（＾～＾）
 
-use std;
-use ren_address_map::*;
 use address_ren_board::AddressRenBoard;
+use empty_ren_territory::*;
+use ren_address_map::*;
 
 pub struct EmptyOwnerMap {
     /// 計算用。探索中のマーク。盤上に紐づく空連ID。
     pub address_ren_board: AddressRenBoard,
 
-    /// 計算用。探索中のマーク。
+    /// 空連IDに紐づく占有者。番地でアクセスするので、ボード形式で持つ☆（＾～＾）
     /// 空連の占有者は、以下のいずれか☆（＾～＾）
     /// 0. 未調査、または 隣接する石がない。
     /// 1. 黒石か枠のいずれかだけに隣接する。
     /// 2. 白石か枠のいずれかだけに隣接する。
     /// 3. 黒石と白石の両方に隣接する。
-    owner: [usize; 21*21],
+    territory: EmptyRenTerritory,
 
     /// 占有するスペース。連IDに、アドレスを紐づける。
     pub space: RenAddressMap,
@@ -23,28 +23,17 @@ impl EmptyOwnerMap {
     pub fn new() -> EmptyOwnerMap {
         EmptyOwnerMap {
             address_ren_board: AddressRenBoard::new(),
-            owner: [0; 21*21],
+            territory: EmptyRenTerritory::new(),
             space: RenAddressMap::new(),
         }
     }
 
-    pub fn get_owner(&self, index:usize) -> usize {
-        self.owner[index]
+    pub fn get_territory(&self) -> &EmptyRenTerritory {
+        &self.territory
     }
 
-    pub fn set_owner(&mut self, index:usize, empty_owner:usize) {
-        self.owner[index] = empty_owner;
-    }
-
-    /// 表示用など。
-    pub fn iter_owner(&self) -> std::slice::Iter<usize> {
-        self.owner.iter()
-    }
-
-    /// キーを変更。
-    pub fn change_key(&mut self, ren_id_before:i16, ren_id_after:i16){
-        self.owner[ren_id_after as usize] = self.owner[ren_id_before as usize];
-        self.owner[ren_id_before as usize] = 0;
+    pub fn get_mut_territory(&mut self) -> &mut EmptyRenTerritory {
+        &mut self.territory
     }
 
     /// 目つぶしなら真。
@@ -54,7 +43,7 @@ impl EmptyOwnerMap {
             return false;
         }
 
-        let owner = self.get_owner(target as usize);
+        let owner = self.territory.get_owner(target as usize);
         if owner == 0 || owner == 3 {
             return false;
         }

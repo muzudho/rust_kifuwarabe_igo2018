@@ -6,51 +6,39 @@
 /// 3. 黒石と白石の両方に隣接する。
 
 use std;
-use std::collections::HashMap;
 
 pub struct EmptyRenTerritory {
-    // 連ID に紐づく、所有者☆（＾～＾）
-    pub value: HashMap<i16,i8>
+    /// 空連IDに紐づく占有者。番地でアクセスするので、ボード形式で持つ☆（＾～＾）
+    /// 空連の占有者は、以下のいずれか☆（＾～＾）
+    /// 0. 未調査、または 隣接する石がない。
+    /// 1. 黒石か枠のいずれかだけに隣接する。
+    /// 2. 白石か枠のいずれかだけに隣接する。
+    /// 3. 黒石と白石の両方に隣接する。
+    owner: [usize; 21*21],
 }
 impl EmptyRenTerritory {
-    pub fn new()-> EmptyRenTerritory {
+    pub fn new() -> EmptyRenTerritory {
         EmptyRenTerritory {
-            value: HashMap::new(),
+            owner: [0; 21*21],
         }
     }
 
-    pub fn set(&mut self, ren_id:i16, owner:i8) {
-        self.value.insert(ren_id, owner);
+    pub fn get_owner(&self, index:usize) -> usize {
+        self.owner[index]
     }
 
-    pub fn get(&self, ren_id:i16) -> Option<&i8> {
-        self.value.get(&ren_id)
+    pub fn set_owner(&mut self, index:usize, empty_owner:usize) {
+        self.owner[index] = empty_owner;
     }
 
-    pub fn iter(&self) -> std::collections::hash_map::Iter<i16, i8> {
-        self.value.iter()
-    }
-
-    pub fn contains_key(&self, ren_id:i16) -> bool {
-        self.value.contains_key(&ren_id)
-    }
-
-    pub fn remove(&mut self, ren_id:i16) -> Option<i8> {
-        self.value.remove(&ren_id)
+    /// 表示用など。
+    pub fn iter_owner(&self) -> std::slice::Iter<usize> {
+        self.owner.iter()
     }
 
     /// キーを変更。
     pub fn change_key(&mut self, ren_id_before:i16, ren_id_after:i16){
-        match self.remove(ren_id_before) {
-            Some(owner) => {
-                if self.contains_key(ren_id_after) {
-                    panic!("キーを変更しようとしたら、既存だった。");
-                } else {
-                    // 無ければ、ベクターを丸ごと移動。
-                    self.set(ren_id_after, owner);
-                }
-            },
-            None => {panic!("ren_id_before: {}, ren_id_after: {}.", ren_id_before, ren_id_after);}
-        };
+        self.owner[ren_id_after as usize] = self.owner[ren_id_before as usize];
+        self.owner[ren_id_before as usize] = 0;
     }
 }
