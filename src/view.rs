@@ -1,4 +1,3 @@
-use address_ren_board::*;
 use board::Board;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
@@ -68,22 +67,22 @@ pub fn show_board_by_number(board:&Board) {
 pub fn show_address_ren_board(pos:&Position) {
     println!("Ren ID board: ");
     for (i, ren_id) in pos.get_ren_database().get_address_stone_ren_board().iter().enumerate() {
-        if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
+        if i == (pos.get_board().get_size()+2) * (pos.get_board().get_size()+2) {
             break;
         }
         print!("{:4}, ", ren_id);
-        if i % (pos.board.get_size() + 2) == (pos.board.get_size() + 1) {
+        if i % (pos.get_board().get_size() + 2) == (pos.get_board().get_size() + 1) {
             println!();
         }
     }
 
     println!("Empty ren ID board: ");
     for (i, ren_id) in pos.get_ren_database().get_address_empty_ren_board().iter().enumerate() {
-        if i == (pos.board.get_size()+2) * (pos.board.get_size()+2) {
+        if i == (pos.get_board().get_size()+2) * (pos.get_board().get_size()+2) {
             break;
         }
         print!("{:4}, ", ren_id);
-        if i % (pos.board.get_size() + 2) == (pos.board.get_size() + 1) {
+        if i % (pos.get_board().get_size() + 2) == (pos.get_board().get_size() + 1) {
             println!();
         }
     }

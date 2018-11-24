@@ -60,7 +60,7 @@ fn main() {
             show_board_address(conf.board_size);
 
             // 盤を表示☆（＾～＾）
-            show_board_by_number(&pos.board);
+            show_board_by_number(&pos.get_board());
 
             // 全部の交点に、連のIDを振る。
             check_liberty_all_points(&mut pos);

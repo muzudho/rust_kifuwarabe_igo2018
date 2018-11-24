@@ -23,6 +23,7 @@ extern crate serde_json;
 use std::fs;
 
 use kifuwarabe_igo2018::*;
+use address_ren_board_searcher::*;
 use config_file::Config;
 use liberty::*;
 use position_file::PositionFile;
@@ -61,6 +62,7 @@ fn main() {
     // 盤面表示☆（＾～＾）
     show_board(&pos.board);
 
+    let mut address_ren_board_searcher = AddressRenBoardSearcher::new();
     let mut record = Record::new();
     // 代入ではなく、コピーを作っている☆（*＾～＾*）
     let mut pos = Position::default(pos.board, 0, pos.turn);
@@ -70,46 +72,46 @@ fn main() {
 
     {
         // 試し打ち☆（＾～＾）
-        do_move(convert_code_to_address(303, pos.board.get_size()), &mut pos, &mut record);
+        do_move(convert_code_to_address(303, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // アンドゥ☆（＾～＾）
         undo_move(&mut pos, &mut record);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
     }
 
     {
         // 試し打ち☆（＾～＾）
-        do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
+        do_move(convert_code_to_address(603, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // 試し打ち☆（＾～＾）
-        do_move(convert_code_to_address(306, pos.board.get_size()), &mut pos, &mut record);
+        do_move(convert_code_to_address(306, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // 試し打ち☆（＾～＾）
-        do_move(convert_code_to_address(606, pos.board.get_size()), &mut pos, &mut record);
+        do_move(convert_code_to_address(606, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // アンドゥ☆（＾～＾）
         undo_move(&mut pos, &mut record);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // アンドゥ☆（＾～＾）
         undo_move(&mut pos, &mut record);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // アンドゥ☆（＾～＾）
         undo_move(&mut pos, &mut record);
         // 盤面表示☆（＾～＾）
-        show_board(&pos.board);
+        show_board(&pos.get_board());
     }
 
     println!("３コウのテスト。");
@@ -121,8 +123,8 @@ fn main() {
         // +       +
         // +++++++++
 
-        do_move(convert_code_to_address(103, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(103, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // +       +
@@ -131,8 +133,8 @@ fn main() {
         // +       +
         // +++++++++
 
-        do_move(convert_code_to_address(102, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(102, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // +       +
@@ -141,8 +143,8 @@ fn main() {
         // +       +
         // +++++++++
 
-        do_move(convert_code_to_address(204, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(204, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // +       +
@@ -151,8 +153,8 @@ fn main() {
         // + x     +
         // +++++++++
 
-        do_move(convert_code_to_address(201, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(201, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o     +
@@ -161,8 +163,8 @@ fn main() {
         // + x     +
         // +++++++++
 
-        do_move(convert_code_to_address(303, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(303, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o     +
@@ -171,8 +173,8 @@ fn main() {
         // + x     +
         // +++++++++
 
-        do_move(convert_code_to_address(302, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(302, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o     +
@@ -181,8 +183,8 @@ fn main() {
         // + x     +
         // +++++++++
 
-        do_move(convert_code_to_address(404, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(404, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o     +
@@ -191,8 +193,8 @@ fn main() {
         // + x x   +
         // +++++++++
 
-        do_move(convert_code_to_address(401, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(401, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o   +
@@ -201,8 +203,8 @@ fn main() {
         // + x x   +
         // +++++++++
 
-        do_move(convert_code_to_address(503, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(503, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o   +
@@ -211,8 +213,8 @@ fn main() {
         // + x x   +
         // +++++++++
 
-        do_move(convert_code_to_address(502, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(502, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o   +
@@ -221,8 +223,8 @@ fn main() {
         // + x x   +
         // +++++++++
 
-        do_move(convert_code_to_address(604, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(604, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o   +
@@ -231,8 +233,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(601, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(601, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -241,8 +243,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(703, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(703, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -251,8 +253,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(702, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(702, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -261,8 +263,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(202, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(202, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -271,8 +273,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(403, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(403, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -281,8 +283,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(602, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(602, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -291,8 +293,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(203, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(203, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -301,8 +303,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(402, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(402, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -311,8 +313,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(603, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -321,8 +323,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(202, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(202, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -331,8 +333,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(403, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(403, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -341,8 +343,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(602, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(602, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -351,8 +353,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(203, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(203, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -361,8 +363,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(402, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(402, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +
@@ -371,8 +373,8 @@ fn main() {
         // + x x x +
         // +++++++++
 
-        do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
-        show_board(&pos.board);
+        do_move(convert_code_to_address(603, pos.get_board().get_size()), &mut pos, &mut record, &mut address_ren_board_searcher);
+        show_board(&pos.get_board());
         show_super_ko(&record);
         // +++++++++
         // + o o o +

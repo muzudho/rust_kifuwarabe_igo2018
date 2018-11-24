@@ -9,7 +9,6 @@ extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
 pub mod address_ren_board_searcher;
-pub mod address_ren_board;
 pub mod best_move;
 pub mod board;
 pub mod config_file;
@@ -101,7 +100,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
                 None => {panic!("Adjacent: {}.", adjacent_ren_id)},
             };
 
-            pos.board.fill_by_vec(&adjacent_ren_addr_vec, 0);
+            pos.get_mut_board().fill_by_vec(&adjacent_ren_addr_vec, 0);
 
             pos.get_mut_ren_database().get_mut_address_stone_ren_board().fill_by_vec(&adjacent_ren_addr_vec, 0);
 
@@ -119,7 +118,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
 /// # Return.
 /// - パスしたら真。
 pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_board_searcher:&mut AddressRenBoardSearcher) -> bool {
-    println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.board.get_size()));
+    println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.get_board().get_size()));
 
     record.count_up();
 
@@ -128,15 +127,18 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
         return true;
     }
 
-    pos.board.set(target, pos.turn);
-    record.set_current(target as i16, pos.board.get_hash());
+    {
+        let turn = pos.turn;
+        pos.get_mut_board().set(target, turn);
+    }
+    record.set_current(target as i16, pos.get_board().get_hash());
     // 空連を切る。
     cut_empty_ren(pos, target, address_ren_board_searcher);
 
-    let top = pos.board.get_top_of(target); // 上の番地。
-    let right = pos.board.get_right_of(target); // 右。
-    let bottom = pos.board.get_bottom_of(target); // 下。
-    let left = pos.board.get_left_of(target); // 左。
+    let top = pos.get_board().get_top_of(target); // 上の番地。
+    let right = pos.get_board().get_right_of(target); // 右。
+    let bottom = pos.get_board().get_bottom_of(target); // 下。
+    let left = pos.get_board().get_left_of(target); // 左。
 
 
     // TODO 石が隣接していれば、連が変わる☆（＾～＾） 0～4つの連が隣接している☆（＾～＾）
@@ -145,20 +147,20 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
     // - [v] 連のIDの更新。
     // TODO - [ ] 連の要素の更新。
     let mut small_id = target as i16;
-    small_id = if pos.board.get(top) == pos.turn {
+    small_id = if pos.get_board().get(top) == pos.turn {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
         refill_address_ren_board(target, top, pos)
     } else {small_id};
-    small_id = if pos.board.get(right) == pos.turn {
+    small_id = if pos.get_board().get(right) == pos.turn {
         println!("Do move: 右とつながる。");
         refill_address_ren_board(target, right, pos)
     } else {small_id};
-    small_id = if pos.board.get(bottom) == pos.turn {
+    small_id = if pos.get_board().get(bottom) == pos.turn {
         println!("Do move: 下とつながる。");
         refill_address_ren_board(target, bottom, pos)
     } else {small_id};
-    small_id = if pos.board.get(left) == pos.turn {
+    small_id = if pos.get_board().get(left) == pos.turn {
         println!("Do move: 左とつながる。");
         refill_address_ren_board(target, left, pos)
     } else {small_id};
@@ -171,7 +173,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
     pos.get_mut_ren_database().get_mut_stone_ren_map().add_addr(small_id, target as i16);
 
     // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
-    let target_liberty_count = count_liberty_at_point(target, &pos.board);
+    let target_liberty_count = count_liberty_at_point(target, &pos.get_board());
     println!("Do move: Target_liberty_count: {}.", target_liberty_count);
     pos.liberty_count_map.add(small_id as usize, i16::from(target_liberty_count - 1));
 
@@ -183,7 +185,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
 
     // TODO 隣接しているのが相手の石で、呼吸点が 1 なら、その連は取れる☆（＾～＾）
     let opponent = get_opponent(pos.turn);
-    if pos.board.get(top) == opponent {
+    if pos.get_board().get(top) == opponent {
         println!("Do move: 上に相手の石。");
         peel_off_by_ren_id(top, pos, record);
 
@@ -192,7 +194,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
             pos.ko = top as i16;
         }
     }
-    if pos.board.get(right) == opponent {
+    if pos.get_board().get(right) == opponent {
         println!("Do move: 右に相手の石。");
         peel_off_by_ren_id(right, pos, record);
 
@@ -201,7 +203,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
             pos.ko = right as i16;
         }
     }
-    if pos.board.get(bottom) == opponent {
+    if pos.get_board().get(bottom) == opponent {
         println!("Do move: 下に相手の石。");
         peel_off_by_ren_id(bottom, pos, record);
 
@@ -210,7 +212,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
             pos.ko = bottom as i16;
         }
     }
-    if pos.board.get(left) == opponent {
+    if pos.get_board().get(left) == opponent {
         println!("Do move: 左に相手の石。");
         peel_off_by_ren_id(left, pos, record);
 
@@ -242,10 +244,10 @@ pub fn undo_move(pos:&mut Position, record:&mut Record) {
             return;
         },
     };
-    println!("Undo move: {:04}.", convert_address_to_code(last.move_addr as usize, pos.board.get_size()));
+    println!("Undo move: {:04}.", convert_address_to_code(last.move_addr as usize, pos.get_board().get_size()));
 
     // 置いた石を取り除く。
-    pos.board.set(last.move_addr as usize, 0);
+    pos.get_mut_board().set(last.move_addr as usize, 0);
 
     // TODO ウチアゲた石も戻したい。
 }
@@ -306,9 +308,9 @@ pub fn get_opponent(color:i8) -> i8 {
 /// * `record` - スーパーコウの判定に使う予定。
 pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     
-    let top = target-(pos.board.get_size()+2); // 上の番地。
+    let top = target-(pos.get_board().get_size()+2); // 上の番地。
     let right = target+1; // 右。
-    let bottom = target+(pos.board.get_size()+2); // 下。
+    let bottom = target+(pos.get_board().get_size()+2); // 下。
     let left = target-1; // 左。
     let top_ren_id = pos.get_ren_database().get_address_stone_ren_board().get(top) as usize; // 上の連のID。
     let right_ren_id = pos.get_ren_database().get_address_stone_ren_board().get(right) as usize; // 上の連のID。
@@ -335,7 +337,7 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
 
     if
         // 空点以外は、着手禁止点。
-        pos.board.get(target) != 0
+        pos.get_board().get(target) != 0
         // コウ（前にアゲた１つの石の番地）なら、着手禁止点。
         || target as i16 == pos.ko
     {
@@ -354,17 +356,17 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
 
     if
         // 隣に空点があれば、自殺手ではない。
-        pos.board.get(top) == 0 || pos.board.get(right) == 0 || pos.board.get(bottom) == 0 || pos.board.get(left) == 0
+        pos.get_board().get(top) == 0 || pos.get_board().get(right) == 0 || pos.get_board().get(bottom) == 0 || pos.get_board().get(left) == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (pos.board.get(top) == pos.turn && top_ren_id < 1000 && 1<pos.liberty_count_map.get(top_ren_id))
-        || (pos.board.get(right) == pos.turn && right_ren_id < 1000 && 1<pos.liberty_count_map.get(right_ren_id))
-        || (pos.board.get(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.liberty_count_map.get(bottom_ren_id))
-        || (pos.board.get(left) == pos.turn && left_ren_id < 1000 && 1<pos.liberty_count_map.get(left_ren_id))
+        || (pos.get_board().get(top) == pos.turn && top_ren_id < 1000 && 1<pos.liberty_count_map.get(top_ren_id))
+        || (pos.get_board().get(right) == pos.turn && right_ren_id < 1000 && 1<pos.liberty_count_map.get(right_ren_id))
+        || (pos.get_board().get(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.liberty_count_map.get(bottom_ren_id))
+        || (pos.get_board().get(left) == pos.turn && left_ren_id < 1000 && 1<pos.liberty_count_map.get(left_ren_id))
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (pos.board.get(top) == opponent && top_ren_id < 1000 && pos.liberty_count_map.get(top_ren_id) < 2)
-        || (pos.board.get(right) == opponent && right_ren_id < 1000 && pos.liberty_count_map.get(right_ren_id) < 2)
-        || (pos.board.get(bottom) == opponent && bottom_ren_id < 1000 && pos.liberty_count_map.get(bottom_ren_id) < 2)
-        || (pos.board.get(left) == opponent && left_ren_id < 1000 && pos.liberty_count_map.get(left_ren_id) < 2)
+        || (pos.get_board().get(top) == opponent && top_ren_id < 1000 && pos.liberty_count_map.get(top_ren_id) < 2)
+        || (pos.get_board().get(right) == opponent && right_ren_id < 1000 && pos.liberty_count_map.get(right_ren_id) < 2)
+        || (pos.get_board().get(bottom) == opponent && bottom_ren_id < 1000 && pos.liberty_count_map.get(bottom_ren_id) < 2)
+        || (pos.get_board().get(left) == opponent && left_ren_id < 1000 && pos.liberty_count_map.get(left_ren_id) < 2)
     {
         return false;
     }
@@ -377,8 +379,8 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
 pub fn pick_move(pos:&Position, record:&Record) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
-    let left_top = (pos.board.get_size()+2) + 1;
-    let rigth_bottom = (pos.board.get_size()+2) * pos.board.get_size() + pos.board.get_size();
+    let left_top = (pos.get_board().get_size()+2) + 1;
+    let rigth_bottom = (pos.get_board().get_size()+2) * pos.get_board().get_size() + pos.get_board().get_size();
 
     for target in left_top..rigth_bottom+1 {
         if !is_forbidden(target, pos, record) {
@@ -419,7 +421,7 @@ pub fn tryout(pos:&mut Position, record:&mut Record, address_ren_board_searcher:
 
         // 盤を表示☆（＾～＾）
         println!("Time: {}, Turn: {}.", i_time, pos.turn);
-        show_board(&pos.board);
+        show_board(&pos.get_board());
 
         // 手番を反転する☆（＾～＾）
         pos.turn = get_opponent(pos.turn);

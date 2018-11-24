@@ -1,15 +1,14 @@
 /// 局面☆（＾▽＾）
 
 use board::Board;
+use address_ren_board_searcher::*;
 use liberty_count_map::LibertyCountMap;
 use ren_database::*;
-use address_ren_board::AddressRenBoard;
-use address_ren_board_searcher::*;
 
 /// ゲーム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数みたいな便利さで使っている☆（＾～＾）
 pub struct Position {
     /// 枠付きの盤面。
-    pub board: Board,
+    board: Board,
     /// コウの番地。
     pub ko: i16,
     /// 手番。1:黒、2:白。
@@ -30,7 +29,15 @@ impl Position {
             ren_database: RenDatabase::new(),
         }
     }
+
+    pub fn get_board(&self) -> &Board {
+        &self.board
+    }
     
+    pub fn get_mut_board(&mut self) -> &mut Board {
+        &mut self.board
+    }
+
     pub fn get_ren_database(&self) -> &RenDatabase {
         &self.ren_database
     }
@@ -56,21 +63,31 @@ impl Position {
     ///
     /// だから、枠の中の 左上隅は 5、右下隅は 10 で、算出方法は以下の通り☆
     pub fn get_left_top_on_board(&self) -> usize {
-        (self.board.get_size()+2) + 1
+        (self.get_board().get_size()+2) + 1
     }
 
     /// 枠の中の右下隅の番地。
     pub fn get_right_bottom_on_board(&self) -> usize {
-        (self.board.get_size()+2) * self.board.get_size() + self.board.get_size()
+        (self.get_board().get_size()+2) * self.get_board().get_size() + self.get_board().get_size()
     }
 
     /// 上隣の番地。
     pub fn get_top_of(&self, target:usize) -> usize {
-        target-(self.board.get_size()+2)
+        target-(self.get_board().get_size()+2)
+    }
+
+    /// 右隣の番地。
+    pub fn get_right_of(&self, target:usize) -> usize {
+        target+1
     }
 
     /// 下隣の番地。
     pub fn get_bottom_of(&self, target:usize) -> usize {
-        target+(self.board.get_size()+2)
+        target+(self.get_board().get_size()+2)
+    }
+
+    /// 左隣の番地。
+    pub fn get_left_of(&self, target:usize) -> usize {
+        target-1
     }
 }

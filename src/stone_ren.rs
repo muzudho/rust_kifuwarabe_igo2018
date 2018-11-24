@@ -1,6 +1,5 @@
 /// 石の連に関するものだぜ☆（＾～＾）
 
-use address_ren_board::*;
 use position::Position;
 use ren_database::*;
 
@@ -9,7 +8,7 @@ use ren_database::*;
 /// * `address_ren_board` - 1000以上はtemporaryな数。
 pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
     // 空点 かつ、まだ今回マークしていない --> 呼吸点+1。
-    if pos.board.get(target) == 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000 {
+    if pos.get_board().get(target) == 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000 {
         pos.liberty_count_map.add(ren_id as usize, 1);
     }
     
@@ -18,11 +17,11 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
         pos.get_ren_database().get_address_stone_ren_board().get(target) != 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000)
         || // または、
         // 探している石でなければ終了。
-        pos.board.get(target) != color
+        pos.get_board().get(target) != color
     {
         // 空点 --> 「自分の連ID + 1000」で ID上書き
         // 1000以上の連ID --> 同上。
-        if pos.board.get(target) == 0 || 1000 <= pos.get_ren_database().get_address_stone_ren_board().get(target) {
+        if pos.get_board().get(target) == 0 || 1000 <= pos.get_ren_database().get_address_stone_ren_board().get(target) {
             pos.get_mut_ren_database().get_mut_address_stone_ren_board().set(target, ren_id + 1000);
         }
         return;
@@ -60,18 +59,34 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
 /// --> 既存の1～4つの連に番地が1つ増える。
 /// # Arguments.
 /// * 'connecting_addr' - 石を置いて、連がつながるところ。
-pub fn connect_stone_ren(pos:&mut Position, connecting_addr:usize) {
+pub fn connect_stone_ren(pos:&mut Position, color:i8, connecting_addr:usize) {
     // 石の連ID。
 
     // 最小のIDの方に統合する。
 
     // 上隣の同色の連ID。
+    {
+        let adjacent = pos.get_top_of(connecting_addr);
+        // pos.get_board().
+    }
 
     // 右隣の同色の連ID。
+    {
+        let adjacent = pos.get_right_of(connecting_addr);
+
+    }
 
     // 下隣の同色の連ID。
+    {
+        let adjacent = pos.get_bottom_of(connecting_addr);
+
+    }
 
     // 左隣の同色の連ID。
+    {
+        let adjacent = pos.get_left_of(connecting_addr);
+
+    }
 
     // 呼吸点の数え直し。
 }

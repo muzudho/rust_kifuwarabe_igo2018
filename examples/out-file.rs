@@ -31,7 +31,7 @@ fn main() {
     let (pos, pre_move) = OutFile::load_out(19, "out.txt");
 
     // 盤面表示☆（＾～＾）
-    show_board(&pos.board);
+    show_board(&pos.get_board());
 
     println!("Ko: '{}'.", pos.ko);
     println!("Turn: '{}'.", pos.turn);

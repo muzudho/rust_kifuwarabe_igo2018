@@ -60,13 +60,13 @@ fn main() {
             };
 
             // 盤面表示☆（＾～＾）
-            show_board(&pos.board);
+            show_board(&pos.get_board());
             println!("Turn: '{}'.", pos.turn);
 
             // 相手の指した手を棋譜に入れる。
             println!("Pre move: '{}'.", pre_move);
             record.count_up();
-            record.set_current(convert_code_to_address(pre_move, pos.board.get_size()) as i16, pos.board.get_hash());
+            record.set_current(convert_code_to_address(pre_move, pos.get_board().get_size()) as i16, pos.get_board().get_hash());
             // TODO 打ち上げた番地が分からん☆（＾～＾）アンドゥで困る☆（＾～＾）
             println!("Record size: '{}'.", record.len());
 
@@ -75,7 +75,7 @@ fn main() {
 
             // 試し打ちをする☆（＾～＾）
             let legal_moves = pick_move(&pos, &record);
-            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut address_ren_board_searcher), pos.board.get_size());
+            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut address_ren_board_searcher), pos.get_board().get_size());
             println!("BestMove: '{}'.", move_code);
 
             // in.txt ファイル出力。

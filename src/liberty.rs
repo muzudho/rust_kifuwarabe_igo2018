@@ -55,7 +55,7 @@ pub fn check_liberty_all_points(pos:&mut Position) {
     let rigth_bottom = pos.get_right_bottom_on_board();
 
     for start in left_top..rigth_bottom+1 { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
-        let color = pos.board.get(start); // 開始地点にある石の色。この石と同じ色を探す。
+        let color = pos.get_board().get(start); // 開始地点にある石の色。この石と同じ色を探す。
 
         // 黒石か白石は、呼吸点を探す。
         if color==1 || color==2 {
