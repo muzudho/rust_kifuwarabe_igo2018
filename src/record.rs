@@ -34,8 +34,12 @@ impl Record {
         }
     }
 
-    pub fn countUp(&mut self) {
+    pub fn count_up(&mut self) {
         self.items.push(RecordItem::new());
+    }
+
+    pub fn count_down(&mut self) -> Option<RecordItem> {
+        self.items.pop()
     }
 
     pub fn get_mut_current(&mut self) -> &mut RecordItem {

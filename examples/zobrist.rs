@@ -68,25 +68,47 @@ fn main() {
     // 全部の交点に、連のIDを振る。
     check_liberty_all_points(&mut pos);
 
-    // 試し打ち☆（＾～＾）
-    do_move(convert_code_to_address(303, pos.board.get_size()), &mut pos, &mut record);
-    // 盤面表示☆（＾～＾）
-    show_board(&pos.board);
+    {
+        // 試し打ち☆（＾～＾）
+        do_move(convert_code_to_address(303, pos.board.get_size()), &mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
 
-    // TODO アンドゥしたい☆（＾～＾）
+        // アンドゥ☆（＾～＾）
+        undo_move(&mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
+    }
 
-    // 試し打ち☆（＾～＾）
-    do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
-    // 盤面表示☆（＾～＾）
-    show_board(&pos.board);
+    {
+        // 試し打ち☆（＾～＾）
+        do_move(convert_code_to_address(603, pos.board.get_size()), &mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
 
-    // 試し打ち☆（＾～＾）
-    do_move(convert_code_to_address(306, pos.board.get_size()), &mut pos, &mut record);
-    // 盤面表示☆（＾～＾）
-    show_board(&pos.board);
+        // 試し打ち☆（＾～＾）
+        do_move(convert_code_to_address(306, pos.board.get_size()), &mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
 
-    // 試し打ち☆（＾～＾）
-    do_move(convert_code_to_address(606, pos.board.get_size()), &mut pos, &mut record);
-    // 盤面表示☆（＾～＾）
-    show_board(&pos.board);
+        // 試し打ち☆（＾～＾）
+        do_move(convert_code_to_address(606, pos.board.get_size()), &mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
+
+        // アンドゥ☆（＾～＾）
+        undo_move(&mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
+
+        // アンドゥ☆（＾～＾）
+        undo_move(&mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
+
+        // アンドゥ☆（＾～＾）
+        undo_move(&mut pos, &mut record);
+        // 盤面表示☆（＾～＾）
+        show_board(&pos.board);
+    }
 }

@@ -111,7 +111,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
 pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     println!("Move: {} {:04}.", target, convert_address_to_code(target, pos.board.get_size()));
 
-    record.countUp();
+    record.count_up();
     record.get_mut_current().move_addr = target as i16;
 
     if target == 0 {
@@ -219,6 +219,23 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     pos.turn = opponent;
 
     false
+}
+
+/// TODO 一手戻すぜ☆（＾～＾）
+pub fn undo_move(pos:&mut Position, record:&mut Record) {
+    let last = match record.count_down() {
+        Some(n) => n,
+        None => {
+            println!("Undo fail.");
+            return;
+        },
+    };
+    println!("Undo move: {:04}.", convert_address_to_code(last.move_addr as usize, pos.board.get_size()));
+
+    // 置いた石を取り除く。
+    pos.board.set(last.move_addr as usize, 0);
+
+    // TODO ウチアゲた石も戻したい。
 }
 
 /// 合法手の中からランダムに１つ選んで打つ☆（＾～＾） 無ければパス☆（＾～＾）
