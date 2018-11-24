@@ -121,6 +121,8 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
 
     pos.board.set(target, pos.turn);
     record.set_current(target as i16, pos.board.get_hash());
+    // 空連を切る。
+    cut_empty_ren(pos, target);
 
     let top = pos.board.get_top_of(target); // 上の番地。
     let right = pos.board.get_right_of(target); // 右。

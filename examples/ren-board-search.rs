@@ -87,6 +87,7 @@ fn main() {
         println!("mark: {}.", mark);
 
         pos.address_ren_board_searcher.count_up_mark();
+        let mut shrink: Vec<i16> = Vec::new();
 
         {
             // 空連12 の 0102 点から上を探索。
@@ -95,8 +96,12 @@ fn main() {
             print!("空連{} の {:04} 点から上を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));
             if min_addr == 0 {
                 println!("空連なし。");
+            } else if min_addr == ren_id {
+                // 連ID が被っている。
+                print!("縮まった空連: {}, 番地: ", min_addr);
+                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
             } else {
-                print!("新しい空連: {}, 番地: ", min_addr);
+                print!("分かれた空連: {}, 番地: ", min_addr);
                 show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
             }
         }
@@ -108,8 +113,12 @@ fn main() {
             print!("空連{} の {:04} 点から右を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
             if min_addr == 0 {
                 println!("空連なし。");
+            } else if min_addr == ren_id {
+                // 連ID が被っている。
+                print!("縮まった空連: {}, 番地: ", min_addr);
+                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
             } else {
-                print!("新しい空連: {}, 番地: ", min_addr);
+                print!("分かれた空連: {}, 番地: ", min_addr);
                 show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
             }
         }
@@ -121,8 +130,12 @@ fn main() {
             print!("空連{} の {:04} 点から下を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
             if min_addr == 0 {
                 println!("空連なし。");
+            } else if min_addr == ren_id {
+                // 連ID が被っている。
+                print!("縮まった空連: {}, 番地: ", min_addr);
+                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
             } else {
-                print!("新しい空連: {}, 番地: ", min_addr);
+                print!("分かれた空連: {}, 番地: ", min_addr);
                 show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
             }
         }
@@ -134,10 +147,26 @@ fn main() {
             print!("空連{} の {:04} 点から左を探索。", ren_id, convert_address_to_code(start, pos.board.get_size()));        
             if min_addr == 0 {
                 println!("空連なし。");
+            } else if min_addr == ren_id {
+                // 連ID が被っている。
+                print!("縮まった空連: {}, 番地: ", min_addr);
+                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
             } else {
-                print!("新しい空連: {}, 番地: ", min_addr);
+                print!("分かれた空連: {}, 番地: ", min_addr);
                 show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
             }
+        }
+
+        if 0 < shrink.len() {
+            pos.empty_owner_map.space.remove(ren_id);
+            pos.empty_owner_map.space.insert(ren_id, shrink);
+
+            print!("縮まった空連の作り直し。番地: ");
+            match &pos.empty_owner_map.space.get(ren_id) {
+                Some(s) => show_vector_i16(s),
+                None => {},
+            };
+            println!(".");
         }
     }
 }

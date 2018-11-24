@@ -30,6 +30,7 @@ impl AddressRenBoardSearcher {
         self.mark += 1;
     }
 
+    /// 先に count_up_mark() を使うこと。
     /// 指定の 連ID が入っているところだけを探す。
     /// 
     /// 探索した番地のなかで、一番小さい番地 を返す。探索に失敗したら 0 を返す。
@@ -47,9 +48,6 @@ impl AddressRenBoardSearcher {
         println!("address_ren_board.get({}): {}.", start, address_ren_board.get(start));
 
         self.filter_ren = ren_id;
-
-        // 今回使うマーカー。
-        // self.mark += 1;
 
         // 最初にマークしておくところ。
         self.mark_board[first_mark_target] = self.mark;
