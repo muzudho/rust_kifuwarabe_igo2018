@@ -183,3 +183,26 @@ fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
     // 左。
     walk_empty(ren_id, pos, left);
 }
+
+// 石を置いたところの空点は消える☆（＾～＾）
+pub fn delete_empty(pos:&mut Position, target:usize) {
+
+    // 空連ID。
+    let empty_ren_id = pos.empty_owner_map.address_ren_board.get(target);
+
+    // その番地のリスト。
+
+    // 指定の連IDを探索し、一番小さい番地を返す関数。
+
+    // 上側の空連を起点に探索し、一番小さい番地。
+
+    // 右側の空連を起点に探索し、一番小さい番地。
+
+    // 下側の空連を起点に探索し、一番小さい番地。
+
+    // 左側の空連を起点に探索し、一番小さい番地。
+
+    // 探索前の空連は破棄。
+
+    // 新しい空連を追加。
+}

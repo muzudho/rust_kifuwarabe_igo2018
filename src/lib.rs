@@ -8,6 +8,8 @@ use rand::Rng;
 extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
+pub mod address_ren_board_searcher;
+pub mod address_ren_board;
 pub mod best_move;
 pub mod board;
 pub mod config_file;
@@ -19,7 +21,6 @@ pub mod position_file;
 pub mod position;
 pub mod record;
 pub mod ren_address_map;
-pub mod address_ren_board;
 pub mod view;
 pub mod zobrist_hash;
 
@@ -121,10 +122,10 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     pos.board.set(target, pos.turn);
     record.set_current(target as i16, pos.board.get_hash());
 
-    let top = target-(pos.board.get_size()+2); // 上の番地。
-    let right = target+1; // 右。
-    let bottom = target+(pos.board.get_size()+2); // 下。
-    let left = target-1; // 左。
+    let top = pos.board.get_top_of(target); // 上の番地。
+    let right = pos.board.get_right_of(target); // 右。
+    let bottom = pos.board.get_bottom_of(target); // 下。
+    let left = pos.board.get_left_of(target); // 左。
 
 
     // TODO 石が隣接していれば、連が変わる☆（＾～＾） 0～4つの連が隣接している☆（＾～＾）

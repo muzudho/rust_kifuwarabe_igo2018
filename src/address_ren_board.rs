@@ -30,5 +30,4 @@ impl AddressRenBoard {
             self.value[*addr as usize] = ren_id;
         }
     }
-
 }

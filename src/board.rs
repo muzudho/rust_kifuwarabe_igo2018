@@ -60,4 +60,23 @@ impl Board {
         }
     }
 
+    // 上隣の番地。
+    pub fn get_top_of(&self, target:usize) -> usize {
+        target-(self.size+2)
+    }
+
+    // 右隣の番地。
+    pub fn get_right_of(&self, target:usize) -> usize {
+        target+1
+    }
+
+    // 下隣の番地。
+    pub fn get_bottom_of(&self, target:usize) -> usize {
+        target+(self.size+2)
+    }
+
+    // 左隣の番地。
+    pub fn get_left_of(&self, target:usize) -> usize {
+        target-1
+    }
 }

@@ -5,6 +5,7 @@ use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use ren_address_map::RenAddressMap;
 use address_ren_board::AddressRenBoard;
+use address_ren_board_searcher::*;
 
 /// ゲーム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数みたいな便利さで使っている☆（＾～＾）
 pub struct Position {
@@ -22,6 +23,8 @@ pub struct Position {
     pub ren_address_map: RenAddressMap,
     /// 計算用。空連の占有者。 0:未調査、1:黒、2:白、3:黒白両方。
     pub empty_owner_map: EmptyOwnerMap,
+    /// 計算用。
+    pub address_ren_board_searcher: AddressRenBoardSearcher,
 }
 impl Position {
     pub fn default(board_stones:Board, ko_address:i16, turn_count:i8) -> Position {
@@ -33,6 +36,7 @@ impl Position {
             liberty_count_map: LibertyCountMap::new(),
             ren_address_map: RenAddressMap::new(),
             empty_owner_map: EmptyOwnerMap::new(),
+            address_ren_board_searcher: AddressRenBoardSearcher::new(),
         }
     }
 
