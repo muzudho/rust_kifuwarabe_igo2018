@@ -3,7 +3,7 @@ use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
 use position::Position;
 use record::*;
-use ren_address_map::RenAddressMap;
+use ren_database::*;
 
 /// 盤の表示☆（＾～＾）
 pub fn show_board(board:&Board){
@@ -109,12 +109,12 @@ pub fn show_empty_owner(empty_owner_map:&EmptyOwnerMap) {
     }
 }
 
-/// 連の要素を表示☆（＾～＾）
-pub fn show_ren_address_map(ren_address_map:&RenAddressMap) {
+/// すべての連の、すべての番地を表示☆（＾～＾）
+pub fn show_ren_address_map(ren_map:&RenMap) {
     println!("Ren element: ");
-    for (ren_id, addr_vec) in ren_address_map.iter() {
+    for (ren_id, ren_obj) in ren_map.iter() {
         print!("[{:3}] ", ren_id);
-        for addr in addr_vec.iter() {
+        for addr in ren_obj.iter_addr() {
             print!("{:3} ", addr);
         }
         println!(".");
@@ -126,6 +126,14 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
     print!("Legal moves: ");
     for legal_move in legal_moves {
         print!("{}, ", legal_move);
+    }
+    println!(".");
+}
+
+/// 連が占有する番地を表示☆（＾～＾）
+pub fn show_ren_addr(ren_obj:&RenObject) {
+    for addr in ren_obj.iter_addr() {
+        print!("{:3}, ", addr);
     }
     println!(".");
 }

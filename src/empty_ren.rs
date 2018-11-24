@@ -1,6 +1,7 @@
 // 空連に関するもの☆（＾～＾）
 
 use position::Position;
+use ren_database::*;
 use view::*;
 
 
@@ -16,7 +17,7 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
 
             // 空点 かつ、連IDが振ってない --> 連IDを振る。隣も調べる。
             pos.empty_owner_map.address_ren_board.set(target, ren_id as i16);
-            pos.empty_owner_map.space.add(ren_id as i16, target as i16);
+            pos.get_mut_ren_database().get_mut_empty_ren_map().add_addr(ren_id as i16, target as i16);
         },
 
         1 => {
@@ -84,7 +85,7 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize) {
     // 石を置いた交点から探索。
     println!("board size: {}.", pos.board.get_size());
     println!("cutting_addr: {}.", cutting_addr);
-    pos.empty_owner_map.space.remove_item(empty_ren_id, cutting_addr as i16);
+    pos.get_mut_ren_database().get_mut_empty_ren_map().remove_addr(empty_ren_id, cutting_addr as i16);
 
     pos.address_ren_board_searcher.count_up_mark();
     let mut shrink: Vec<i16> = Vec::new();
@@ -158,12 +159,12 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize) {
     }
 
     if 0 < shrink.len() {
-        pos.empty_owner_map.space.remove(empty_ren_id);
-        pos.empty_owner_map.space.insert(empty_ren_id, shrink);
+        pos.get_mut_ren_database().get_mut_empty_ren_map().remove_ren(empty_ren_id);
+        pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(empty_ren_id, RenObject::default(empty_ren_id, shrink));
 
         print!("縮まった空連の作り直し。番地: ");
-        match &pos.empty_owner_map.space.get(empty_ren_id) {
-            Some(s) => show_vector_i16(s),
+        match &pos.get_mut_ren_database().get_mut_empty_ren_map().get_ren(empty_ren_id) {
+            Some(ren_obj) => show_ren_addr(ren_obj),
             None => {},
         };
         println!(".");

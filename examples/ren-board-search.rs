@@ -26,6 +26,7 @@ use kifuwarabe_igo2018::*;
 use config_file::Config;
 use position_file::PositionFile;
 use position::Position;
+use ren_database::*;
 use liberty::*;
 use view::*;
 
@@ -77,7 +78,7 @@ fn main() {
 
     // 空連の占有者を表示☆（＾～＾）
     show_empty_owner(&pos.empty_owner_map);
-    show_ren_address_map(&pos.empty_owner_map.space);
+    show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
 
     {
         // 空連12 の上の 0102 点に石を置く☆（＾～＾）
@@ -85,7 +86,7 @@ fn main() {
         let stone_addr = convert_code_to_address(102, pos.board.get_size());
         println!("board size: {}.", pos.board.get_size());
         println!("stone_addr: {}.", stone_addr);
-        pos.empty_owner_map.space.remove_item(ren_id, stone_addr as i16);
+        pos.get_mut_ren_database().get_mut_empty_ren_map().remove_addr(ren_id, stone_addr as i16);
 
         pos.address_ren_board_searcher.count_up_mark();
         let mut shrink: Vec<i16> = Vec::new();
@@ -159,12 +160,12 @@ fn main() {
         }
 
         if !shrink.is_empty() {
-            pos.empty_owner_map.space.remove(ren_id);
-            pos.empty_owner_map.space.insert(ren_id, shrink);
+            pos.get_mut_ren_database().get_mut_empty_ren_map().remove_ren(ren_id);
+            pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(ren_id, RenObject::default(ren_id, shrink));
 
             print!("縮まった空連の作り直し。番地: ");
-            match &pos.empty_owner_map.space.get(ren_id) {
-                Some(s) => show_vector_i16(s),
+            match &pos.get_ren_database().get_empty_ren_map().get_ren(ren_id) {
+                Some(ren_obj) => show_ren_addr(ren_obj),
                 None => {},
             };
             println!(".");

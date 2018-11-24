@@ -1,6 +1,7 @@
 /// 石の連に関するものだぜ☆（＾～＾）
 
 use position::Position;
+use ren_database::*;
 
 /// 連にIDを振り、連の呼吸点も数える。
 /// # Arguments.
@@ -28,15 +29,15 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
 
     // 探している色の石なら 連ID を付ける。検索を開始したセル番号でも振っとく。
     pos.address_ren_board.set(target, ren_id);
-    if ren_id < 1000 && pos.ren_address_map.contains_key(ren_id) {
-        match pos.ren_address_map.get_mut(ren_id) {
-            Some(s) => {s.push(target as i16);}
+    if ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().contains_key(ren_id) {
+        match pos.get_mut_ren_database().get_mut_stone_ren_map().get_mut_ren(ren_id) {
+            Some(ren_obj) => {ren_obj.add_addr(target as i16);}
             None => {panic!("walk_liberty");}
         }
     } else {
-        let mut vec = Vec::new();
-        vec.push(target as i16);
-        pos.ren_address_map.insert(ren_id, vec);
+        // let mut vec = Vec::new();
+        // vec.push(target as i16);
+        pos.get_mut_ren_database().get_mut_stone_ren_map().insert_ren(ren_id, RenObject::default(ren_id, vec![target as i16]));
     }
 
     // 隣を探す。（再帰）

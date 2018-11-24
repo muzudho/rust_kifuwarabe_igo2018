@@ -102,7 +102,7 @@ impl RenMap {
     }
 
     /// 指定した連から、指定した番地を除外する。
-    pub fn remove_item(&mut self, ren_id:i16, removing_addr:i16) {
+    pub fn remove_addr(&mut self, ren_id:i16, removing_addr:i16) {
         // println!("連{} の {}番地を除外。", ren_id, removing_addr);
         match self.get_mut_ren(ren_id) {
             Some(ren_obj) => {
@@ -136,16 +136,23 @@ impl RenMap {
 /// 連。
 pub struct RenObject {
     /// 連ID。
-    pub id: i16,
+    id: i16,
 
     /// 含む番地。
-    pub addresses: Vec<i16>,
+    addresses: Vec<i16>,
 }
 impl RenObject {
     pub fn new() -> RenObject {
         RenObject {
             id: 0,
             addresses: Vec::new(),
+        }
+    }
+
+    pub fn default(ren_id:i16, member_addresses:Vec<i16>) -> RenObject {
+        RenObject {
+            id: ren_id,
+            addresses: member_addresses,
         }
     }
 
@@ -159,14 +166,26 @@ impl RenObject {
         self.addresses.extend(other_ren_obj.iter_addr().cloned());
     }
 
+    pub fn get_id(&self) -> i16 {
+        self.id
+    }
+
     pub fn iter_addr(&self) -> std::slice::Iter<i16> {
         self.addresses.iter()
+    }
+
+    pub fn len_addr(&self) -> usize {
+        self.addresses.len()
     }
 
     /// 指定の番地を除外する。
     pub fn remove_addr(&mut self, addr:i16) {
         let index = self.addresses.iter().position(|&r| r == addr).unwrap();
         self.addresses.remove(index);
+    }
+
+    pub fn to_addr_vec(&self) -> Vec<i16> {
+        self.addresses.to_vec()
     }
 }
 

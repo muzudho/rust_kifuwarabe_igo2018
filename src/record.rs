@@ -1,5 +1,7 @@
 // 棋譜☆（＾～＾）
 
+use ren_database::*;
+
 pub struct RecordItem {
     // 指し手の番地を入れてくだけ☆（＾～＾）
     pub move_addr: i16,
@@ -20,8 +22,15 @@ impl RecordItem {
     }
 
     /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは ren_id を 0 にする。
-    pub fn add_agehama(&mut self, agehama:&Vec<i16>) {
+    pub fn add_agehama_by_vec(&mut self, agehama:&Vec<i16>) {
         for addr in agehama {
+            self.agehama_addrs.push(*addr);
+        }
+    }
+
+    /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは ren_id を 0 にする。
+    pub fn add_agehama_by_ren(&mut self, agehama_ren_obj:&RenObject) {
+        for addr in agehama_ren_obj.iter_addr() {
             self.agehama_addrs.push(*addr);
         }
     }
@@ -57,9 +66,14 @@ impl Record {
         self.items[index].board_hash = board_hash;
     }
 
-    pub fn add_current_agehama(&mut self, agehama:&Vec<i16>){
+    pub fn add_current_agehama_by_vec(&mut self, agehama:&Vec<i16>){
         let index = self.items.len()-1;
-        self.items[index].add_agehama(agehama);
+        self.items[index].add_agehama_by_vec(agehama);
+    }
+
+    pub fn add_current_agehama_by_ren(&mut self, agehama_ren_obj:&RenObject){
+        let index = self.items.len()-1;
+        self.items[index].add_agehama_by_ren(agehama_ren_obj);
     }
 
     /*

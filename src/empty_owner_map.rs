@@ -2,7 +2,7 @@
 
 use address_ren_board::AddressRenBoard;
 use empty_ren_territory::*;
-use ren_address_map::*;
+use ren_database::*;
 
 pub struct EmptyOwnerMap {
     /// 計算用。探索中のマーク。盤上に紐づく空連ID。
@@ -15,16 +15,12 @@ pub struct EmptyOwnerMap {
     /// 2. 白石か枠のいずれかだけに隣接する。
     /// 3. 黒石と白石の両方に隣接する。
     territory: EmptyRenTerritory,
-
-    /// 占有するスペース。連IDに、アドレスを紐づける。
-    pub space: RenAddressMap,
 }
 impl EmptyOwnerMap {
     pub fn new() -> EmptyOwnerMap {
         EmptyOwnerMap {
             address_ren_board: AddressRenBoard::new(),
             territory: EmptyRenTerritory::new(),
-            space: RenAddressMap::new(),
         }
     }
 
@@ -37,7 +33,7 @@ impl EmptyOwnerMap {
     }
 
     /// 目つぶしなら真。
-    pub fn is_eye_filling(&self, color:i8, target:i16) -> bool {
+    pub fn is_eye_filling(&self, color:i8, target:i16, ren_database:&RenDatabase) -> bool {
         let ren_id = self.address_ren_board.get(target as usize);
         if ren_id == 0 {
             return false;
@@ -52,8 +48,8 @@ impl EmptyOwnerMap {
             return false;
         }
 
-        match self.space.get(ren_id as i16) {
-            Some(n) => { 1==n.len() },
+        match ren_database.get_empty_ren_map().get_ren(ren_id as i16) {
+            Some(ren_obj) => { 1 == ren_obj.len_addr() },
             None => { false },
         }
     }

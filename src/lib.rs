@@ -22,7 +22,6 @@ pub mod out_file;
 pub mod position_file;
 pub mod position;
 pub mod record;
-pub mod ren_address_map;
 pub mod ren_database;
 pub mod stone_ren;
 pub mod view;
@@ -32,6 +31,7 @@ use position::Position;
 use empty_ren::*;
 use liberty::*;
 use record::*;
+use ren_database::*;
 use view::*;
 // use zobrist_hash::*;
 
@@ -60,15 +60,18 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
     if self_ren_id < adjacent_ren_id {
         println!("Do move: Self: {}, Adjacent: {}. 新しいIDの方が小さい。", self_ren_id, adjacent_ren_id);
         {
-            let adjacent_addr_vec: &Vec<i16> = match pos.ren_address_map.get(adjacent_ren_id) {
-                Some(s) => {s},
+            let adjacent_ren_addr_vec = match pos.get_ren_database().get_stone_ren_map().get_ren(adjacent_ren_id) {
+                Some(adjacent_ren_obj) => {
+                    adjacent_ren_obj.to_addr_vec()
+                },
                 None => {panic!("Self: {}, Adjacent: {}.", self_ren_id, adjacent_ren_id)},
             };
-            pos.address_ren_board.fill(adjacent_addr_vec, self_ren_id);
+
+            pos.address_ren_board.fill_by_vec(&adjacent_ren_addr_vec, self_ren_id);
         }
 
         // キー変更。
-        pos.ren_address_map.change_key(adjacent_ren_id, self_ren_id);
+        pos.get_mut_ren_database().get_mut_stone_ren_map().change_key(adjacent_ren_id, self_ren_id);
         pos.liberty_count_map.change_key(adjacent_ren_id, self_ren_id);
 
         self_ren_id
@@ -94,18 +97,20 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
 
         // 除去されるアドレス一覧。
         {
-            let adjacent_addr_vec: &Vec<i16> = match pos.ren_address_map.get(adjacent_ren_id) {
-                Some(s) => {s},
+            let adjacent_ren_addr_vec = match pos.get_ren_database().get_stone_ren_map().get_ren(adjacent_ren_id) {
+                Some(adjacent_ren_obj) => (*adjacent_ren_obj).to_addr_vec(),
                 None => {panic!("Adjacent: {}.", adjacent_ren_id)},
             };
-            pos.board.fill(adjacent_addr_vec, 0);
-            pos.address_ren_board.fill(adjacent_addr_vec, 0);
 
-            record.add_current_agehama(adjacent_addr_vec);
+            pos.board.fill_by_vec(&adjacent_ren_addr_vec, 0);
+
+            pos.address_ren_board.fill_by_vec(&adjacent_ren_addr_vec, 0);
+
+            record.add_current_agehama_by_vec(&adjacent_ren_addr_vec);
         }
 
         // キー削除。
-        pos.ren_address_map.remove(adjacent_ren_id);
+        pos.get_mut_ren_database().get_mut_stone_ren_map().remove_ren(adjacent_ren_id);
         pos.liberty_count_map.set(adjacent_ren_id as usize, 0);
     }
 }
@@ -164,7 +169,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record) -> bool {
     // [v] 指定連ID を持つ石を、 べつの指定連ID に塗り替えたい☆（＾～＾） -> AddressRenBoard を使う☆（＾～＾）
 
     // [v] 今置いたばかりの石の連ID も、指定連ID にする☆（＾～＾） -> 連の要素一覧に 置いた石の番地を 追加。
-    pos.ren_address_map.add(small_id, target as i16);
+    pos.get_mut_ren_database().get_mut_stone_ren_map().add_addr(small_id, target as i16);
 
     // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
     let target_liberty_count = count_liberty_at_point(target, &pos.board);
@@ -338,7 +343,7 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     }
 
     // FIXME 目つぶしは、着手禁止点扱いにする。連をつなぐ有効な手の場合もあるが。
-    if pos.empty_owner_map.is_eye_filling(pos.turn, target as i16) {
+    if pos.empty_owner_map.is_eye_filling(pos.turn, target as i16, pos.get_ren_database()) {
         return true;
     }
 

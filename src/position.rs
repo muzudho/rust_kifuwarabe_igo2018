@@ -3,7 +3,6 @@
 use board::Board;
 use empty_owner_map::EmptyOwnerMap;
 use liberty_count_map::LibertyCountMap;
-use ren_address_map::RenAddressMap;
 use ren_database::*;
 use address_ren_board::AddressRenBoard;
 use address_ren_board_searcher::*;
@@ -20,8 +19,6 @@ pub struct Position {
     pub address_ren_board: AddressRenBoard,
     /// 計算用。連に紐づく呼吸点の数。
     pub liberty_count_map: LibertyCountMap,
-    /// 計算用。連に紐づく番地のリスト。
-    pub ren_address_map: RenAddressMap,
     /// 計算用。空連の占有者。 0:未調査、1:黒、2:白、3:黒白両方。
     pub empty_owner_map: EmptyOwnerMap,
     /// 計算用。
@@ -37,7 +34,6 @@ impl Position {
             turn: turn_count,
             address_ren_board: AddressRenBoard::new(),
             liberty_count_map: LibertyCountMap::new(),
-            ren_address_map: RenAddressMap::new(),
             empty_owner_map: EmptyOwnerMap::new(),
             address_ren_board_searcher: AddressRenBoardSearcher::new(),
             ren_database: RenDatabase::new(),
