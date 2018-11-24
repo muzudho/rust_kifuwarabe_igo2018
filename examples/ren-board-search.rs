@@ -158,7 +158,7 @@ fn main() {
             }
         }
 
-        if 0 < shrink.len() {
+        if !shrink.is_empty() {
             pos.empty_owner_map.space.remove(ren_id);
             pos.empty_owner_map.space.insert(ren_id, shrink);
 

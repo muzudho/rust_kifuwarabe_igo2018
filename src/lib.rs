@@ -14,6 +14,7 @@ pub mod best_move;
 pub mod board;
 pub mod config_file;
 pub mod empty_owner_map;
+pub mod empty_ren_territory;
 pub mod empty_ren;
 pub mod liberty_count_map;
 pub mod liberty;

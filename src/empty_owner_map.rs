@@ -5,15 +5,16 @@ use ren_address_map::*;
 use address_ren_board::AddressRenBoard;
 
 pub struct EmptyOwnerMap {
-    /// 計算用。盤上に紐づく空連ID。
+    /// 計算用。探索中のマーク。盤上に紐づく空連ID。
     pub address_ren_board: AddressRenBoard,
 
+    /// 計算用。探索中のマーク。
     /// 空連の占有者は、以下のいずれか☆（＾～＾）
     /// 0. 未調査、または 隣接する石がない。
     /// 1. 黒石か枠のいずれかだけに隣接する。
     /// 2. 白石か枠のいずれかだけに隣接する。
     /// 3. 黒石と白石の両方に隣接する。
-    pub owner: [usize; 21*21],
+    owner: [usize; 21*21],
 
     /// 占有するスペース。連IDに、アドレスを紐づける。
     pub space: RenAddressMap,
@@ -27,15 +28,16 @@ impl EmptyOwnerMap {
         }
     }
 
-    pub fn get(&self, index:usize) -> usize {
+    pub fn get_owner(&self, index:usize) -> usize {
         self.owner[index]
     }
 
-    pub fn set(&mut self, index:usize, empty_owner:usize) {
+    pub fn set_owner(&mut self, index:usize, empty_owner:usize) {
         self.owner[index] = empty_owner;
     }
 
-    pub fn iter(&self) -> std::slice::Iter<usize> {
+    /// 表示用など。
+    pub fn iter_owner(&self) -> std::slice::Iter<usize> {
         self.owner.iter()
     }
 
@@ -52,7 +54,7 @@ impl EmptyOwnerMap {
             return false;
         }
 
-        let owner = self.get(target as usize);
+        let owner = self.get_owner(target as usize);
         if owner == 0 || owner == 3 {
             return false;
         }

@@ -23,9 +23,10 @@ use std::path::Path;
 
 use kifuwarabe_igo2018::*;
 use config_file::Config;
+use liberty::*;
 use position_file::PositionFile;
 use position::Position;
-use liberty::*;
+use record::*;
 use view::*;
 
 fn main() {

@@ -10,7 +10,7 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
         0 => {
             // 空点。
             if 0 < pos.empty_owner_map.address_ren_board.get(target) {
-                // 空点 しかし、既に連IDが振ってある。調査済みだ。 --> 隣は調べない。
+                // しかし、既に連IDが振ってある。調査済みだ。 --> 隣は調べない。
                 return;
             }
 
@@ -20,14 +20,14 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
         },
 
         1 => {
-            if pos.empty_owner_map.get(ren_id) == 3 {
+            if pos.empty_owner_map.get_owner(ren_id) == 3 {
                 // 占有者は白黒両方の場合、更新なし。
-            } else if pos.empty_owner_map.get(ren_id) == 2 {
+            } else if pos.empty_owner_map.get_owner(ren_id) == 2 {
                 // 黒石 かつ、占有者が 黒、白の両方になる。
-                pos.empty_owner_map.set(ren_id, 3);
+                pos.empty_owner_map.set_owner(ren_id, 3);
             } else {
                 // 占有者は黒石か。
-                pos.empty_owner_map.set(ren_id, 1);
+                pos.empty_owner_map.set_owner(ren_id, 1);
             }
 
             // 隣は調べない。
@@ -35,14 +35,14 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
         },
 
         2 => {
-            if pos.empty_owner_map.get(ren_id) == 3 {
+            if pos.empty_owner_map.get_owner(ren_id) == 3 {
                 // 占有者は白黒両方の場合、更新なし。
-            } else if pos.empty_owner_map.get(ren_id) == 1 {
+            } else if pos.empty_owner_map.get_owner(ren_id) == 1 {
                 // 白石 かつ、占有者が 黒、白の両方になる。
-                pos.empty_owner_map.set(ren_id, 3);
+                pos.empty_owner_map.set_owner(ren_id, 3);
             } else {
                 // 占有者は白石か。
-                pos.empty_owner_map.set(ren_id, 2);
+                pos.empty_owner_map.set_owner(ren_id, 2);
             }
 
             // 隣は調べない。
@@ -78,107 +78,96 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
 /// # Arguments.
 /// * 'cutting_addr' - 石を置いて、消えるところ。
 pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize) {
+    // 空連ID。
+    let empty_ren_id = pos.empty_owner_map.address_ren_board.get(cutting_addr);
 
-    // その番地のリスト。
+    // 石を置いた交点から探索。
+    println!("board size: {}.", pos.board.get_size());
+    println!("cutting_addr: {}.", cutting_addr);
+    pos.empty_owner_map.space.remove_item(empty_ren_id, cutting_addr as i16);
 
-    // 指定の連IDを探索し、一番小さい番地を返す関数。
+    pos.address_ren_board_searcher.count_up_mark();
+    let mut shrink: Vec<i16> = Vec::new();
 
     {
-        // 空連ID。
-        let empty_ren_id = pos.empty_owner_map.address_ren_board.get(cutting_addr);
-
-        // 石を置いた交点から探索。
-        println!("board size: {}.", pos.board.get_size());
-        println!("cutting_addr: {}.", cutting_addr);
-        pos.empty_owner_map.space.remove_item(empty_ren_id, cutting_addr as i16);
-
-        pos.address_ren_board_searcher.count_up_mark();
-        let mut shrink: Vec<i16> = Vec::new();
-
-        {
-            // 上側の空連を起点に探索し、一番小さい番地。
-            let start = pos.board.get_top_of(cutting_addr);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
-            println!("空連{} の上を探索。", empty_ren_id);
-            if min_addr == 0 {
-                println!("空連なし。");
-            } else if min_addr == empty_ren_id {
-                // 連ID が被っている。
-                print!("縮まった空連: {}, 番地: ", min_addr);
-                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
-            } else {
-                print!("分かれた空連: {}, 番地: ", min_addr);
-                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
-            }
-        }
-
-        {
-            // 右側の空連を起点に探索し、一番小さい番地。
-            let start = pos.board.get_right_of(cutting_addr);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
-            println!("空連{} の右を探索。", empty_ren_id);        
-            if min_addr == 0 {
-                println!("空連なし。");
-            } else if min_addr == empty_ren_id {
-                // 連ID が被っている。
-                print!("縮まった空連: {}, 番地: ", min_addr);
-                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
-            } else {
-                print!("分かれた空連: {}, 番地: ", min_addr);
-                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
-            }
-        }
-
-        {
-            // 下側の空連を起点に探索し、一番小さい番地。
-            let start = pos.board.get_bottom_of(cutting_addr);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
-            println!("空連{} の下を探索。", empty_ren_id);        
-            if min_addr == 0 {
-                println!("空連なし。");
-            } else if min_addr == empty_ren_id {
-                // 連ID が被っている。
-                print!("縮まった空連: {}, 番地: ", min_addr);
-                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
-            } else {
-                print!("分かれた空連: {}, 番地: ", min_addr);
-                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
-            }
-        }
-
-        {
-            // 左側の空連を起点に探索し、一番小さい番地。
-            let start = pos.board.get_left_of(cutting_addr);
-            let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
-            println!("空連{} の左を探索。", empty_ren_id);
-            if min_addr == 0 {
-                println!("空連なし。");
-            } else if min_addr == empty_ren_id {
-                // 連ID が被っている。
-                print!("縮まった空連: {}, 番地: ", min_addr);
-                shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
-            } else {
-                print!("分かれた空連: {}, 番地: ", min_addr);
-                show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
-            }
-        }
-
-        if 0 < shrink.len() {
-            pos.empty_owner_map.space.remove(empty_ren_id);
-            pos.empty_owner_map.space.insert(empty_ren_id, shrink);
-
-            print!("縮まった空連の作り直し。番地: ");
-            match &pos.empty_owner_map.space.get(empty_ren_id) {
-                Some(s) => show_vector_i16(s),
-                None => {},
-            };
-            println!(".");
+        // 上側の空連を起点に探索し、一番小さい番地。
+        let start = pos.board.get_top_of(cutting_addr);
+        let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+        println!("空連{} の上を探索。", empty_ren_id);
+        if min_addr == 0 {
+            println!("空連なし。");
+        } else if min_addr == empty_ren_id {
+            // 連ID が被っている。
+            print!("縮まった空連: {}, 番地: ", min_addr);
+            shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
+        } else {
+            print!("分かれた空連: {}, 番地: ", min_addr);
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
         }
     }
 
-    // pos.address_ren_board_searcher.
+    {
+        // 右側の空連を起点に探索し、一番小さい番地。
+        let start = pos.board.get_right_of(cutting_addr);
+        let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+        println!("空連{} の右を探索。", empty_ren_id);        
+        if min_addr == 0 {
+            println!("空連なし。");
+        } else if min_addr == empty_ren_id {
+            // 連ID が被っている。
+            print!("縮まった空連: {}, 番地: ", min_addr);
+            shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
+        } else {
+            print!("分かれた空連: {}, 番地: ", min_addr);
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+    }
 
-    // 探索前の空連は破棄。
+    {
+        // 下側の空連を起点に探索し、一番小さい番地。
+        let start = pos.board.get_bottom_of(cutting_addr);
+        let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+        println!("空連{} の下を探索。", empty_ren_id);        
+        if min_addr == 0 {
+            println!("空連なし。");
+        } else if min_addr == empty_ren_id {
+            // 連ID が被っている。
+            print!("縮まった空連: {}, 番地: ", min_addr);
+            shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
+        } else {
+            print!("分かれた空連: {}, 番地: ", min_addr);
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+    }
 
-    // 新しい空連を追加。
+    {
+        // 左側の空連を起点に探索し、一番小さい番地。
+        let start = pos.board.get_left_of(cutting_addr);
+        let min_addr = pos.address_ren_board_searcher.get_min_address(&pos.board, &pos.empty_owner_map.address_ren_board, empty_ren_id, start, cutting_addr);
+        println!("空連{} の左を探索。", empty_ren_id);
+        if min_addr == 0 {
+            println!("空連なし。");
+        } else if min_addr == empty_ren_id {
+            // 連ID が被っている。
+            print!("縮まった空連: {}, 番地: ", min_addr);
+            shrink = pos.address_ren_board_searcher.get_found_addr().to_vec();
+        } else {
+            print!("分かれた空連: {}, 番地: ", min_addr);
+            show_vector_i16(&pos.address_ren_board_searcher.get_found_addr());
+        }
+    }
+
+    if 0 < shrink.len() {
+        pos.empty_owner_map.space.remove(empty_ren_id);
+        pos.empty_owner_map.space.insert(empty_ren_id, shrink);
+
+        print!("縮まった空連の作り直し。番地: ");
+        match &pos.empty_owner_map.space.get(empty_ren_id) {
+            Some(s) => show_vector_i16(s),
+            None => {},
+        };
+        println!(".");
+    }
+
+    // TODO 空点の所有者の更新。
 }

@@ -21,13 +21,13 @@ use std::fs;
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
-// use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
 use config_file::Config;
+use liberty::*;
 use position_file::PositionFile;
 use position::Position;
-use liberty::*;
+use record::*;
 use view::*;
 
 fn main() {
@@ -53,7 +53,8 @@ fn main() {
             show_board(&pos.board);
 
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
-            let mut pos = Position::default(pos.board, 0, pos.turn, pos.ply);
+            let mut pos = Position::default(pos.board, 0, pos.turn);
+            let mut record = Record::new();
 
             // 盤番地を表示☆（＾～＾）
             show_board_address(conf.board_size);
@@ -95,9 +96,9 @@ fn main() {
             println!("Conv {} -> {}", 908, convert_code_to_address(908, board_size));
             println!("Conv {} -> {}", 909, convert_code_to_address(909, board_size));
              */
-            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), &pos);
+            let forbidden = is_forbidden(convert_code_to_address(704, conf.board_size), &pos, &record);
             println!("forbidden? {}", forbidden);
-            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), &pos);
+            let forbidden = is_forbidden(convert_code_to_address(401, conf.board_size), &pos, &record);
             println!("forbidden? {}", forbidden);
 
         }

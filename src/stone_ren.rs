@@ -47,3 +47,24 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
     walk_liberty(ren_id, color, pos, bottom);// 下。
     walk_liberty(ren_id, color, pos, target-1);// 左。
 }
+
+/// TODO 石の連の接続☆（＾～＾）
+/// --> 新しい連が1つ増える。
+/// --> 既存の1～4つの連に番地が1つ増える。
+/// # Arguments.
+/// * 'connecting_addr' - 石を置いて、連がつながるところ。
+pub fn connect_stone_ren(pos:&mut Position, connecting_addr:usize) {
+    // 石の連ID。
+
+    // 最小のIDの方に統合する。
+
+    // 上隣の同色の連ID。
+
+    // 右隣の同色の連ID。
+
+    // 下隣の同色の連ID。
+
+    // 左隣の同色の連ID。
+
+    // 呼吸点の数え直し。
+}
