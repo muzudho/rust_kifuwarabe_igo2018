@@ -40,12 +40,16 @@ fn main() {
 
     // 設定ファイル読込。
     let conf = Config::load("config.json");
+    println!("Load: config.json");
 
     // 計算用。
     let mut address_ren_board_searcher = AddressRenBoardSearcher::new();
 
     // 棋譜。
     let mut record = Record::new();
+
+    println!("CgfGoban(きふわらべ改造版)で対局を開始してください。 out.txt を読みに行きます。");
+
     loop {
         // 局面ファイルの有無確認。
         if Path::new(&conf.out_path).exists() {
@@ -59,7 +63,7 @@ fn main() {
                 Err(e) => {panic!(e)}
             };
 
-            // 盤面表示☆（＾～＾）
+            // 表示: 盤面表示☆（＾～＾）
             show_board(&pos.get_board());
             println!("Turn: '{}'.", pos.turn);
 
@@ -73,8 +77,10 @@ fn main() {
             // 全部の交点に、連のIDを振る。
             check_liberty_all_points(&mut pos);
 
-            // 試し打ちをする☆（＾～＾）
+            // 着手できる交点を取り出すぜ☆
             let legal_moves = pick_move(&pos, &record);
+
+            // 試し打ちをする☆（＾～＾）
             let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut address_ren_board_searcher), pos.get_board().get_size());
             println!("BestMove: '{}'.", move_code);
 

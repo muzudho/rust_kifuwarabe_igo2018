@@ -64,7 +64,7 @@ impl OutFile {
             if row < 21 {
                 let numbers: Vec<i8> = line.split(',').filter_map(|k| k.parse().ok()).collect::<Vec<i8>>();
                 for stone in numbers {
-                    temp_board.set(cell, stone);
+                    temp_board.setStone(cell, stone);
                     cell += 1;
                 }
             } else if row == 21 {

@@ -8,7 +8,7 @@ use view::*;
 
 /// 空連にIDを振り、空連の占有者も調べる。
 pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
-    match pos.get_board().get(target) {
+    match pos.get_board().getStone(target) {
         0 => {
             // 空点。
             if 0 < pos.get_ren_database().get_address_empty_ren_board().get(target) {
@@ -70,7 +70,7 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
             return;
         },
 
-        _ => {panic!("想定しない石の種類。 '{}'", pos.get_board().get(target))},
+        _ => {panic!("想定しない石の種類。 '{}'", pos.get_board().getStone(target))},
     };
 
     // 隣を探す。（再帰）
@@ -175,7 +175,7 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize, address_ren_board_se
         }
     }
 
-    if 0 < shrink.len() {
+    if !shrink.is_empty() {
         let old_territory = match pos.get_ren_database().get_empty_ren_map().get_ren(empty_ren_id) {
             Some(ren_obj) => ren_obj.get_territory(),
             None => {println!("空連テリトリーの取得失敗。連ID: {}.", empty_ren_id); 0},

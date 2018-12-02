@@ -2,6 +2,7 @@
 
 use ren_database::*;
 
+#[derive(Default)]
 pub struct RecordItem {
     // 指し手の番地を入れてくだけ☆（＾～＾）
     pub move_addr: i16,
@@ -36,6 +37,7 @@ impl RecordItem {
     }
 }
 
+#[derive(Default)]
 pub struct Record {
     // 1手打つごとに増えていく☆（＾～＾）
     pub items: Vec<RecordItem>,
@@ -82,6 +84,10 @@ impl Record {
         &mut self.items[index]
     }
      */
+
+    pub fn is_empty(&self) -> bool {
+        0 == self.items.len()
+    }
 
     pub fn len(&self) -> usize {
         self.items.len()

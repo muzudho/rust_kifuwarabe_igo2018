@@ -27,7 +27,7 @@ impl Board {
         }
     }
 
-    pub fn get(&self, index:usize) -> i8 {
+    pub fn getStone(&self, index:usize) -> i8 {
         self.value[index]
     }
 
@@ -36,7 +36,8 @@ impl Board {
     }
 
     /// 石を置く。
-    pub fn set(&mut self, index:usize, stone:i8) {
+    /// - ゾブリストハッシュを再計算。
+    pub fn setStone(&mut self, index:usize, stone:i8) {
         self.hash = self.zobrist_hash.switch(self.hash, self.value[index], index as i16);
         self.value[index] = stone;
         self.hash = self.zobrist_hash.switch(self.hash, stone, index as i16);
@@ -57,14 +58,14 @@ impl Board {
     /// 石を置く。石を除去したいときは stone を 0 にする。
     pub fn fill_by_vec(&mut self, addr_vec:&Vec<i16>, stone:i8) {
         for addr in addr_vec {
-            self.set(*addr as usize, stone);
+            self.setStone(*addr as usize, stone);
         }
     }
 
     /// 石を置く。石を除去したいときは stone を 0 にする。
     pub fn fill_by_ren(&mut self, ren_obj:&RenObject, stone:i8) {
         for addr in ren_obj.iter_addr() {
-            self.set(*addr as usize, stone);
+            self.setStone(*addr as usize, stone);
         }
     }
 

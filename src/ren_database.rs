@@ -4,6 +4,7 @@ use std;
 use std::collections::HashMap;
 
 /// 石連と、空連に大きく分かれる☆（＾～＾）
+#[derive(Default)]
 pub struct RenDatabase {
     // 石連ID に紐づくもの。 連IDは 番地から作られる。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
     stone_ren_map: RenMap,
@@ -61,6 +62,7 @@ impl RenDatabase {
 
 
 /// 連の大分類リスト。
+#[derive(Default)]
 pub struct RenMap {
     /// 連ID と、 連オブジェクト が紐づく。
     map: HashMap<i16,RenObject>,
@@ -74,13 +76,10 @@ impl RenMap {
 
     /// 連に番地を追加するぜ☆（＾～＾）
     pub fn add_addr(&mut self, ren_id:i16, addr:i16) {
-        match self.map.get_mut(&ren_id) {
-            Some(ren_obj) => {
-                // 番地追加。
-                ren_obj.add_addr(addr);
-                return;
-            },
-            None => {},
+        if let Some(ren_obj) = self.map.get_mut(&ren_id) {
+            // 番地追加。
+            ren_obj.add_addr(addr);
+            return;
         };
 
         // 無い連なら、新規作成して追加。
@@ -111,9 +110,9 @@ impl RenMap {
     }
 
     /// 既存の連に、外部から連を結合。
-    pub fn extend_ren(&mut self, ren_id:i16, other_ren_obj:RenObject) {
+    pub fn extend_ren(&mut self, ren_id:i16, other_ren_obj:&RenObject) {
         match self.map.get_mut(&ren_id) {
-            Some(ren_obj) => {ren_obj.extend(other_ren_obj);},
+            Some(ren_obj) => {ren_obj.extend(&other_ren_obj);},
             None => {panic!("Extend: ren_id: {}.", ren_id)},
         };
     }
@@ -141,7 +140,7 @@ impl RenMap {
             Some(ren_obj) => {
                 if self.contains_key(ren_id_after) {
                     // 既存なら、既存ベクターに追加。
-                    self.extend_ren(ren_id_after, ren_obj);
+                    self.extend_ren(ren_id_after, &ren_obj);
                 } else {
                     // 無ければ、ベクターを丸ごと移動。
                     self.insert_ren(ren_id_after, ren_obj);
@@ -196,7 +195,7 @@ impl RenObject {
     }
 
     /// 別の連の番地を追加する。
-    pub fn extend(&mut self, other_ren_obj:RenObject) {
+    pub fn extend(&mut self, other_ren_obj:&RenObject) {
         self.addresses.extend(other_ren_obj.iter_addr().cloned());
     }
 
@@ -249,6 +248,11 @@ impl RenObject {
 pub struct AddressRenBoard {
     // 番地と連IDの紐づけ。
     pub value: [i16; 21 * 21],
+}
+impl Default for AddressRenBoard {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 impl AddressRenBoard {
     pub fn new() -> AddressRenBoard {

@@ -56,22 +56,24 @@ fn main() {
             let mut pos = Position::default(pos.board, 0, pos.turn);
             let mut record = Record::new();
 
-            // 盤番地を表示☆（＾～＾）
+            // 表示☆（＾～＾）
+
+            // 表示      : 盤番地を表示☆（＾～＾）
             show_board_address(conf.board_size);
 
-            // 盤を表示☆（＾～＾）
+            // 表示      : 盤を表示☆（＾～＾）
             show_board_by_number(&pos.get_board());
 
-            // 全部の交点に、連のIDを振る。
+            // データ更新: 全部の交点に、連のIDを振る。
             check_liberty_all_points(&mut pos);
 
-            // 連のIDを表示☆（＾～＾）
+            // 表示      : 連のIDを表示☆（＾～＾）
             show_address_ren_board(&pos);
 
-            // 呼吸点の数を表示☆（＾～＾）
+            // 表示      : 呼吸点の数を表示☆（＾～＾）
             show_libarty_count(&pos.liberty_count_map);
 
-            // 空連の占有者を表示☆（＾～＾）
+            // 表示      : 空連の占有者を表示☆（＾～＾）
             show_territory(&pos.get_ren_database().get_empty_ren_map());
             show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
 

@@ -6,6 +6,11 @@ pub struct LibertyCountMap {
     /// 呼吸点の数は、盤の交点の数より必ず少ない。が、 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
     pub value: [i16; 21*21],
 }
+impl Default for LibertyCountMap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl LibertyCountMap {
     pub fn new() -> LibertyCountMap {
         LibertyCountMap {

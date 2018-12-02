@@ -17,6 +17,11 @@ pub struct ZobristHash {
 
     // // 手番2つのランダム値。
 }
+impl Default for ZobristHash {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl ZobristHash {
     pub fn new() -> ZobristHash {
         let mut zob = ZobristHash {
