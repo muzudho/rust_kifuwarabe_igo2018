@@ -13,16 +13,16 @@ pub fn count_liberty_at_point(target:usize, board:&Board) -> i8 {
     let left = target-1; // 左。
 
     let mut count = 0;
-    if board.getStone(top) == 0 {
+    if board.get_stone(top) == 0 {
         count += 1;
     }
-    if board.getStone(right) == 0 {
+    if board.get_stone(right) == 0 {
         count += 1;
     }
-    if board.getStone(bottom) == 0 {
+    if board.get_stone(bottom) == 0 {
         count += 1;
     }
-    if board.getStone(left) == 0 {
+    if board.get_stone(left) == 0 {
         count += 1;
     }
 
@@ -55,7 +55,7 @@ pub fn check_liberty_all_points(pos:&mut Position) {
     let rigth_bottom = pos.get_right_bottom_on_board();
 
     for start in left_top ..= rigth_bottom { // 検索を開始するセルの番号。連のIDを決めるのにも使う。
-        let color = pos.get_board().getStone(start); // 開始地点にある石の色。この石と同じ色を探す。
+        let color = pos.get_board().get_stone(start); // 開始地点にある石の色。この石と同じ色を探す。
 
         // 黒石か白石は、呼吸点を探す。
         if color==1 || color==2 {

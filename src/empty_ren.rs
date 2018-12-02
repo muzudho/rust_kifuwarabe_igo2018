@@ -8,7 +8,7 @@ use view::*;
 
 /// 空連にIDを振り、空連の占有者も調べる。
 pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
-    match pos.get_board().getStone(target) {
+    match pos.get_board().get_stone(target) {
         0 => {
             // 空点。
             if 0 < pos.get_ren_database().get_address_empty_ren_board().get(target) {
@@ -70,7 +70,7 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
             return;
         },
 
-        _ => {panic!("想定しない石の種類。 '{}'", pos.get_board().getStone(target))},
+        _ => {panic!("想定しない石の種類。 '{}'", pos.get_board().get_stone(target))},
     };
 
     // 隣を探す。（再帰）

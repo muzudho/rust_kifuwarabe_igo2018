@@ -131,7 +131,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
     // 手番の石の色を ひっくり返す。
     {
         let turn = pos.turn;
-        pos.get_mut_board().setStone(target, turn);
+        pos.get_mut_board().set_stone(target, turn);
     }
     record.set_current(target as i16, pos.get_board().get_hash());
     // 空連を切る。
@@ -149,20 +149,20 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
     // - [v] 連のIDの更新。
     // TODO - [ ] 連の要素の更新。
     let mut small_id = target as i16;
-    small_id = if pos.get_board().getStone(top) == pos.turn {
+    small_id = if pos.get_board().get_stone(top) == pos.turn {
         println!("Do move: 上とつながる。");
         // 置いた石と、隣の 連ID を見比べて、小さなID の方で塗りつぶす。
         refill_address_ren_board(target, top, pos)
     } else {small_id};
-    small_id = if pos.get_board().getStone(right) == pos.turn {
+    small_id = if pos.get_board().get_stone(right) == pos.turn {
         println!("Do move: 右とつながる。");
         refill_address_ren_board(target, right, pos)
     } else {small_id};
-    small_id = if pos.get_board().getStone(bottom) == pos.turn {
+    small_id = if pos.get_board().get_stone(bottom) == pos.turn {
         println!("Do move: 下とつながる。");
         refill_address_ren_board(target, bottom, pos)
     } else {small_id};
-    small_id = if pos.get_board().getStone(left) == pos.turn {
+    small_id = if pos.get_board().get_stone(left) == pos.turn {
         println!("Do move: 左とつながる。");
         refill_address_ren_board(target, left, pos)
     } else {small_id};
@@ -187,7 +187,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
 
     // TODO 隣接しているのが相手の石で、呼吸点が 1 なら、その連は取れる☆（＾～＾）
     let opponent = get_opponent(pos.turn);
-    if pos.get_board().getStone(top) == opponent {
+    if pos.get_board().get_stone(top) == opponent {
         println!("Do move: 上に相手の石。");
         peel_off_by_ren_id(top, pos, record);
 
@@ -196,7 +196,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
             pos.ko = top as i16;
         }
     }
-    if pos.get_board().getStone(right) == opponent {
+    if pos.get_board().get_stone(right) == opponent {
         println!("Do move: 右に相手の石。");
         peel_off_by_ren_id(right, pos, record);
 
@@ -205,7 +205,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
             pos.ko = right as i16;
         }
     }
-    if pos.get_board().getStone(bottom) == opponent {
+    if pos.get_board().get_stone(bottom) == opponent {
         println!("Do move: 下に相手の石。");
         peel_off_by_ren_id(bottom, pos, record);
 
@@ -214,7 +214,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
             pos.ko = bottom as i16;
         }
     }
-    if pos.get_board().getStone(left) == opponent {
+    if pos.get_board().get_stone(left) == opponent {
         println!("Do move: 左に相手の石。");
         peel_off_by_ren_id(left, pos, record);
 
@@ -249,7 +249,7 @@ pub fn undo_move(pos:&mut Position, record:&mut Record) {
     println!("Undo move: {:04}.", convert_address_to_code(last.move_addr as usize, pos.get_board().get_size()));
 
     // 置いた石を取り除く。
-    pos.get_mut_board().setStone(last.move_addr as usize, 0);
+    pos.get_mut_board().set_stone(last.move_addr as usize, 0);
 
     // TODO ウチアゲた石も戻したい。
 }
@@ -351,7 +351,7 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     // 着手禁止と すぐ分かるところなら、さっさと真を返すぜ☆（＾～＾）
 
     // 空点と、コウ☆（＾～＾）
-    if pos.get_board().getStone(target) != 0
+    if pos.get_board().get_stone(target) != 0
        ||
        target as i16 == pos.ko
     {
@@ -370,17 +370,17 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
     // - 連の呼吸点。
     if
         // 隣に空点があれば、自殺手ではない。
-        pos.get_board().getStone(top) == 0 || pos.get_board().getStone(right) == 0 || pos.get_board().getStone(bottom) == 0 || pos.get_board().getStone(left) == 0
+        pos.get_board().get_stone(top) == 0 || pos.get_board().get_stone(right) == 0 || pos.get_board().get_stone(bottom) == 0 || pos.get_board().get_stone(left) == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (pos.get_board().getStone(top) == pos.turn && top_ren_id < 1000 && 1<pos.liberty_count_map.get(top_ren_id))
-        || (pos.get_board().getStone(right) == pos.turn && right_ren_id < 1000 && 1<pos.liberty_count_map.get(right_ren_id))
-        || (pos.get_board().getStone(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.liberty_count_map.get(bottom_ren_id))
-        || (pos.get_board().getStone(left) == pos.turn && left_ren_id < 1000 && 1<pos.liberty_count_map.get(left_ren_id))
+        || (pos.get_board().get_stone(top) == pos.turn && top_ren_id < 1000 && 1<pos.liberty_count_map.get(top_ren_id))
+        || (pos.get_board().get_stone(right) == pos.turn && right_ren_id < 1000 && 1<pos.liberty_count_map.get(right_ren_id))
+        || (pos.get_board().get_stone(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.liberty_count_map.get(bottom_ren_id))
+        || (pos.get_board().get_stone(left) == pos.turn && left_ren_id < 1000 && 1<pos.liberty_count_map.get(left_ren_id))
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (pos.get_board().getStone(top) == opponent && top_ren_id < 1000 && pos.liberty_count_map.get(top_ren_id) < 2)
-        || (pos.get_board().getStone(right) == opponent && right_ren_id < 1000 && pos.liberty_count_map.get(right_ren_id) < 2)
-        || (pos.get_board().getStone(bottom) == opponent && bottom_ren_id < 1000 && pos.liberty_count_map.get(bottom_ren_id) < 2)
-        || (pos.get_board().getStone(left) == opponent && left_ren_id < 1000 && pos.liberty_count_map.get(left_ren_id) < 2)
+        || (pos.get_board().get_stone(top) == opponent && top_ren_id < 1000 && pos.liberty_count_map.get(top_ren_id) < 2)
+        || (pos.get_board().get_stone(right) == opponent && right_ren_id < 1000 && pos.liberty_count_map.get(right_ren_id) < 2)
+        || (pos.get_board().get_stone(bottom) == opponent && bottom_ren_id < 1000 && pos.liberty_count_map.get(bottom_ren_id) < 2)
+        || (pos.get_board().get_stone(left) == opponent && left_ren_id < 1000 && pos.liberty_count_map.get(left_ren_id) < 2)
     {
         return false;
     }

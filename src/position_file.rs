@@ -42,7 +42,7 @@ impl PositionFile {
         for line in document["board"].as_array().unwrap().iter() {
             let chars = line.as_str().unwrap().chars().collect::<Vec<char>>();
             for ch in &chars {
-                temp_board.setStone(i, match ch {
+                temp_board.set_stone(i, match ch {
                     'x' => 1, // 黒。
                     'o' => 2, // 白。
                     '+' => 3, // 枠。
