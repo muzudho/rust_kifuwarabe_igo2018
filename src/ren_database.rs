@@ -7,42 +7,30 @@ use std::collections::HashMap;
 /// 石連と、空連に大きく分かれる☆（＾～＾）
 #[derive(Default)]
 pub struct RenDatabase {
-    // 石連ID に紐づくプロパティ。 連IDは 番地から作られる。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
-    stone_ren_map: RenMap,
+    // 連ID に紐づくプロパティ。 連IDは 番地から作られる。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
+    ren_mappings: RenMap,
 
-    // 空連ID に紐づくプロパティ。
-    empty_ren_map: RenMap,
-
-    /// 計算用。盤上に紐づく連ID。
+    /// 計算用。探索中のマーク。盤上に紐づく「石」の連ID。
     address_stone_ren_board: AddressRenBoard,
 
-    /// 計算用。探索中のマーク。盤上に紐づく空連ID。
+    /// 計算用。探索中のマーク。盤上に紐づく「空点」の連ID。
     address_empty_ren_board: AddressRenBoard,
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
         RenDatabase {
-            stone_ren_map: RenMap::new(),
-            empty_ren_map: RenMap::new(),
+            ren_mappings: RenMap::new(),
             address_stone_ren_board: AddressRenBoard::new(),
             address_empty_ren_board: AddressRenBoard::new(),
         }
     }
 
-    pub fn get_stone_ren_map(&self) -> &RenMap {
-        &self.stone_ren_map
+    pub fn get_ren_mappings(&self) -> &RenMap {
+        &self.ren_mappings
     }
 
-    pub fn get_mut_stone_ren_map(&mut self) -> &mut RenMap {
-        &mut self.stone_ren_map
-    }
-
-    pub fn get_empty_ren_map(&self) -> &RenMap {
-        &self.empty_ren_map
-    }
-
-    pub fn get_mut_empty_ren_map(&mut self) -> &mut RenMap {
-        &mut self.empty_ren_map
+    pub fn get_mut_ren_mappings(&mut self) -> &mut RenMap {
+        &mut self.ren_mappings
     }
 
     pub fn get_address_stone_ren_board(&self) -> &AddressRenBoard {
@@ -63,10 +51,9 @@ impl RenDatabase {
 }
 
 
-/// 連の大分類リスト。
+/// 連ID と、 連オブジェクト が紐づく。
 #[derive(Default)]
 pub struct RenMap {
-    /// 連ID と、 連オブジェクト が紐づく。
     map: HashMap<i16,RenObject>,
 }
 impl RenMap {

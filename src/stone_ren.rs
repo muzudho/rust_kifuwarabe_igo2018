@@ -9,7 +9,7 @@ use ren_database::*;
 pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
     // 空点 かつ、まだ今回マークしていない --> 呼吸点+1。
     if pos.get_board().get_stone(target) == 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000 {
-        pos.get_mut_ren_database().get_mut_stone_ren_map().get_mut_ren(ren_id).expect("walk_liberty(1)").add_liberty_count(1);
+        pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(ren_id).expect("walk_liberty(1)").add_liberty_count(1);
     }
     
     if (
@@ -31,18 +31,18 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
     // 番地に 連ID を紐づける。検索を開始したセル番号でも振っとく。
     pos.get_mut_ren_database().get_mut_address_stone_ren_board().set(target, ren_id);
 
-    if ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().contains_key(ren_id) {
-        match pos.get_mut_ren_database().get_mut_stone_ren_map().get_mut_ren(ren_id) {
+    if ren_id < 1000 && pos.get_ren_database().get_ren_mappings().contains_key(ren_id) {
+        match pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(ren_id) {
             Some(ren_obj) => {ren_obj.add_addr(target as i16);}
             None => {panic!("walk_liberty");}
         }
     } else {
-        let old_territory = match pos.get_ren_database().get_empty_ren_map().get_ren(ren_id) {
+        let old_territory = match pos.get_ren_database().get_ren_mappings().get_ren(ren_id) {
             Some(ren_obj) => ren_obj.get_territory(),
             None => {println!("石連テリトリーの取得失敗。連ID: {}.", ren_id); 0},
         };
 
-        pos.get_mut_ren_database().get_mut_stone_ren_map().insert_ren(ren_id, RenObject::default(ren_id, vec![target as i16], old_territory));
+        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(ren_id, RenObject::default(ren_id, vec![target as i16], old_territory));
     }
 
     // 隣を探す。（再帰）

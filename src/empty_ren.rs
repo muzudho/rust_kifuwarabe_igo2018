@@ -22,11 +22,11 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
             pos.get_mut_ren_database().get_mut_address_empty_ren_board().set(target, ren_id as i16);
 
             // 連IDに 番地を追加する。
-            pos.get_mut_ren_database().get_mut_empty_ren_map().add_addr(ren_id as i16, target as i16);
+            pos.get_mut_ren_database().get_mut_ren_mappings().add_addr(ren_id as i16, target as i16);
         },
 
         1 => {
-            match pos.get_mut_ren_database().get_mut_empty_ren_map().get_mut_ren(ren_id as i16) {
+            match pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(ren_id as i16) {
                 Some(ren_obj) => {
                     if ren_obj.get_territory() == 3 {
                         // 占有者は白黒両方の場合、更新なし。
@@ -46,7 +46,7 @@ pub fn walk_empty(ren_id:usize, pos:&mut Position, target:usize) {
         },
 
         2 => {
-            match pos.get_mut_ren_database().get_mut_empty_ren_map().get_mut_ren(ren_id as i16) {
+            match pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(ren_id as i16) {
                 Some(ren_obj) => {
                     if ren_obj.get_territory() == 3 {
                         // 占有者は白黒両方の場合、更新なし。
@@ -100,7 +100,7 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize, address_ren_board_se
     // 石を置いた交点から探索。
     println!("board size: {}.", pos.get_board().get_size());
     println!("cutting_addr: {}.", cutting_addr);
-    pos.get_mut_ren_database().get_mut_empty_ren_map().remove_addr(empty_ren_id, cutting_addr as i16);
+    pos.get_mut_ren_database().get_mut_ren_mappings().remove_addr(empty_ren_id, cutting_addr as i16);
 
     address_ren_board_searcher.count_up_mark();
     let mut shrink: Vec<i16> = Vec::new();
@@ -176,16 +176,16 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize, address_ren_board_se
     }
 
     if !shrink.is_empty() {
-        let old_territory = match pos.get_ren_database().get_empty_ren_map().get_ren(empty_ren_id) {
+        let old_territory = match pos.get_ren_database().get_ren_mappings().get_ren(empty_ren_id) {
             Some(ren_obj) => ren_obj.get_territory(),
             None => {println!("空連テリトリーの取得失敗。連ID: {}.", empty_ren_id); 0},
         };
 
-        pos.get_mut_ren_database().get_mut_empty_ren_map().remove_ren(empty_ren_id);
-        pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(empty_ren_id, RenObject::default(empty_ren_id, shrink, old_territory));
+        pos.get_mut_ren_database().get_mut_ren_mappings().remove_ren(empty_ren_id);
+        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(empty_ren_id, RenObject::default(empty_ren_id, shrink, old_territory));
 
         print!("縮まった空連の作り直し。番地: ");
-        match &pos.get_mut_ren_database().get_mut_empty_ren_map().get_ren(empty_ren_id) {
+        match &pos.get_mut_ren_database().get_mut_ren_mappings().get_ren(empty_ren_id) {
             Some(ren_obj) => show_ren_addr(ren_obj),
             None => {},
         };

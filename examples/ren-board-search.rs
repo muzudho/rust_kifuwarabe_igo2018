@@ -76,11 +76,11 @@ fn main() {
     show_address_ren_board(&pos);
 
     // 呼吸点の数を表示☆（＾～＾）
-    show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+    show_libarty_count(&pos.get_ren_database().get_ren_mappings());
 
     // 空連の占有者を表示☆（＾～＾）
-    show_territory(&pos.get_ren_database().get_empty_ren_map());
-    show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+    show_territory(&pos.get_ren_database().get_ren_mappings());
+    show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
     {
         // 空連12 の上の 0102 点に石を置く☆（＾～＾）
@@ -88,7 +88,7 @@ fn main() {
         let stone_addr = convert_code_to_address(102, pos.get_board().get_size());
         println!("board size: {}.", pos.get_board().get_size());
         println!("stone_addr: {}.", stone_addr);
-        pos.get_mut_ren_database().get_mut_empty_ren_map().remove_addr(ren_id, stone_addr as i16);
+        pos.get_mut_ren_database().get_mut_ren_mappings().remove_addr(ren_id, stone_addr as i16);
 
         address_ren_board_searcher.count_up_mark();
         let mut shrink: Vec<i16> = Vec::new();

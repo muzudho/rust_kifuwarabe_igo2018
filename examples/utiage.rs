@@ -67,12 +67,11 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+        show_libarty_count(&pos.get_ren_database().get_ren_mappings());
         // 空連の占有者を表示☆（＾～＾）
-        show_territory(&pos.get_ren_database().get_empty_ren_map());
+        show_territory(&pos.get_ren_database().get_ren_mappings());
         // 連の要素を表示☆（＾～＾）
         show_ren_address_map(&pos.get_ren_database().get_stone_ren_map());
-        show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(102, conf.board_size), &mut pos, &mut record, &mut address_ren_board_searcher);
@@ -82,12 +81,11 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+        show_libarty_count(&pos.get_ren_database().get_ren_mappings());
         // 空連の占有者を表示☆（＾～＾）
-        show_territory(&pos.get_ren_database().get_empty_ren_map());
+        show_territory(&pos.get_ren_database().get_ren_mappings());
         // 連の要素を表示☆（＾～＾）
-        show_ren_address_map(&pos.get_ren_database().get_stone_ren_map());
-        show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+        show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(401, conf.board_size), &mut pos, &mut record, &mut address_ren_board_searcher);
@@ -97,12 +95,11 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+        show_libarty_count(&pos.get_ren_database().get_ren_mappings());
         // 空連の占有者を表示☆（＾～＾）
-        show_territory(&pos.get_ren_database().get_empty_ren_map());
+        show_territory(&pos.get_ren_database().get_ren_mappings());
         // 連の要素を表示☆（＾～＾）
-        show_ren_address_map(&pos.get_ren_database().get_stone_ren_map());
-        show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+        show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(901, conf.board_size), &mut pos, &mut record, &mut address_ren_board_searcher);
@@ -112,12 +109,11 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+        show_libarty_count(&pos.get_ren_database().get_ren_mappings());
         // 空連の占有者を表示☆（＾～＾）
-        show_territory(&pos.get_ren_database().get_empty_ren_map());
+        show_territory(&pos.get_ren_database().get_ren_mappings());
         // 連の要素を表示☆（＾～＾）
-        show_ren_address_map(&pos.get_ren_database().get_stone_ren_map());
-        show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+        show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(109, conf.board_size), &mut pos, &mut record, &mut address_ren_board_searcher);
@@ -127,12 +123,11 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+        show_libarty_count(&pos.get_ren_database().get_ren_mappings());
         // 空連の占有者を表示☆（＾～＾）
-        show_territory(&pos.get_ren_database().get_empty_ren_map());
+        show_territory(&pos.get_ren_database().get_ren_mappings());
         // 連の要素を表示☆（＾～＾）
-        show_ren_address_map(&pos.get_ren_database().get_stone_ren_map());
-        show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+        show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(409, conf.board_size), &mut pos, &mut record, &mut address_ren_board_searcher);
@@ -142,12 +137,11 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+        show_libarty_count(&pos.get_ren_database().get_ren_mappings());
         // 空連の占有者を表示☆（＾～＾）
-        show_territory(&pos.get_ren_database().get_empty_ren_map());
+        show_territory(&pos.get_ren_database().get_ren_mappings());
         // 連の要素を表示☆（＾～＾）
-        show_ren_address_map(&pos.get_ren_database().get_stone_ren_map());
-        show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+        show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
         // 試し打ちをする☆（＾～＾）
         do_move(convert_code_to_address(909, conf.board_size), &mut pos, &mut record, &mut address_ren_board_searcher);

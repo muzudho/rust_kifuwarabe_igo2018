@@ -54,7 +54,7 @@ fn main() {
 
             // 代入ではなく、コピーを作っている☆（*＾～＾*）
             let mut pos = Position::default(pos.board, 0, pos.turn);
-            let mut record = Record::new();
+            // let mut record = Record::new();
 
             // 表示☆（＾～＾）
 
@@ -71,11 +71,11 @@ fn main() {
             show_address_ren_board(&pos);
 
             // 表示      : 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+            show_libarty_count(&pos.get_ren_database().get_ren_mappings());
 
             // 表示      : 空連の占有者を表示☆（＾～＾）
-            show_territory(&pos.get_ren_database().get_empty_ren_map());
-            show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+            show_territory(&pos.get_ren_database().get_ren_mappings());
+            show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
 
             // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 
