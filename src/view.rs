@@ -1,5 +1,4 @@
 use board::Board;
-use liberty_count_map::LibertyCountMap;
 use position::Position;
 use record::*;
 use ren_database::*;
@@ -89,11 +88,11 @@ pub fn show_address_ren_board(pos:&Position) {
 }
 
 /// 呼吸点の数を表示☆（＾～＾）
-pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
+pub fn show_libarty_count(ren_map:&RenMap) {
     println!("Liberty count: ");
-    for (ren_id, lib_cnt) in liberty_count_map.iter_liberty_count().enumerate() {
-        if *lib_cnt != 0 {
-            println!("[{:3}] {:3}", ren_id, lib_cnt);
+    for (ren_id, ren_obj) in ren_map.iter() {
+        if (*ren_obj).get_liberty_count() != 0 {
+            println!("[{:3}] {:3}", ren_id, (*ren_obj).get_liberty_count());
         }
     }
 }

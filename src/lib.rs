@@ -13,7 +13,6 @@ pub mod best_move;
 pub mod board;
 pub mod config_file;
 pub mod empty_ren;
-pub mod liberty_count_map;
 pub mod liberty;
 pub mod out_file;
 pub mod position_file;
@@ -70,7 +69,7 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
 
         // キー変更。
         pos.get_mut_ren_database().get_mut_stone_ren_map().change_key(adjacent_ren_id, self_ren_id);
-        pos.get_mut_ren_database().liberty_count_map.change_key_liberty_count(adjacent_ren_id, self_ren_id);
+        // pos.get_mut_ren_database().get_mut_stone_ren_map().change_key_liberty_count(adjacent_ren_id, self_ren_id);
 
         self_ren_id
     } else {
@@ -86,7 +85,7 @@ pub fn refill_address_ren_board(target:usize, adjacent:usize, pos:&mut Position)
 pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record) {
     // 除去される連ID。
     let adjacent_ren_id = pos.get_ren_database().get_address_stone_ren_board().get(adjacent);
-    let adj_lib_cnt = pos.get_ren_database().liberty_count_map.get_liberty_count(adjacent_ren_id as usize);
+    let adj_lib_cnt = pos.get_ren_database().get_stone_ren_map().get_ren(adjacent_ren_id).expect("peel_off_by_ren_id(1)").get_liberty_count();
     println!("Do move: 隣の連ID {}, 隣の呼吸点数 {}。", adjacent_ren_id, adj_lib_cnt);
 
     // 呼吸点
@@ -109,7 +108,7 @@ pub fn peel_off_by_ren_id(adjacent:usize, pos:&mut Position, record:&mut Record)
 
         // キー削除。
         pos.get_mut_ren_database().get_mut_stone_ren_map().remove_ren(adjacent_ren_id);
-        pos.get_mut_ren_database().liberty_count_map.set_liberty_count(adjacent_ren_id as usize, 0);
+        // pos.get_mut_ren_database().get_mut_stone_ren_map().get_mut_ren(adjacent_ren_id).expect("peel_off_by_ren_id(2)").set_liberty_count(0);
     }
 }
 
@@ -177,7 +176,7 @@ pub fn do_move(target:usize, pos:&mut Position, record:&mut Record, address_ren_
     // TODO - [ ] 呼吸点の更新。 置いた石の呼吸点と、接続した連の呼吸点 を足して 1 引く☆（＾～＾）
     let target_liberty_count = count_liberty_at_point(target, &pos.get_board());
     println!("Do move: Target_liberty_count: {}.", target_liberty_count);
-    pos.get_mut_ren_database().liberty_count_map.add_liberty_count(small_id as usize, i16::from(target_liberty_count - 1));
+    pos.get_mut_ren_database().get_mut_stone_ren_map().get_mut_ren(small_id).expect("do_move(1)").add_liberty_count(i16::from(target_liberty_count - 1));
 
 
     // TODO アンドゥを考えるなら、置き換える前の ID を覚えておきたい☆（＾～＾） 棋譜としてスタックに積み上げか☆（＾～＾）
@@ -372,15 +371,15 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
         // 隣に空点があれば、自殺手ではない。
         pos.get_board().get_stone(top) == 0 || pos.get_board().get_stone(right) == 0 || pos.get_board().get_stone(bottom) == 0 || pos.get_board().get_stone(left) == 0
         // 隣に呼吸点が 2つ以上ある自分の色の連が1つでもあれば、自殺手ではない。
-        || (pos.get_board().get_stone(top) == pos.turn && top_ren_id < 1000 && 1<pos.get_ren_database().liberty_count_map.get_liberty_count(top_ren_id))
-        || (pos.get_board().get_stone(right) == pos.turn && right_ren_id < 1000 && 1<pos.get_ren_database().liberty_count_map.get_liberty_count(right_ren_id))
-        || (pos.get_board().get_stone(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.get_ren_database().liberty_count_map.get_liberty_count(bottom_ren_id))
-        || (pos.get_board().get_stone(left) == pos.turn && left_ren_id < 1000 && 1<pos.get_ren_database().liberty_count_map.get_liberty_count(left_ren_id))
+        || (pos.get_board().get_stone(top) == pos.turn && top_ren_id < 1000 && 1<pos.get_ren_database().get_stone_ren_map().get_ren(top_ren_id as i16).expect("is_forbidden(1)").get_liberty_count())
+        || (pos.get_board().get_stone(right) == pos.turn && right_ren_id < 1000 && 1<pos.get_ren_database().get_stone_ren_map().get_ren(right_ren_id as i16).expect("is_forbidden(2)").get_liberty_count())
+        || (pos.get_board().get_stone(bottom) == pos.turn && bottom_ren_id < 1000 && 1<pos.get_ren_database().get_stone_ren_map().get_ren(bottom_ren_id as i16).expect("is_forbidden(3)").get_liberty_count())
+        || (pos.get_board().get_stone(left) == pos.turn && left_ren_id < 1000 && 1<pos.get_ren_database().get_stone_ren_map().get_ren(left_ren_id as i16).expect("is_forbidden(4)").get_liberty_count())
         // 隣に呼吸点が 1つ以下の相手の色の連が1つでもあれば、自殺手ではない。
-        || (pos.get_board().get_stone(top) == opponent && top_ren_id < 1000 && pos.get_ren_database().liberty_count_map.get_liberty_count(top_ren_id) < 2)
-        || (pos.get_board().get_stone(right) == opponent && right_ren_id < 1000 && pos.get_ren_database().liberty_count_map.get_liberty_count(right_ren_id) < 2)
-        || (pos.get_board().get_stone(bottom) == opponent && bottom_ren_id < 1000 && pos.get_ren_database().liberty_count_map.get_liberty_count(bottom_ren_id) < 2)
-        || (pos.get_board().get_stone(left) == opponent && left_ren_id < 1000 && pos.get_ren_database().liberty_count_map.get_liberty_count(left_ren_id) < 2)
+        || (pos.get_board().get_stone(top) == opponent && top_ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().get_ren(top_ren_id as i16).expect("is_forbidden(5)").get_liberty_count() < 2)
+        || (pos.get_board().get_stone(right) == opponent && right_ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().get_ren(right_ren_id as i16).expect("is_forbidden(6)").get_liberty_count() < 2)
+        || (pos.get_board().get_stone(bottom) == opponent && bottom_ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().get_ren(bottom_ren_id as i16).expect("is_forbidden(7)").get_liberty_count() < 2)
+        || (pos.get_board().get_stone(left) == opponent && left_ren_id < 1000 && pos.get_ren_database().get_stone_ren_map().get_ren(left_ren_id as i16).expect("is_forbidden(8)").get_liberty_count() < 2)
     {
         return false;
     }

@@ -71,7 +71,7 @@ fn main() {
             show_address_ren_board(&pos);
 
             // 表示      : 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(&pos.liberty_count_map);
+            show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
 
             // 表示      : 空連の占有者を表示☆（＾～＾）
             show_territory(&pos.get_ren_database().get_empty_ren_map());

@@ -3,7 +3,6 @@
 use std;
 use std::collections::HashMap;
 // use address_ren_board_searcher::*;
-use liberty_count_map::LibertyCountMap;
 
 /// 石連と、空連に大きく分かれる☆（＾～＾）
 #[derive(Default)]
@@ -19,9 +18,6 @@ pub struct RenDatabase {
 
     /// 計算用。探索中のマーク。盤上に紐づく空連ID。
     address_empty_ren_board: AddressRenBoard,
-
-    /// 計算用。連に紐づく呼吸点の数。
-    pub liberty_count_map: LibertyCountMap,
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
@@ -30,7 +26,6 @@ impl RenDatabase {
             empty_ren_map: RenMap::new(),
             address_stone_ren_board: AddressRenBoard::new(),
             address_empty_ren_board: AddressRenBoard::new(),
-            liberty_count_map: LibertyCountMap::new(),
         }
     }
 
@@ -106,6 +101,17 @@ impl RenMap {
     pub fn iter(&self) -> std::collections::hash_map::Iter<i16, RenObject> {
         self.map.iter()
     }
+    /*
+    pub fn iter_liberty_count(&self) -> std::slice::Iter<i16> {
+        self.liberty_count.iter()
+    }
+
+    /// キーを変更。
+    pub fn change_key_liberty_count(&mut self, ren_id_before:i16, ren_id_after:i16){
+        self.liberty_count[ren_id_after as usize] = self.liberty_count[ren_id_before as usize];
+        self.liberty_count[ren_id_before as usize] = 0;
+    }
+    */
 
     pub fn contains_key(&self, ren_id:i16) -> bool {
         self.map.contains_key(&ren_id)
@@ -177,8 +183,8 @@ pub struct RenObject {
     /// 3. 黒石と白石の両方に隣接する。
     territory: i8,
 
-    // 呼吸点の数は、盤の交点の数より必ず少ない。が、 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
-    // liberty_count: i16,
+    // 計算用。連に紐づく呼吸点の数。呼吸点の数は、盤の交点の数より必ず少ない。が、 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
+    liberty_count: i16,
 }
 impl RenObject {
     /*
@@ -196,6 +202,7 @@ impl RenObject {
             id: ren_id,
             addresses: member_addresses,
             territory: empty_territory,
+            liberty_count: 0,
         }
     }
 
@@ -248,6 +255,19 @@ impl RenObject {
         }
 
         1 == self.len_addr()
+    }
+
+
+    pub fn add_liberty_count(&mut self, liberty_count:i16) {
+        self.liberty_count += liberty_count;
+    }
+
+    pub fn get_liberty_count(&self) -> i16 {
+        self.liberty_count
+    }
+
+    pub fn set_liberty_count(&mut self, liberty_count:i16) {
+        self.liberty_count = liberty_count;
     }
 }
 
