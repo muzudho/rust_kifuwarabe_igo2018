@@ -67,7 +67,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.liberty_count_map);
+        show_libarty_count(&pos.get_ren_database().liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_territory(&pos.get_ren_database().get_empty_ren_map());
         // 連の要素を表示☆（＾～＾）
@@ -82,7 +82,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.liberty_count_map);
+        show_libarty_count(&pos.get_ren_database().liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_territory(&pos.get_ren_database().get_empty_ren_map());
         // 連の要素を表示☆（＾～＾）
@@ -97,7 +97,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.liberty_count_map);
+        show_libarty_count(&pos.get_ren_database().liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_territory(&pos.get_ren_database().get_empty_ren_map());
         // 連の要素を表示☆（＾～＾）
@@ -112,7 +112,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.liberty_count_map);
+        show_libarty_count(&pos.get_ren_database().liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_territory(&pos.get_ren_database().get_empty_ren_map());
         // 連の要素を表示☆（＾～＾）
@@ -127,7 +127,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.liberty_count_map);
+        show_libarty_count(&pos.get_ren_database().liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_territory(&pos.get_ren_database().get_empty_ren_map());
         // 連の要素を表示☆（＾～＾）
@@ -142,7 +142,7 @@ fn main() {
         // 連のIDを表示☆（＾～＾）
         show_address_ren_board(&pos);
         // 呼吸点の数を表示☆（＾～＾）
-        show_libarty_count(&pos.liberty_count_map);
+        show_libarty_count(&pos.get_ren_database().liberty_count_map);
         // 空連の占有者を表示☆（＾～＾）
         show_territory(&pos.get_ren_database().get_empty_ren_map());
         // 連の要素を表示☆（＾～＾）

@@ -9,7 +9,7 @@ use ren_database::*;
 pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
     // 空点 かつ、まだ今回マークしていない --> 呼吸点+1。
     if pos.get_board().get_stone(target) == 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000 {
-        pos.liberty_count_map.add(ren_id as usize, 1);
+        pos.get_mut_ren_database().liberty_count_map.add_liberty_count(ren_id as usize, 1);
     }
     
     if (

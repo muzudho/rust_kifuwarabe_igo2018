@@ -67,7 +67,7 @@ fn main() {
             show_board_address(conf.board_size);
 
             // 盤を表示☆（＾～＾）
-            show_board_by_number(&pos.board);
+            show_board_by_number(&pos.get_board());
 
             // 全部の交点に、連のIDを振る。
             check_liberty_all_points(&mut pos);
@@ -76,7 +76,7 @@ fn main() {
             show_address_ren_board(&pos);
 
             // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(&pos.liberty_count_map);
+            show_libarty_count(&pos.get_ren_database().liberty_count_map);
 
             // 空連の占有者を表示☆（＾～＾）
             show_territory(&pos.get_ren_database().get_empty_ren_map());

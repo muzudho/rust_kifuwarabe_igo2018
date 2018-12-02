@@ -2,13 +2,16 @@
 
 use std;
 use std::collections::HashMap;
+// use address_ren_board_searcher::*;
+use liberty_count_map::LibertyCountMap;
 
 /// 石連と、空連に大きく分かれる☆（＾～＾）
 #[derive(Default)]
 pub struct RenDatabase {
-    // 石連ID に紐づくもの。 連IDは 番地から作られる。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
+    // 石連ID に紐づくプロパティ。 連IDは 番地から作られる。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
     stone_ren_map: RenMap,
-    // 空連ID に紐づくもの。
+
+    // 空連ID に紐づくプロパティ。
     empty_ren_map: RenMap,
 
     /// 計算用。盤上に紐づく連ID。
@@ -16,6 +19,9 @@ pub struct RenDatabase {
 
     /// 計算用。探索中のマーク。盤上に紐づく空連ID。
     address_empty_ren_board: AddressRenBoard,
+
+    /// 計算用。連に紐づく呼吸点の数。
+    pub liberty_count_map: LibertyCountMap,
 }
 impl RenDatabase {
     pub fn new() -> RenDatabase {
@@ -24,6 +30,7 @@ impl RenDatabase {
             empty_ren_map: RenMap::new(),
             address_stone_ren_board: AddressRenBoard::new(),
             address_empty_ren_board: AddressRenBoard::new(),
+            liberty_count_map: LibertyCountMap::new(),
         }
     }
 
@@ -154,7 +161,7 @@ impl RenMap {
 
 
 
-/// 連。
+/// 連（のプロパティ）。
 pub struct RenObject {
     /// 連ID。
     id: i16,
@@ -169,6 +176,9 @@ pub struct RenObject {
     /// 2. 白石か枠のいずれかだけに隣接する。
     /// 3. 黒石と白石の両方に隣接する。
     territory: i8,
+
+    // 呼吸点の数は、盤の交点の数より必ず少ない。が、 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
+    // liberty_count: i16,
 }
 impl RenObject {
     /*

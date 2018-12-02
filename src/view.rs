@@ -91,7 +91,7 @@ pub fn show_address_ren_board(pos:&Position) {
 /// 呼吸点の数を表示☆（＾～＾）
 pub fn show_libarty_count(liberty_count_map:&LibertyCountMap) {
     println!("Liberty count: ");
-    for (ren_id, lib_cnt) in liberty_count_map.iter().enumerate() {
+    for (ren_id, lib_cnt) in liberty_count_map.iter_liberty_count().enumerate() {
         if *lib_cnt != 0 {
             println!("[{:3}] {:3}", ren_id, lib_cnt);
         }

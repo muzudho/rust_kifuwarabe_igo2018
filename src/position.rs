@@ -1,20 +1,18 @@
 /// 局面☆（＾▽＾）
 
 use board::Board;
-use address_ren_board_searcher::*;
-use liberty_count_map::LibertyCountMap;
 use ren_database::*;
 
 /// ゲーム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数みたいな便利さで使っている☆（＾～＾）
 pub struct Position {
     /// 枠付きの盤面。
     board: Board,
+
     /// コウの番地。
     pub ko: i16,
+
     /// 手番。1:黒、2:白。
     pub turn: i8,
-    /// 計算用。連に紐づく呼吸点の数。
-    pub liberty_count_map: LibertyCountMap,
     
     /// 連のデータベース☆（＾～＾）
     ren_database: RenDatabase,
@@ -25,7 +23,6 @@ impl Position {
             board: board_stones,
             ko: ko_address,
             turn: turn_count,
-            liberty_count_map: LibertyCountMap::new(),
             ren_database: RenDatabase::new(),
         }
     }
