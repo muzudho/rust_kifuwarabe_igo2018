@@ -1,7 +1,7 @@
 /// 局面☆（＾▽＾）
 
 use board::Board;
-use ren_database::*;
+use ren_db::ren_database::*;
 
 /// ゲーム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数みたいな便利さで使っている☆（＾～＾）
 pub struct Position {

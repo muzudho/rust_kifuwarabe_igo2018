@@ -22,7 +22,7 @@ use std::path::Path;
 // use std::collections::HashMap;
 
 use kifuwarabe_igo2018::*;
-use address_ren_board_searcher::*;
+use ren_db::address_ren_board_searcher::*;
 use config_file::Config;
 use liberty::*;
 use position_file::PositionFile;

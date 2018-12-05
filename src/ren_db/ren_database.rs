@@ -8,7 +8,7 @@ use std::collections::HashMap;
 #[derive(Default)]
 pub struct RenDatabase {
     // 連ID に紐づくプロパティ。 連IDは 番地から作られる。 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
-    ren_mappings: RenMap,
+    ren_mappings: PieceGraph,
 
     /// 計算用。探索中のマーク。盤上に紐づく「石」の連ID。
     address_stone_ren_board: AddressRenBoard,
@@ -19,17 +19,17 @@ pub struct RenDatabase {
 impl RenDatabase {
     pub fn new() -> RenDatabase {
         RenDatabase {
-            ren_mappings: RenMap::new(),
+            ren_mappings: PieceGraph::new(),
             address_stone_ren_board: AddressRenBoard::new(),
             address_empty_ren_board: AddressRenBoard::new(),
         }
     }
 
-    pub fn get_ren_mappings(&self) -> &RenMap {
+    pub fn get_ren_mappings(&self) -> &PieceGraph {
         &self.ren_mappings
     }
 
-    pub fn get_mut_ren_mappings(&mut self) -> &mut RenMap {
+    pub fn get_mut_ren_mappings(&mut self) -> &mut PieceGraph {
         &mut self.ren_mappings
     }
 
@@ -53,12 +53,12 @@ impl RenDatabase {
 
 /// 連ID と、 連オブジェクト が紐づく。
 #[derive(Default)]
-pub struct RenMap {
-    map: HashMap<i16,RenObject>,
+pub struct PieceGraph {
+    map: HashMap<i16,PieceObject>,
 }
-impl RenMap {
-    pub fn new() -> RenMap {
-        RenMap {
+impl PieceGraph {
+    pub fn new() -> PieceGraph {
+        PieceGraph {
             map: HashMap::new(),
         }
     }
@@ -72,20 +72,20 @@ impl RenMap {
         };
 
         // 無い連なら、新規作成して追加。
-        let mut ren_obj = RenObject::default(ren_id, vec![addr], 0);
+        let ren_obj = PieceObject::default(ren_id, vec![addr], 0);
         self.map.insert(ren_id, ren_obj);
     }
 
 
-    pub fn get_ren(&self, ren_id:i16) -> Option<&RenObject> {
+    pub fn get_ren(&self, ren_id:i16) -> Option<&PieceObject> {
         self.map.get(&ren_id)
     }
 
-    pub fn get_mut_ren(&mut self, ren_id:i16) -> Option<&mut RenObject> {
+    pub fn get_mut_ren(&mut self, ren_id:i16) -> Option<&mut PieceObject> {
         self.map.get_mut(&ren_id)
     }
 
-    pub fn iter(&self) -> std::collections::hash_map::Iter<i16, RenObject> {
+    pub fn iter(&self) -> std::collections::hash_map::Iter<i16, PieceObject> {
         self.map.iter()
     }
     /*
@@ -105,12 +105,12 @@ impl RenMap {
     }
 
     /// 外部から連を追加。
-    pub fn insert_ren(&mut self, ren_id:i16, ren_obj:RenObject) {
+    pub fn insert_ren(&mut self, ren_id:i16, ren_obj:PieceObject) {
         self.map.insert(ren_id, ren_obj);
     }
 
     /// 既存の連に、外部から連を結合。
-    pub fn extend_ren(&mut self, ren_id:i16, other_ren_obj:&RenObject) {
+    pub fn extend_ren(&mut self, ren_id:i16, other_ren_obj:&PieceObject) {
         match self.map.get_mut(&ren_id) {
             Some(ren_obj) => {ren_obj.extend(&other_ren_obj);},
             None => {panic!("Extend: ren_id: {}.", ren_id)},
@@ -118,7 +118,7 @@ impl RenMap {
     }
 
     // 連を除外。
-    pub fn remove_ren(&mut self, ren_id:i16) -> Option<RenObject> {
+    pub fn remove_ren(&mut self, ren_id:i16) -> Option<PieceObject> {
         self.map.remove(&ren_id)
     }
 
@@ -155,7 +155,7 @@ impl RenMap {
 
 
 /// 連（のプロパティ）。
-pub struct RenObject {
+pub struct PieceObject {
     /// 連ID。
     id: i16,
 
@@ -173,10 +173,10 @@ pub struct RenObject {
     // 計算用。連に紐づく呼吸点の数。呼吸点の数は、盤の交点の数より必ず少ない。が、 19路盤は 361交点あるので、i16 にする。 i8 の -128～127 では足りない☆（＾～＾）
     liberty_count: i16,
 }
-impl RenObject {
+impl PieceObject {
     /*
-    pub fn new() -> RenObject {
-        RenObject {
+    pub fn new() -> PieceObject {
+        PieceObject {
             id: 0,
             addresses: Vec::new(),
             territory: 0,
@@ -184,8 +184,8 @@ impl RenObject {
     }
      */
 
-    pub fn default(ren_id:i16, member_addresses:Vec<i16>, empty_territory:i8) -> RenObject {
-        RenObject {
+    pub fn default(ren_id:i16, member_addresses:Vec<i16>, empty_territory:i8) -> PieceObject {
+        PieceObject {
             id: ren_id,
             addresses: member_addresses,
             territory: empty_territory,
@@ -199,7 +199,7 @@ impl RenObject {
     }
 
     /// 別の連の番地を追加する。
-    pub fn extend(&mut self, other_ren_obj:&RenObject) {
+    pub fn extend(&mut self, other_ren_obj:&PieceObject) {
         self.addresses.extend(other_ren_obj.iter_addr().cloned());
     }
 
@@ -298,7 +298,7 @@ impl AddressRenBoard {
     }
 
     /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは ren_id を 0 にする。
-    pub fn fill_by_ren(&mut self, ren_obj:&RenObject, new_ren_id:i16) {
+    pub fn fill_by_ren(&mut self, ren_obj:&PieceObject, new_ren_id:i16) {
         for addr in ren_obj.iter_addr() {
             self.value[*addr as usize] = new_ren_id;
         }

@@ -168,7 +168,7 @@ fn main() {
             };
 
             pos.get_mut_ren_database().get_mut_empty_ren_map().remove_ren(ren_id);
-            pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(ren_id, RenObject::default(ren_id, shrink, old_territory));
+            pos.get_mut_ren_database().get_mut_empty_ren_map().insert_ren(ren_id, PieceObject::default(ren_id, shrink, old_territory));
 
             print!("縮まった空連の作り直し。番地: ");
             match &pos.get_ren_database().get_empty_ren_map().get_ren(ren_id) {

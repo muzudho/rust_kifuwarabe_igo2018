@@ -1,7 +1,7 @@
 /// 石の連に関するものだぜ☆（＾～＾）
 
 use position::Position;
-use ren_database::*;
+use ren_db::ren_database::*;
 
 /// 連にIDを振り、連の呼吸点も数える。
 /// # Arguments.
@@ -42,7 +42,7 @@ pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
             None => {println!("石連テリトリーの取得失敗。連ID: {}.", ren_id); 0},
         };
 
-        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(ren_id, RenObject::default(ren_id, vec![target as i16], old_territory));
+        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(ren_id, PieceObject::default(ren_id, vec![target as i16], old_territory));
     }
 
     // 隣を探す。（再帰）

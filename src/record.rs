@@ -1,6 +1,6 @@
 // 棋譜☆（＾～＾）
 
-use ren_database::*;
+use ren_db::ren_database::*;
 
 #[derive(Default)]
 pub struct RecordItem {
@@ -30,7 +30,7 @@ impl RecordItem {
     }
 
     /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは ren_id を 0 にする。
-    pub fn add_agehama_by_ren(&mut self, agehama_ren_obj:&RenObject) {
+    pub fn add_agehama_by_ren(&mut self, agehama_ren_obj:&PieceObject) {
         for addr in agehama_ren_obj.iter_addr() {
             self.agehama_addrs.push(*addr);
         }
@@ -73,7 +73,7 @@ impl Record {
         self.items[index].add_agehama_by_vec(agehama);
     }
 
-    pub fn add_current_agehama_by_ren(&mut self, agehama_ren_obj:&RenObject){
+    pub fn add_current_agehama_by_ren(&mut self, agehama_ren_obj:&PieceObject){
         let index = self.items.len()-1;
         self.items[index].add_agehama_by_ren(agehama_ren_obj);
     }

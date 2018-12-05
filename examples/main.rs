@@ -22,7 +22,7 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
-use address_ren_board_searcher::*;
+use ren_db::address_ren_board_searcher::*;
 use kifuwarabe_igo2018::*;
 use config_file::Config;
 use out_file::OutFile;

@@ -1,7 +1,7 @@
 use board::Board;
 use position::Position;
 use record::*;
-use ren_database::*;
+use ren_db::ren_database::*;
 
 /// 盤の表示☆（＾～＾）
 pub fn show_board(board:&Board){
@@ -88,7 +88,7 @@ pub fn show_address_ren_board(pos:&Position) {
 }
 
 /// 呼吸点の数を表示☆（＾～＾）
-pub fn show_libarty_count(ren_map:&RenMap) {
+pub fn show_libarty_count(ren_map:&PieceGraph) {
     println!("Liberty count: ");
     for (ren_id, ren_obj) in ren_map.iter() {
         if (*ren_obj).get_liberty_count() != 0 {
@@ -98,7 +98,7 @@ pub fn show_libarty_count(ren_map:&RenMap) {
 }
 
 /// 空連の占有者を表示☆（＾～＾）
-pub fn show_territory(ren_map:&RenMap) {
+pub fn show_territory(ren_map:&PieceGraph) {
     println!("Territory: ");
     for (ren_id, ren_obj) in ren_map.iter() {
         let territory = ren_obj.get_territory();
@@ -109,7 +109,7 @@ pub fn show_territory(ren_map:&RenMap) {
 }
 
 /// すべての連の、すべての番地を表示☆（＾～＾）
-pub fn show_ren_address_map(ren_map:&RenMap) {
+pub fn show_ren_address_map(ren_map:&PieceGraph) {
     println!("Ren element: ");
     for (ren_id, ren_obj) in ren_map.iter() {
         print!("[{:3}] ", ren_id);
@@ -130,7 +130,7 @@ pub fn show_legal_moves(legal_moves:&[usize]) {
 }
 
 /// 連が占有する番地を表示☆（＾～＾）
-pub fn show_ren_addr(ren_obj:&RenObject) {
+pub fn show_ren_addr(ren_obj:&PieceObject) {
     for addr in ren_obj.iter_addr() {
         print!("{:3}, ", addr);
     }

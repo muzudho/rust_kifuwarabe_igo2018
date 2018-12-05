@@ -1,9 +1,9 @@
 /// 連と呼吸点の計算☆（＾～＾）
 
 use board::Board;
-use empty_ren::*;
+use ren_db::empty_ren::*;
 use position::Position;
-use stone_ren::*;
+use ren_db::stone_ren::*;
 
 /// 4方向の空点を数えるだけ☆（＾～＾）
 pub fn count_liberty_at_point(target:usize, board:&Board) -> i8 {

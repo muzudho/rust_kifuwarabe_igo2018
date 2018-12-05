@@ -8,24 +8,21 @@ use rand::Rng;
 extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
-pub mod address_ren_board_searcher;
 pub mod best_move;
 pub mod board;
 pub mod config_file;
-pub mod empty_ren;
 pub mod liberty;
 pub mod out_file;
 pub mod position_file;
 pub mod position;
 pub mod record;
-pub mod ren_database;
-pub mod stone_ren;
+pub mod ren_db;
 pub mod view;
 pub mod zobrist_hash;
 
-use address_ren_board_searcher::*;
+use ren_db::address_ren_board_searcher::*;
 use position::Position;
-use empty_ren::*;
+use ren_db::empty_ren::*;
 use liberty::*;
 use record::*;
 // use ren_database::*;

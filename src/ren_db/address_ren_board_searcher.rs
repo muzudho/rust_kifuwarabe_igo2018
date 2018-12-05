@@ -1,7 +1,7 @@
 // 連IDが入った盤を探索するやつだぜ☆（＾～＾）
 use std::cmp;
 use board::*;
-use ren_database::*;
+use ren_db::ren_database::*;
 
 // アプリケーション１つに、インスタンスは１個だけ存在するぜ☆（＾～＾）
 pub struct AddressRenBoardSearcher {

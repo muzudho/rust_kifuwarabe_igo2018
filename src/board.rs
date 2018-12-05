@@ -1,7 +1,7 @@
 /// 石を置いている盤だぜ☆（＾～＾）
 
 use std;
-use ren_database::*;
+use ren_db::ren_database::*;
 use zobrist_hash::*;
 
 /// プログラム中にインスタンスが１つだけ存在する☆（＾～＾） グローバル変数のような便利さで使っている☆（＾～＾）
@@ -63,7 +63,7 @@ impl Board {
     }
 
     /// 石を置く。石を除去したいときは stone を 0 にする。
-    pub fn fill_by_ren(&mut self, ren_obj:&RenObject, stone:i8) {
+    pub fn fill_by_ren(&mut self, ren_obj:&PieceObject, stone:i8) {
         for addr in ren_obj.iter_addr() {
             self.set_stone(*addr as usize, stone);
         }

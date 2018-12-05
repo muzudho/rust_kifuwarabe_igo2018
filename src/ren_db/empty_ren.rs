@@ -1,8 +1,8 @@
 // 空連に関するもの☆（＾～＾）
 
-use address_ren_board_searcher::*;
+use ren_db::address_ren_board_searcher::*;
 use position::Position;
-use ren_database::*;
+use ren_db::ren_database::*;
 use view::*;
 
 
@@ -182,7 +182,7 @@ pub fn cut_empty_ren(pos:&mut Position, cutting_addr:usize, address_ren_board_se
         };
 
         pos.get_mut_ren_database().get_mut_ren_mappings().remove_ren(empty_ren_id);
-        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(empty_ren_id, RenObject::default(empty_ren_id, shrink, old_territory));
+        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(empty_ren_id, PieceObject::default(empty_ren_id, shrink, old_territory));
 
         print!("縮まった空連の作り直し。番地: ");
         match &pos.get_mut_ren_database().get_mut_ren_mappings().get_ren(empty_ren_id) {
