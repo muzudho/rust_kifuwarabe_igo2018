@@ -22,14 +22,14 @@ impl RecordItem {
         }
     }
 
-    /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは ren_id を 0 にする。
+    /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは piece_id を 0 にする。
     pub fn add_agehama_by_vec(&mut self, agehama:&Vec<i16>) {
         for addr in agehama {
             self.agehama_addrs.push(*addr);
         }
     }
 
-    /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは ren_id を 0 にする。
+    /// 複数の指定アドレスを 連ID で埋める。石を除去したいときは piece_id を 0 にする。
     pub fn add_agehama_by_ren(&mut self, agehama_ren_obj:&PieceObject) {
         for addr in agehama_ren_obj.iter_addr() {
             self.agehama_addrs.push(*addr);

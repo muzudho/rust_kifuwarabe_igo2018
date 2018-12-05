@@ -22,7 +22,7 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
-use ren_db::address_ren_board_searcher::*;
+use ren_db::piece_distribution_searcher::*;
 use kifuwarabe_igo2018::*;
 use config_file::Config;
 use out_file::OutFile;
@@ -43,7 +43,7 @@ fn main() {
     println!("Load: config.json");
 
     // 計算用。
-    let mut address_ren_board_searcher = AddressRenBoardSearcher::new();
+    let mut piece_distribution_searcher = PieceDistributionSearcher::new();
 
     // 棋譜。
     let mut record = Record::new();
@@ -81,7 +81,7 @@ fn main() {
             let legal_moves = pick_move(&pos, &record);
 
             // 試し打ちをする☆（＾～＾）
-            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut address_ren_board_searcher), pos.get_board().get_size());
+            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut piece_distribution_searcher), pos.get_board().get_size());
             println!("BestMove: '{}'.", move_code);
 
             // in.txt ファイル出力。

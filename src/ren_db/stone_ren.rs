@@ -5,53 +5,53 @@ use ren_db::ren_database::*;
 
 /// 連にIDを振り、連の呼吸点も数える。
 /// # Arguments.
-/// * `address_ren_board` - 1000以上はtemporaryな数。
-pub fn walk_liberty(ren_id:i16, color:i8, pos:&mut Position, target:usize){
+/// * `piece_distribution` - 1000以上はtemporaryな数。
+pub fn walk_liberty(piece_id:i16, color:i8, pos:&mut Position, target:usize){
     // 空点 かつ、まだ今回マークしていない --> 呼吸点+1。
-    if pos.get_board().get_stone(target) == 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000 {
-        pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(ren_id).expect("walk_liberty(1)").add_liberty_count(1);
+    if pos.get_board().get_stone(target) == 0 && pos.get_piece_database().get_stone_piece_distribution().get(target) != piece_id + 1000 {
+        pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(piece_id).expect("walk_liberty(1)").add_liberty_count(1);
     }
     
     if (
         // 連IDが振られてたら終了。ただし「自分の連ID + 1000」を除く。0 は枠セル番号なんで、連IDに使わない。
-        pos.get_ren_database().get_address_stone_ren_board().get(target) != 0 && pos.get_ren_database().get_address_stone_ren_board().get(target) != ren_id + 1000)
+        pos.get_piece_database().get_stone_piece_distribution().get(target) != 0 && pos.get_piece_database().get_stone_piece_distribution().get(target) != piece_id + 1000)
         || // または、
         // 探している石でなければ終了。
         pos.get_board().get_stone(target) != color
     {
         // 空点 --> 「自分の連ID + 1000」で ID上書き
         // 1000以上の連ID --> 同上。
-        if pos.get_board().get_stone(target) == 0 || 1000 <= pos.get_ren_database().get_address_stone_ren_board().get(target) {
-            pos.get_mut_ren_database().get_mut_address_stone_ren_board().set(target, ren_id + 1000);
+        if pos.get_board().get_stone(target) == 0 || 1000 <= pos.get_piece_database().get_stone_piece_distribution().get(target) {
+            pos.get_mut_ren_database().get_mut_stone_piece_distribution().set(target, piece_id + 1000);
         }
         return;
     }
 
     // 探している色の石なら
     // 番地に 連ID を紐づける。検索を開始したセル番号でも振っとく。
-    pos.get_mut_ren_database().get_mut_address_stone_ren_board().set(target, ren_id);
+    pos.get_mut_ren_database().get_mut_stone_piece_distribution().set(target, piece_id);
 
-    if ren_id < 1000 && pos.get_ren_database().get_ren_mappings().contains_key(ren_id) {
-        match pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(ren_id) {
+    if piece_id < 1000 && pos.get_piece_database().get_piece_mappings().contains_key(piece_id) {
+        match pos.get_mut_ren_database().get_mut_ren_mappings().get_mut_ren(piece_id) {
             Some(ren_obj) => {ren_obj.add_addr(target as i16);}
             None => {panic!("walk_liberty");}
         }
     } else {
-        let old_territory = match pos.get_ren_database().get_ren_mappings().get_ren(ren_id) {
+        let old_territory = match pos.get_piece_database().get_piece_mappings().get_piece(piece_id) {
             Some(ren_obj) => ren_obj.get_territory(),
-            None => {println!("石連テリトリーの取得失敗。連ID: {}.", ren_id); 0},
+            None => {println!("石連テリトリーの取得失敗。連ID: {}.", piece_id); 0},
         };
 
-        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(ren_id, PieceObject::default(ren_id, vec![target as i16], old_territory));
+        pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(piece_id, PieceObject::default(piece_id, vec![target as i16], old_territory));
     }
 
     // 隣を探す。（再帰）
     let top = pos.get_top_of(target);
     let bottom = pos.get_bottom_of(target);
-    walk_liberty(ren_id, color, pos, top);// 上。
-    walk_liberty(ren_id, color, pos, target+1);// 右。
-    walk_liberty(ren_id, color, pos, bottom);// 下。
-    walk_liberty(ren_id, color, pos, target-1);// 左。
+    walk_liberty(piece_id, color, pos, top);// 上。
+    walk_liberty(piece_id, color, pos, target+1);// 右。
+    walk_liberty(piece_id, color, pos, bottom);// 下。
+    walk_liberty(piece_id, color, pos, target-1);// 左。
 }
 
 /// TODO 石の連の接続☆（＾～＾）

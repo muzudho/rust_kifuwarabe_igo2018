@@ -63,24 +63,24 @@ pub fn show_board_by_number(board:&Board) {
 }
 
 /// 盤に振られた 連ID を表示だぜ☆（＾～＾）
-pub fn show_address_ren_board(pos:&Position) {
+pub fn show_piece_distribution(pos:&Position) {
     println!("Ren ID board: ");
-    for (i, ren_id) in pos.get_ren_database().get_address_stone_ren_board().iter().enumerate() {
+    for (i, piece_id) in pos.get_piece_database().get_stone_piece_distribution().iter().enumerate() {
         if i == (pos.get_board().get_size()+2) * (pos.get_board().get_size()+2) {
             break;
         }
-        print!("{:4}, ", ren_id);
+        print!("{:4}, ", piece_id);
         if i % (pos.get_board().get_size() + 2) == (pos.get_board().get_size() + 1) {
             println!();
         }
     }
 
     println!("Empty ren ID board: ");
-    for (i, ren_id) in pos.get_ren_database().get_address_empty_ren_board().iter().enumerate() {
+    for (i, piece_id) in pos.get_piece_database().get_empty_piece_distribution().iter().enumerate() {
         if i == (pos.get_board().get_size()+2) * (pos.get_board().get_size()+2) {
             break;
         }
-        print!("{:4}, ", ren_id);
+        print!("{:4}, ", piece_id);
         if i % (pos.get_board().get_size() + 2) == (pos.get_board().get_size() + 1) {
             println!();
         }
@@ -90,9 +90,9 @@ pub fn show_address_ren_board(pos:&Position) {
 /// 呼吸点の数を表示☆（＾～＾）
 pub fn show_libarty_count(ren_map:&PieceGraph) {
     println!("Liberty count: ");
-    for (ren_id, ren_obj) in ren_map.iter() {
+    for (piece_id, ren_obj) in ren_map.iter() {
         if (*ren_obj).get_liberty_count() != 0 {
-            println!("[{:3}] {:3}", ren_id, (*ren_obj).get_liberty_count());
+            println!("[{:3}] {:3}", piece_id, (*ren_obj).get_liberty_count());
         }
     }
 }
@@ -100,10 +100,10 @@ pub fn show_libarty_count(ren_map:&PieceGraph) {
 /// 空連の占有者を表示☆（＾～＾）
 pub fn show_territory(ren_map:&PieceGraph) {
     println!("Territory: ");
-    for (ren_id, ren_obj) in ren_map.iter() {
+    for (piece_id, ren_obj) in ren_map.iter() {
         let territory = ren_obj.get_territory();
         if territory != 0 && territory != 3 {
-            println!("[{:3}] {:3}", ren_id, territory);
+            println!("[{:3}] {:3}", piece_id, territory);
         }
     }
 }
@@ -111,8 +111,8 @@ pub fn show_territory(ren_map:&PieceGraph) {
 /// すべての連の、すべての番地を表示☆（＾～＾）
 pub fn show_ren_address_map(ren_map:&PieceGraph) {
     println!("Ren element: ");
-    for (ren_id, ren_obj) in ren_map.iter() {
-        print!("[{:3}] ", ren_id);
+    for (piece_id, ren_obj) in ren_map.iter() {
+        print!("[{:3}] ", piece_id);
         for addr in ren_obj.iter_addr() {
             print!("{:3} ", addr);
         }

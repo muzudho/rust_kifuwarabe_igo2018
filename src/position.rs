@@ -35,7 +35,7 @@ impl Position {
         &mut self.board
     }
 
-    pub fn get_ren_database(&self) -> &RenDatabase {
+    pub fn get_piece_database(&self) -> &RenDatabase {
         &self.ren_database
     }
     

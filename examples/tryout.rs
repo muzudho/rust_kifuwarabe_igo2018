@@ -73,14 +73,14 @@ fn main() {
             check_liberty_all_points(&mut pos);
 
             // 連のIDを表示☆（＾～＾）
-            show_address_ren_board(&pos);
+            show_piece_distribution(&pos);
 
             // 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(&pos.get_ren_database().get_stone_ren_map());
+            show_libarty_count(&pos.get_piece_database().get_stone_ren_map());
 
             // 空連の占有者を表示☆（＾～＾）
-            show_territory(&pos.get_ren_database().get_empty_ren_map());
-            show_ren_address_map(&pos.get_ren_database().get_empty_ren_map());
+            show_territory(&pos.get_piece_database().get_empty_ren_map());
+            show_ren_address_map(&pos.get_piece_database().get_empty_ren_map());
 
             // 試し打ちをする☆（＾～＾）
             //

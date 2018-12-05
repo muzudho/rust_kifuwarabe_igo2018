@@ -73,41 +73,41 @@ fn main() {
     check_liberty_all_points(&mut pos);
 
     // 連のIDを表示☆（＾～＾）
-    show_address_ren_board(&pos);
+    show_piece_distribution(&pos);
 
     // 呼吸点の数を表示☆（＾～＾）
-    show_libarty_count(&pos.get_ren_database().get_ren_mappings());
+    show_libarty_count(&pos.get_piece_database().get_piece_mappings());
 
     // 空連の占有者を表示☆（＾～＾）
-    show_territory(&pos.get_ren_database().get_ren_mappings());
-    show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
+    show_territory(&pos.get_piece_database().get_piece_mappings());
+    show_ren_address_map(&pos.get_piece_database().get_piece_mappings());
 
     // 目つぶしの確認☆（＾～＾）
     {
         let addr = convert_code_to_address(401, pos.get_board().get_size()) as i16;
         let color = 1;
-        if let Some(ren_obj) = pos.get_ren_database().get_ren_mappings().get_ren(addr) {
+        if let Some(ren_obj) = pos.get_piece_database().get_piece_mappings().get_piece(addr) {
             println!("eye_fill: 0401x {}", ren_obj.is_eye_filling(color));
         }
     }
     {
         let addr = convert_code_to_address(704, pos.get_board().get_size()) as i16;
         let color = 2;
-        if let Some(ren_obj) = pos.get_ren_database().get_ren_mappings().get_ren(addr) {
+        if let Some(ren_obj) = pos.get_piece_database().get_piece_mappings().get_piece(addr) {
             println!("eye_fill: 0704o {}", ren_obj.is_eye_filling(color));
         }
     }
     {
         let addr = convert_code_to_address(404, pos.get_board().get_size()) as i16;
         let color = 1;
-        if let Some(ren_obj) = pos.get_ren_database().get_ren_mappings().get_ren(addr) {
+        if let Some(ren_obj) = pos.get_piece_database().get_piece_mappings().get_piece(addr) {
             println!("eye_fill: 0404x {}", ren_obj.is_eye_filling(color));
         }
     }
     {
         let addr = convert_code_to_address(909, pos.get_board().get_size()) as i16;
         let color = 2;
-        if let Some(ren_obj) = pos.get_ren_database().get_ren_mappings().get_ren(addr) {
+        if let Some(ren_obj) = pos.get_piece_database().get_piece_mappings().get_piece(addr) {
             println!("eye_fill: 0909o {}", ren_obj.is_eye_filling(color));
         }
     }

@@ -68,14 +68,14 @@ fn main() {
             check_liberty_all_points(&mut pos);
 
             // 表示      : 連のIDを表示☆（＾～＾）
-            show_address_ren_board(&pos);
+            show_piece_distribution(&pos);
 
             // 表示      : 呼吸点の数を表示☆（＾～＾）
-            show_libarty_count(&pos.get_ren_database().get_ren_mappings());
+            show_libarty_count(&pos.get_piece_database().get_piece_mappings());
 
             // 表示      : 空連の占有者を表示☆（＾～＾）
-            show_territory(&pos.get_ren_database().get_ren_mappings());
-            show_ren_address_map(&pos.get_ren_database().get_ren_mappings());
+            show_territory(&pos.get_piece_database().get_piece_mappings());
+            show_ren_address_map(&pos.get_piece_database().get_piece_mappings());
 
             // TODO 連のIDに紐づく石の番地を表示☆（＾～＾）
 
