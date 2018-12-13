@@ -138,7 +138,21 @@ impl Air2018 {
         // 着手禁止点以外は、全部合法手☆（*＾～＾*）
         println!("ボトルネック {0} 箇所。", self.bottle_neck_addr.len());
         for target in self.bottle_neck_addr.iter() {
-            if !is_forbidden(*target as usize, pos, record) {
+
+            // 連ID。
+            let piece_id = pos.get_piece_database().get_stone_piece_distribution().get(*target as usize);
+            println!("連ID: {0}.", piece_id);
+            let terittory = match pos.get_piece_database().get_piece_mappings().get_piece(piece_id) {
+                Some(piece) => {piece.get_territory()},
+                None => {0},
+            };
+            
+            // 着手禁止点ではなく、相手の領域でもない。
+            if
+                !is_forbidden(*target as usize, pos, record)
+                &&
+                terittory != opponent                
+            {
                 vec.push(*target as usize);
             }
         }
