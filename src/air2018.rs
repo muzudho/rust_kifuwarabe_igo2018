@@ -42,46 +42,64 @@ impl Air2018 {
 
         // 相手の石について。
         for target in pos.get_left_top_on_board() ..= pos.get_right_bottom_on_board() {
+
             if opponent == pos.get_board().get_stone(target as usize) {
-                // 上
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_top_of(target) as i16);
-                self.count_bottle_neck(pos);
 
-                // 右上
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_top_right_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の上からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_top_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
 
-                // 右
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_right_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の右上からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_top_right_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
 
-                // 右下
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_bottom_right_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の右からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_right_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
 
-                // 下
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_bottom_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の右下からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_bottom_right_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
 
-                // 左下
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_bottom_left_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の下からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_bottom_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
 
-                // 左
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_left_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の左下からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_bottom_left_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
 
-                // 左上
-                self.clear_count_board(pos);
-                self.search_by_right_hand(pos, 0, pos.get_board().get_top_left_of(target) as i16);
-                self.count_bottle_neck(pos);
+                // 石の左からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_left_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
+
+                // 石の左上からスタート。
+                for direction in 0..=3 {
+                    self.clear_count_board(pos);
+                    self.search_by_right_hand(pos, target as i16, direction, pos.get_board().get_top_left_of(target) as i16);
+                    self.count_bottle_neck(pos);
+                }
             }
         }
 
@@ -99,8 +117,13 @@ impl Air2018 {
 
     /// 壁に右手を付けての探索。
     /// * `direction` - 顔の向き。 0:上、1:右、2:下、3:左。
-    pub fn search_by_right_hand(&mut self, pos:&Position, direction:i8, target:i16) {
-        println!("右手: {0}", target);
+    pub fn search_by_right_hand(&mut self, pos:&Position, end_point:i16, direction:i8, target:i16) {
+        if end_point == target {
+            println!("終点: {0}", target);
+            return;
+        }
+
+        println!("右手: {0}, 終点: {1}", target, end_point);
         match pos.get_board().get_stone(target as usize) {
             0 => {
                 // 現在位置が空点なら、踏破扱い。
@@ -139,6 +162,7 @@ impl Air2018 {
         // 左上の石の色。
         let top_left_stone = pos.get_board().get_stone(pos.get_board().get_top_left_of(target as usize));
 
+        // 上、右、下、左 の順。
         match direction {
             0 => {
                 // 上を向いている。
@@ -147,8 +171,15 @@ impl Air2018 {
                 if pos.turn == right_stone {
                     if top_stone == 0 || top_stone == opponent {
                         // 上が空いてるか、相手の石なら、上に進む。
-                        self.search_by_right_hand(pos, 0, pos.get_board().get_top_of(target as usize) as i16);
+                        println!("↑");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_top_of(target as usize) as i16);
                     }
+                    else if left_stone == 0 || left_stone == opponent {
+                        // 左が空いてるか、相手の石なら、左に進む。
+                        println!("↑←");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_left_of(target as usize) as i16);
+                    }
+                    // そうでなければ、そのまま抜ける。
                 }
             },
             1 => {
@@ -157,9 +188,16 @@ impl Air2018 {
                 // 下に自分の色の石があるか？
                 if pos.turn == bottom_stone {
                     if right_stone == 0 || right_stone == opponent {
-                        // 上が空いてるか、相手の石なら、右に進む。
-                        self.search_by_right_hand(pos, 0, pos.get_board().get_right_of(target as usize) as i16);
+                        // 右が空いてるか、相手の石なら、右に進む。
+                        println!("→");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_right_of(target as usize) as i16);
                     }
+                    else if top_stone == 0 || top_stone == opponent {
+                        // 上が空いてるか、相手の石なら、上に進む。
+                        println!("→↑");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_top_of(target as usize) as i16);
+                    }
+                    // そうでなければ、そのまま抜ける。
                 }
             },
             2 => {
@@ -169,8 +207,15 @@ impl Air2018 {
                 if pos.turn == left_stone {
                     if bottom_stone == 0 || bottom_stone == opponent {
                         // 下が空いてるか、相手の石なら、下に進む。
-                        self.search_by_right_hand(pos, 0, pos.get_board().get_bottom_of(target as usize) as i16);
+                        println!("↓←");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_bottom_of(target as usize) as i16);
                     }
+                    else if right_stone == 0 || right_stone == opponent {
+                        // 右が空いてるか、相手の石なら、右に進む。
+                        println!("↓→");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_right_of(target as usize) as i16);
+                    }
+                    // そうでなければ、そのまま抜ける。
                 }
             },
             _ => {
@@ -180,8 +225,15 @@ impl Air2018 {
                 if pos.turn == top_stone {
                     if left_stone == 0 || left_stone == opponent {
                         // 左が空いてるか、相手の石なら、左に進む。
-                        self.search_by_right_hand(pos, 0, pos.get_board().get_left_of(target as usize) as i16);
+                        println!("←");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_left_of(target as usize) as i16);
                     }
+                    else if bottom_stone == 0 || bottom_stone == opponent {
+                        // 下が空いてるか、相手の石なら、下に進む。
+                        println!("←↓");
+                        self.search_by_right_hand(pos, end_point as i16, 0, pos.get_board().get_bottom_of(target as usize) as i16);
+                    }
+                    // そうでなければ、そのまま抜ける。
                 }
             }
         }
