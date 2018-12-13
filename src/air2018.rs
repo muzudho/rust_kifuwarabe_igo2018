@@ -233,8 +233,9 @@ impl Air2018 {
                     }
                     else
                     {
-                        // そうでなければ、そのまま抜ける。
-                        println!("×");
+                        // そうでなければ、逆走。
+                        println!("◇↓逆走");
+                        self.search_by_right_hand(pos, end_point as i16, bottom_direction, pos.get_board().get_bottom_of(target as usize) as i16);
                     }
                 }
                 else if bottom_right_stone == wall_stone && (right_stone == 0 || right_stone == floor_stone) {
@@ -265,8 +266,9 @@ impl Air2018 {
                     }
                     else
                     {
-                        // そうでなければ、そのまま抜ける。
-                        println!("×");
+                        // そうでなければ、逆走。
+                        println!("◇←逆走");
+                        self.search_by_right_hand(pos, end_point as i16, left_direction, pos.get_board().get_left_of(target as usize) as i16);
                     }
                 }
                 else if bottom_left_stone == wall_stone && (bottom_stone == 0 || bottom_stone == floor_stone) {
@@ -297,8 +299,9 @@ impl Air2018 {
                     }
                     else
                     {
-                        // そうでなければ、そのまま抜ける。
-                        println!("×");
+                        // そうでなければ、逆走。
+                        println!("◇↑逆走");
+                        self.search_by_right_hand(pos, end_point as i16, top_direction, pos.get_board().get_top_of(target as usize) as i16);
                     }
                 }
                 else if top_left_stone == wall_stone && (left_stone == 0 || left_stone == floor_stone) {
@@ -329,8 +332,9 @@ impl Air2018 {
                     }
                     else
                     {
-                        // そうでなければ、そのまま抜ける。
-                        println!("×");
+                        // そうでなければ、逆走。
+                        println!("◇→逆走");
+                        self.search_by_right_hand(pos, end_point as i16, right_direction, pos.get_board().get_right_of(target as usize) as i16);
                     }
                 }
                 else if top_right_stone == wall_stone && (top_stone == 0 || top_stone == floor_stone) {
