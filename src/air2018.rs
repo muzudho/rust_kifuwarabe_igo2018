@@ -204,8 +204,14 @@ impl Air2018 {
 
         // println!("右手: {0}, 終点: {1}", target, end_point);
         if current_stone == 0 || current_stone == floor_stone {
-            // 現在位置が空点 または 通れる石 なら、踏破扱い。
-            self.count_board[target as usize] += 1;
+            if self.count_end_point == 0 {
+                // 始点は、区間の開とするので、無視する。
+            }
+            else
+            {
+                // 現在位置が空点 または 通れる石 なら、踏破扱い。
+                self.count_board[target as usize] += 1;
+            }
         }
         else if current_stone == wall_stone
         {

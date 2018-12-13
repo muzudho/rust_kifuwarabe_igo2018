@@ -41,7 +41,7 @@ pub fn walk_liberty(piece_id:i16, color:i8, pos:&mut Position, target:usize){
             Some(ren_obj) => ren_obj.get_territory(),
             None => {
                 // TODO ここはよく通るが何だろうか？
-                // println!("石連テリトリーの取得失敗。連ID: {}.", piece_id);
+                println!("石連テリトリーの取得失敗。連ID: {}.", piece_id);
                 0
             },
         };
