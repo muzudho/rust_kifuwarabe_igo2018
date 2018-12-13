@@ -74,9 +74,19 @@ impl Board {
         target-(self.size+2)
     }
 
+    // 右上隣の番地。
+    pub fn get_top_right_of(&self, target:usize) -> usize {
+        target-(self.size+2)+1
+    }
+
     // 右隣の番地。
     pub fn get_right_of(&self, target:usize) -> usize {
         target+1
+    }
+
+    // 右下隣の番地。
+    pub fn get_bottom_right_of(&self, target:usize) -> usize {
+        target+(self.size+2)+1
     }
 
     // 下隣の番地。
@@ -84,8 +94,18 @@ impl Board {
         target+(self.size+2)
     }
 
+    // 左下隣の番地。
+    pub fn get_bottom_left_of(&self, target:usize) -> usize {
+        target+(self.size+2)-1
+    }
+
     // 左隣の番地。
     pub fn get_left_of(&self, target:usize) -> usize {
         target-1
+    }
+
+    // 左上隣の番地。
+    pub fn get_top_left_of(&self, target:usize) -> usize {
+        target-(self.size+2)-1
     }
 }
