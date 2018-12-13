@@ -115,41 +115,73 @@ impl Air2018 {
         // 相手の石の色。
         let opponent = get_opponent(pos.turn);
 
+        // 上の石の色。
+        let top_stone = pos.get_board().get_stone(pos.get_board().get_top_of(target as usize));
+
+        // 右上の石の色。
+        let top_right_stone = pos.get_board().get_stone(pos.get_board().get_top_right_of(target as usize));
+
+        // 右の石の色。
+        let right_stone = pos.get_board().get_stone(pos.get_board().get_right_of(target as usize));
+
+        // 右下の石の色。
+        let bottom_right_stone = pos.get_board().get_stone(pos.get_board().get_bottom_right_of(target as usize));
+
+        // 下の石の色。
+        let bottom_stone = pos.get_board().get_stone(pos.get_board().get_bottom_of(target as usize));
+
+        // 左下の石の色。
+        let bottom_left_stone = pos.get_board().get_stone(pos.get_board().get_bottom_left_of(target as usize));
+
+        // 左の石の色。
+        let left_stone = pos.get_board().get_stone(pos.get_board().get_left_of(target as usize));
+
+        // 左上の石の色。
+        let top_left_stone = pos.get_board().get_stone(pos.get_board().get_top_left_of(target as usize));
+
         match direction {
             0 => {
                 // 上を向いている。
 
                 // 右に自分の色の石があるか？
-                if pos.turn == pos.get_board().get_stone(pos.get_board().get_right_of(target as usize)) {
-                    // 上に進む。
-                    self.search_by_right_hand(pos, 0, pos.get_board().get_top_of(target as usize) as i16);
+                if pos.turn == right_stone {
+                    if top_stone == 0 || top_stone == opponent {
+                        // 上が空いてるか、相手の石なら、上に進む。
+                        self.search_by_right_hand(pos, 0, pos.get_board().get_top_of(target as usize) as i16);
+                    }
                 }
             },
             1 => {
                 // 右を向いている。
 
                 // 下に自分の色の石があるか？
-                if pos.turn == pos.get_board().get_stone(pos.get_board().get_bottom_of(target as usize)) {
-                    // 右に進む。
-                    self.search_by_right_hand(pos, 0, pos.get_board().get_right_of(target as usize) as i16);
+                if pos.turn == bottom_stone {
+                    if right_stone == 0 || right_stone == opponent {
+                        // 上が空いてるか、相手の石なら、右に進む。
+                        self.search_by_right_hand(pos, 0, pos.get_board().get_right_of(target as usize) as i16);
+                    }
                 }
             },
             2 => {
                 // 下を向いている。
 
                 // 左に自分の色の石があるか？
-                if pos.turn == pos.get_board().get_stone(pos.get_board().get_left_of(target as usize)) {
-                    // 下に進む。
-                    self.search_by_right_hand(pos, 0, pos.get_board().get_bottom_of(target as usize) as i16);
+                if pos.turn == left_stone {
+                    if bottom_stone == 0 || bottom_stone == opponent {
+                        // 下が空いてるか、相手の石なら、下に進む。
+                        self.search_by_right_hand(pos, 0, pos.get_board().get_bottom_of(target as usize) as i16);
+                    }
                 }
             },
             _ => {
                 // 左を向いている。
 
                 // 上に自分の色の石があるか？
-                if pos.turn == pos.get_board().get_stone(pos.get_board().get_top_of(target as usize)) {
-                    // 左に進む。
-                    self.search_by_right_hand(pos, 0, pos.get_board().get_left_of(target as usize) as i16);
+                if pos.turn == top_stone {
+                    if left_stone == 0 || left_stone == opponent {
+                        // 左が空いてるか、相手の石なら、左に進む。
+                        self.search_by_right_hand(pos, 0, pos.get_board().get_left_of(target as usize) as i16);
+                    }
                 }
             }
         }
