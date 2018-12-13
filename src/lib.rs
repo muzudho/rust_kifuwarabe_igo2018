@@ -8,6 +8,7 @@ use rand::Rng;
 extern crate serde_json;
 
 /// このライブラリーに含まれる公開モジュール☆（＾～＾）
+pub mod air2018;
 pub mod best_move;
 pub mod board;
 pub mod config_file;
@@ -25,9 +26,7 @@ use position::Position;
 use ren_db::empty_ren::*;
 use liberty::*;
 use record::*;
-// use ren_database::*;
 use view::*;
-// use zobrist_hash::*;
 
 /// # 実行方法
 /// [Windows]+[R], "cmd",
@@ -386,7 +385,7 @@ pub fn is_forbidden(target:usize, pos:&Position, record:&Record) -> bool {
 }
 
 /// 指定局面での合法手生成。
-pub fn pick_move(pos:&Position, record:&Record) -> Vec<usize> {
+pub fn pick_move_normal(pos:&Position, record:&Record) -> Vec<usize> {
     let mut vec: Vec<usize> = Vec::new();
 
     // 着手禁止点以外は、全部合法手☆（*＾～＾*）
@@ -409,7 +408,7 @@ pub fn tryout(pos:&mut Position, record:&mut Record, piece_distribution_searcher
 
     // ランダムムーブする☆（＾～＾） 上限は 2000手でいいだろ☆（＾ｑ＾）
     for i_time in 0 .. 2001 {
-        let legal_moves = pick_move(&pos, record);
+        let legal_moves = pick_move_normal(&pos, record);
         // 合法手の表示☆（＾～＾）
         show_legal_moves(&legal_moves);
         // 合法手があれば、ランダムに１つ選ぶ。
