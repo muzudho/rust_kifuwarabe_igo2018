@@ -82,7 +82,11 @@ fn main() {
             // TODO let legal_moves = pick_move_normal(&pos, &record);
             
             let mut air2018 = Air2018::new();
-            let legal_moves = air2018.pick_move_air2018(&pos, &record);
+            let mut legal_moves = air2018.pick_move_air2018(&pos, &record);
+            // 候補が無ければ、ランダム打ち。
+            if legal_moves.is_empty() {
+                legal_moves = pick_move_normal(&pos, &record);
+            }
 
             // 試し打ちをする☆（＾～＾）
             let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut piece_distribution_searcher), pos.get_board().get_size());
