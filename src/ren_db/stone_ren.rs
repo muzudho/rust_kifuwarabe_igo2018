@@ -39,7 +39,11 @@ pub fn walk_liberty(piece_id:i16, color:i8, pos:&mut Position, target:usize){
     } else {
         let old_territory = match pos.get_piece_database().get_piece_mappings().get_piece(piece_id) {
             Some(ren_obj) => ren_obj.get_territory(),
-            None => {println!("石連テリトリーの取得失敗。連ID: {}.", piece_id); 0},
+            None => {
+                // TODO ここはよく通るが何だろうか？
+                // println!("石連テリトリーの取得失敗。連ID: {}.", piece_id);
+                0
+            },
         };
 
         pos.get_mut_ren_database().get_mut_ren_mappings().insert_ren(piece_id, PieceObject::default(piece_id, vec![target as i16], old_territory));

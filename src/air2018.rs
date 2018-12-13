@@ -56,9 +56,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_top_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の右上からスタート。
@@ -66,9 +66,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_top_right_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の右からスタート。
@@ -76,9 +76,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_right_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の右下からスタート。
@@ -86,9 +86,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_bottom_right_of(target) as i16;
                     self.search_by_right_hand(pos, end_point, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の下からスタート。
@@ -96,9 +96,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_bottom_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の左下からスタート。
@@ -106,9 +106,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_bottom_left_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の左からスタート。
@@ -116,9 +116,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_left_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
 
                 // 石の左上からスタート。
@@ -126,9 +126,9 @@ impl Air2018 {
                     self.clear_count_board(pos);
                     let end_point = pos.get_board().get_top_left_of(target) as i16;
                     self.search_by_right_hand(pos, end_point as i16, direction, end_point);
-                    if self.count_end_point != 2 {
-                        self.count_bottle_neck(pos);
-                    }
+                    // if self.count_end_point != 2 {
+                    // }
+                    self.count_bottle_neck(pos);
                 }
             }
         }
@@ -136,6 +136,7 @@ impl Air2018 {
         let mut vec: Vec<usize> = Vec::new();
 
         // 着手禁止点以外は、全部合法手☆（*＾～＾*）
+        println!("ボトルネック {0} 箇所。", self.bottle_neck_addr.len());
         for target in self.bottle_neck_addr.iter() {
             if !is_forbidden(*target as usize, pos, record) {
                 vec.push(*target as usize);
@@ -148,27 +149,13 @@ impl Air2018 {
     /// 壁に右手を付けての探索。
     /// * `direction` - 顔の向き。 0:上、1:右、2:下、3:左。
     pub fn search_by_right_hand(&mut self, pos:&Position, end_point:i16, direction:i8, target:i16) {
-        if end_point == target {
-            if self.count_end_point == 0 {
-                println!("始点: {0}", target);
-                self.count_end_point += 1;
-            } else {
-                println!("終点: {0}", target);
-                self.count_end_point += 1;
-                return;
-            }
-        }
 
-        // println!("右手: {0}, 終点: {1}", target, end_point);
-        match pos.get_board().get_stone(target as usize) {
-            0 => {
-                // 現在位置が空点なら、踏破扱い。
-                self.count_board[target as usize] += 1;
-            },
-            _ => {
-                // 現在位置が石、枠なら、終了。
-                return;
-            },
+        // 現在地の石の色。
+        let current_stone = pos.get_board().get_stone(target as usize);
+
+        if current_stone == 3 {
+            // 現在地が枠なら、即終了。
+            return;
         }
 
         // 壁となる石の色。（相手の石の色）
@@ -213,138 +200,162 @@ impl Air2018 {
         // 左上の石の色。
         let top_left_stone = pos.get_board().get_stone(pos.get_board().get_top_left_of(target as usize));
 
+
+
+        // println!("右手: {0}, 終点: {1}", target, end_point);
+        if current_stone == 0 || current_stone == floor_stone {
+            // 現在位置が空点 または 通れる石 なら、踏破扱い。
+            self.count_board[target as usize] += 1;
+        }
+        else if current_stone == wall_stone
+        {
+            // 現在位置が壁なら、終了。
+            return;
+        }
+
+        if end_point == target {
+            if self.count_end_point == 0 {
+                // println!("始点: {0}", target);
+                self.count_end_point += 1;
+            } else {
+                // println!("終点: {0}", target);
+                self.count_end_point += 1;
+                return;
+            }
+        }
+
         // 上、右、下、左 の順。
         match direction {
             0 => {
                 // 上を向いている。
-                print!("（＾～＾）↑");
+                // print!("（＾～＾）↑");
 
                 // 右に壁があるか？
                 if wall_stone == right_stone {
                     if top_stone == 0 || top_stone == floor_stone {
                         // 上が空いてるか、通れる石なら、上に進む。
-                        println!("足↑");
+                        // println!("足↑");
                         self.search_by_right_hand(pos, end_point as i16, top_direction, pos.get_board().get_top_of(target as usize) as i16);
                     }
                     else if left_stone == 0 || left_stone == floor_stone {
                         // 左が空いてるか、通れる石なら、左に進む。
-                        println!("足←");
+                        // println!("足←");
                         self.search_by_right_hand(pos, end_point as i16, left_direction, pos.get_board().get_left_of(target as usize) as i16);
                     }
                     else
                     {
                         // そうでなければ、逆走。
-                        println!("◇↓逆走");
+                        // println!("◇↓逆走");
                         self.search_by_right_hand(pos, end_point as i16, bottom_direction, pos.get_board().get_bottom_of(target as usize) as i16);
                     }
                 }
                 else if bottom_right_stone == wall_stone && (right_stone == 0 || right_stone == floor_stone) {
                     // 右下が壁で、右が空いてるか、通れる石なら、右に進む。
-                    println!("手空。足→");
+                    // println!("手空。足→");
                     self.search_by_right_hand(pos, end_point as i16, right_direction, pos.get_board().get_right_of(target as usize) as i16);
                 }
                 else
                 {
-                    println!("（／＿＼）");
+                    // println!("（／＿＼）");
                 }
             },
             1 => {
                 // 右を向いている。
-                print!("（＾～＾）→");
+                // print!("（＾～＾）→");
 
                 // 下に壁があるか？
                 if wall_stone == bottom_stone {
                     if right_stone == 0 || right_stone == floor_stone {
                         // 右が空いてるか、通れる石なら、右に進む。
-                        println!("足→");
+                        // println!("足→");
                         self.search_by_right_hand(pos, end_point as i16, right_direction, pos.get_board().get_right_of(target as usize) as i16);
                     }
                     else if top_stone == 0 || top_stone == floor_stone {
                         // 上が空いてるか、通れる石なら、上に進む。
-                        println!("足↑");
+                        // println!("足↑");
                         self.search_by_right_hand(pos, end_point as i16, top_direction, pos.get_board().get_top_of(target as usize) as i16);
                     }
                     else
                     {
                         // そうでなければ、逆走。
-                        println!("◇←逆走");
+                        // println!("◇←逆走");
                         self.search_by_right_hand(pos, end_point as i16, left_direction, pos.get_board().get_left_of(target as usize) as i16);
                     }
                 }
                 else if bottom_left_stone == wall_stone && (bottom_stone == 0 || bottom_stone == floor_stone) {
                     // 左下が壁で、下が空いてるか、通れる石なら、下に進む。
-                    println!("手空。足↓");
+                    // println!("手空。足↓");
                     self.search_by_right_hand(pos, end_point as i16, bottom_direction, pos.get_board().get_bottom_of(target as usize) as i16);
                 }
                 else
                 {
-                    println!("（／＿＼）");
+                    // println!("（／＿＼）");
                 }
             },
             2 => {
                 // 下を向いている。
-                print!("（＾～＾）↓");
+                // print!("（＾～＾）↓");
 
                 // 左に壁があるか？
                 if wall_stone == left_stone {
                     if bottom_stone == 0 || bottom_stone == floor_stone {
                         // 下が空いてるか、通れる石なら、下に進む。
-                        println!("足↓");
+                        // println!("足↓");
                         self.search_by_right_hand(pos, end_point as i16, bottom_direction, pos.get_board().get_bottom_of(target as usize) as i16);
                     }
                     else if right_stone == 0 || right_stone == floor_stone {
                         // 右が空いてるか、通れる石なら、右に進む。
-                        println!("足→");
+                        // println!("足→");
                         self.search_by_right_hand(pos, end_point as i16, right_direction, pos.get_board().get_right_of(target as usize) as i16);
                     }
                     else
                     {
                         // そうでなければ、逆走。
-                        println!("◇↑逆走");
+                        // println!("◇↑逆走");
                         self.search_by_right_hand(pos, end_point as i16, top_direction, pos.get_board().get_top_of(target as usize) as i16);
                     }
                 }
                 else if top_left_stone == wall_stone && (left_stone == 0 || left_stone == floor_stone) {
                     // 左上が壁で、左が空いてるか、通れる石なら、左に進む。
-                    println!("手空。足←");
+                    // println!("手空。足←");
                     self.search_by_right_hand(pos, end_point as i16, left_direction, pos.get_board().get_left_of(target as usize) as i16);
                 }
                 else
                 {
-                    println!("（／＿＼）");
+                    // println!("（／＿＼）");
                 }
             },
             _ => {
                 // 左を向いている。
-                print!("（＾～＾）←");
+                // print!("（＾～＾）←");
 
                 // 上に壁があるか？
                 if wall_stone == top_stone {
                     if left_stone == 0 || left_stone == floor_stone {
                         // 左が空いてるか、通れる石なら、左に進む。
-                        println!("足←");
+                        // println!("足←");
                         self.search_by_right_hand(pos, end_point as i16, left_direction, pos.get_board().get_left_of(target as usize) as i16);
                     }
                     else if bottom_stone == 0 || bottom_stone == floor_stone {
                         // 下が空いてるか、通れる石なら、下に進む。
-                        println!("足↓");
+                        // println!("足↓");
                         self.search_by_right_hand(pos, end_point as i16, bottom_direction, pos.get_board().get_bottom_of(target as usize) as i16);
                     }
                     else
                     {
                         // そうでなければ、逆走。
-                        println!("◇→逆走");
+                        // println!("◇→逆走");
                         self.search_by_right_hand(pos, end_point as i16, right_direction, pos.get_board().get_right_of(target as usize) as i16);
                     }
                 }
                 else if top_right_stone == wall_stone && (top_stone == 0 || top_stone == floor_stone) {
                     // 右上が壁で、上が空いてるか、通れる石なら、上に進む。
-                    println!("手空。足↑");
+                    // println!("手空。足↑");
                     self.search_by_right_hand(pos, end_point as i16, top_direction, pos.get_board().get_top_of(target as usize) as i16);
                 }
                 else
                 {
-                    println!("（／＿＼）");
+                    // println!("（／＿＼）");
                 }
             }
         }
