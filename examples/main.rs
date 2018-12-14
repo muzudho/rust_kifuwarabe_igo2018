@@ -46,7 +46,7 @@ fn main() {
     // 計算用。
     let mut piece_distribution_searcher = PieceDistributionSearcher::new();
 
-    // 棋譜。
+    // 棋譜のクリアー。
     let mut record = Record::new();
 
     println!("CgfGoban(きふわらべ改造版)で対局を開始してください。 out.txt を読みに行きます。");
@@ -63,9 +63,6 @@ fn main() {
                 Ok(_o) => {}
                 Err(e) => {panic!(e)}
             };
-
-            // 棋譜のクリアー。
-            record.clear();
 
             // 表示: 盤面表示☆（＾～＾）
             show_board(&pos.get_board());
@@ -101,11 +98,13 @@ fn main() {
             // 試し打ちをする☆（＾～＾）
             let mut move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut piece_distribution_searcher), pos.get_board().get_size());
 
+            /* 棋譜データをクリアーしてないので止めで。☆（＾～＾）毎対局、再起動しろだぜ☆（＾～＾）
             if 2*410 < record.len() {
                 // 2*410 手も超えていれば投了する☆（＾～＾）
                 println!("410手ぐらいを超えていれば投了する☆（＾～＾） 自分の覚えている棋譜の長さ: '{}'.", record.len());
                 move_code = 0;
             }
+             */
 
             println!("BestMove: '{}'.", move_code);
 
