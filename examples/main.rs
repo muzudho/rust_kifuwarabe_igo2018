@@ -86,6 +86,13 @@ fn main() {
             // 候補が無ければ、ランダム打ち。
             if legal_moves.is_empty() {
                 legal_moves = pick_move_normal(&pos, &record);
+                // ただし、端の手を省く。
+                legal_moves = air2018.pick_move_air2018_filter2(&pos, &record, legal_moves);
+
+                // それでも候補が無ければ、ランダム打ち。
+                if legal_moves.is_empty() {
+                    legal_moves = pick_move_normal(&pos, &record);
+                }
             }
 
             // 試し打ちをする☆（＾～＾）

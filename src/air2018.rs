@@ -160,6 +160,57 @@ impl Air2018 {
         vec
     }
 
+    /// 端の手を省く。
+    pub fn pick_move_air2018_filter2(&mut self, pos:&Position, record:&Record, vec_source: Vec<usize>) -> Vec<usize> {
+        let mut vec: Vec<usize> = Vec::new();
+
+        // 石を数える。
+        let mut stone_count = 0;
+        for target in pos.get_left_top_on_board() ..= pos.get_right_bottom_on_board() {
+            let stone = pos.get_board().get_stone(target as usize);
+
+            if stone == 1 || stone == 2 {
+                stone_count += 1;
+            }
+        }
+
+        // 避ける列の数
+        let mut avoid = 0;
+        if stone_count < 8 {
+            avoid = 4;
+        }
+        else if stone_count < 25 {
+            avoid = 3;
+        }
+        else if stone_count < 55 {
+            avoid = 2;
+        }
+        else if stone_count < 160 {
+            avoid = 1;
+        }
+
+        println!("石が {0} 個なので、端から {1} 列は避ける☆（＾～＾）", stone_count, avoid);
+        for target in vec_source {
+
+            // 19路盤は 21x21 のボード☆（＾～＾）
+            // 21 で割って 1 余れば 1列目、 19 余れば 19 列目☆（＾～＾）
+            // 21 で割って小数点以下切り捨てて、 1 なら 1 行目、 19 なら 19 行目☆（＾～＾）
+            let column = target % 21;
+            let row = target / 21;
+            
+            // 着手禁止点ではなく、端でもない。
+            if
+                !is_forbidden(target as usize, pos, record)
+                &&
+                (0 + avoid < column && column < 20 - avoid && 0 + avoid < row &&  row < 20 - avoid)
+            {
+                vec.push(target as usize);
+            }
+        }
+
+        vec
+    }
+
     /// 壁に右手を付けての探索。
     /// * `direction` - 顔の向き。 0:上、1:右、2:下、3:左。
     pub fn search_by_right_hand(&mut self, pos:&Position, end_point:i16, direction:i8, target:i16) {
