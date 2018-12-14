@@ -179,13 +179,13 @@ impl Air2018 {
         if stone_count < 8 {
             avoid = 4;
         }
-        else if stone_count < 25 {
+        else if stone_count < 20 {
             avoid = 3;
         }
         else if stone_count < 55 {
             avoid = 2;
         }
-        else if stone_count < 160 {
+        else if stone_count < 170 {
             avoid = 1;
         }
 

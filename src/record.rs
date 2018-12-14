@@ -49,6 +49,10 @@ impl Record {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.items.clear();
+    }
+
     pub fn count_up(&mut self) {
         self.items.push(RecordItem::new());
     }

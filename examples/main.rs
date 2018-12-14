@@ -64,6 +64,9 @@ fn main() {
                 Err(e) => {panic!(e)}
             };
 
+            // 棋譜のクリアー。
+            record.clear();
+
             // 表示: 盤面表示☆（＾～＾）
             show_board(&pos.get_board());
             println!("Turn: '{}'.", pos.turn);
@@ -96,7 +99,14 @@ fn main() {
             }
 
             // 試し打ちをする☆（＾～＾）
-            let move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut piece_distribution_searcher), pos.get_board().get_size());
+            let mut move_code = convert_address_to_code(do_random_move(&mut pos, &legal_moves, &mut record, &mut piece_distribution_searcher), pos.get_board().get_size());
+
+            if 2*410 < record.len() {
+                // 2*410 手も超えていれば投了する☆（＾～＾）
+                println!("410手ぐらいを超えていれば投了する☆（＾～＾） 自分の覚えている棋譜の長さ: '{}'.", record.len());
+                move_code = 0;
+            }
+
             println!("BestMove: '{}'.", move_code);
 
             // in.txt ファイル出力。
