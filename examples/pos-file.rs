@@ -9,7 +9,7 @@
 /// 
 /// ### 実行。
 /// cls
-/// cd C:\MuzudhoDrive\projects_rust\rust_kifuwarabe_igo2018
+/// cd C:\muzudho\projects_rust\rust-kifuwarabe-igo2018
 /// cargo run --example pos-file
 /// ```
 
